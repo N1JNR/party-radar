@@ -5,6 +5,8 @@ import { PoMenuComponent, PoNotificationService } from '@po-ui/ng-components';
 
 import { AUTH_GATEWAY, AuthGateway, AuthUser } from '../../core/auth/auth.gateway';
 import { AuthStore } from '../../core/auth/auth.store';
+import { HOME_DATA_SOURCE } from '../../features/home/data/home.source';
+import { HomeStore } from '../../features/home/data/home.store';
 import { AppShellComponent } from './app-shell.component';
 
 const user: AuthUser = { name: 'Ana Souza', username: 'ana', avatarUrl: null };
@@ -20,6 +22,7 @@ describe('AppShellComponent', () => {
       providers: [
         provideRouter([]),
         { provide: PoNotificationService, useValue: { information } },
+        { provide: HOME_DATA_SOURCE, useValue: {} },
         {
           provide: AUTH_GATEWAY,
           useValue: { restoreSession: () => Promise.resolve({ user }), ...gateway },
@@ -157,9 +160,37 @@ describe('AppShellComponent', () => {
     await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith('/login', { replaceUrl: true }));
   });
 
-  it('mostra os squads recebidos no menu', async () => {
+  it('mostra os squads da home no menu', async () => {
     await render();
-    fixture.componentInstance.squads.set([{ id: 's1', name: 'Squad da Sexta', playing: 2 }]);
+    const squad = { id: 's1', name: 'Squad da Sexta', memberIds: ['bia', 'caio'] };
+    const playing = (id: string) => ({
+      id,
+      name: id,
+      avatarUrl: null,
+      game: 'CS2',
+      platform: 'pc' as const,
+      startedAt: '2026-10-16T21:00:00Z',
+    });
+    TestBed.inject(HomeStore).data.set({
+      card: {
+        name: 'Ana',
+        username: 'ana',
+        avatarUrl: null,
+        playingNow: null,
+        title: null,
+        stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
+        games: 0,
+        gameOfMonth: null,
+        partner: null,
+        platforms: [],
+      },
+      steamPublic: true,
+      friendsCount: 2,
+      friendsPlaying: [playing('bia'), playing('caio')],
+      squads: [squad],
+      question: null,
+      inviteLink: '',
+    });
     fixture.detectChanges();
     expect(menu().menus[3].subItems?.[0].label).toBe('Squad da Sexta · 2 jogando');
   });

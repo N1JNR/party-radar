@@ -1,30 +1,80 @@
-.inicio {
+// Container de até 1120 px (DESIGN.md, seção 4). Duas colunas no desktop: o card e, ao lado,
+// os avisos e quem está jogando. Uma coluna abaixo de 1024 px.
+.home {
   box-sizing: border-box;
-  min-height: 100dvh;
-  max-width: 400px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: var(--spacing-lg) var(--spacing-sm);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-.inicio__title {
-  margin: var(--spacing-sm) 0 0;
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-xs);
+  padding: var(--spacing-md) var(--spacing-sm) var(--spacing-xl);
   color: var(--pr-text);
 }
-.inicio__username {
-  margin: var(--spacing-xxs) 0 0;
+.home__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+.home__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+}
+.home__grid {
+  display: grid;
+  gap: var(--spacing-md);
+}
+.home__main,
+.home__side {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+// Esqueleto (CA14): blocos na cor da superfície, sem texto falso e sem animação.
+.skeleton {
+  height: 160px;
+  border-radius: var(--border-radius-lg);
+  background: var(--pr-surface-raised);
+}
+.skeleton--card {
+  height: 520px;
+}
+
+// Erro (CA15).
+.home__error {
+  display: grid;
+  justify-items: start;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  background: var(--pr-surface-raised);
+}
+.home__error-title {
+  margin: 0;
+  font-weight: 700;
+}
+.home__error-text {
+  margin: 0 0 var(--spacing-xs);
   color: var(--pr-text-muted);
   font-size: var(--font-size-sm);
 }
-.inicio__next {
-  max-width: 30ch;
-  margin: var(--spacing-md) 0 var(--spacing-lg);
-  color: var(--pr-text-muted);
-  line-height: var(--line-height-md);
+
+@media (min-width: 768px) {
+  .home {
+    padding: var(--spacing-lg);
+  }
+  .home__title {
+    font-size: var(--font-size-xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .home__grid {
+    grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
+    align-items: start;
+  }
 }

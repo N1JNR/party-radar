@@ -36,7 +36,7 @@ export class PlayerCardComponent {
   readonly firstAccess = input(false);
   readonly seePatentes = output<void>();
 
-  protected readonly phrases = FIRST_ACCESS_PHRASES;
+  protected readonly phrases = computed(() => FIRST_ACCESS_PHRASES);
   protected readonly tagNeutral = PoTagType.Neutral;
   protected readonly playing = computed(() => playingLabel(this.card().playingNow));
   protected readonly hours = computed(() => formatHours(this.card().stats.hours));

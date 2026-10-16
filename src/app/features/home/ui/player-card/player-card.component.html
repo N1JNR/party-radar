@@ -30,7 +30,7 @@
     <p class="player-card__hours-value">{{ hours() }}</p>
     <p class="player-card__hours-caption">jogadas este mês, em {{ games() }}</p>
     @if (firstAccess()) {
-      <p class="player-card__phrase">{{ phrases.hours }}</p>
+      <p class="player-card__phrase">{{ phrases().hours }}</p>
     }
   </div>
 
@@ -42,7 +42,7 @@
           <span class="player-card__stat-value">{{ game.name }}</span>
           <span class="player-card__stat-caption">{{ gameOfMonthHours() }}</span>
         } @else {
-          <span class="player-card__phrase">{{ phrases.gameOfMonth }}</span>
+          <span class="player-card__phrase">{{ phrases().gameOfMonth }}</span>
         }
       </dd>
     </div>
@@ -59,7 +59,7 @@
           </span>
           <span class="player-card__stat-caption">{{ matches() }}</span>
         } @else {
-          <span class="player-card__phrase">{{ phrases.partner }}</span>
+          <span class="player-card__phrase">{{ phrases().partner }}</span>
         }
       </dd>
     </div>
@@ -80,7 +80,7 @@
             }
           </ul>
         } @else {
-          <span class="player-card__phrase">{{ phrases.platform }}</span>
+          <span class="player-card__phrase">{{ phrases().platform }}</span>
         }
       </dd>
     </div>
