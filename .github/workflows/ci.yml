@@ -14,6 +14,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      # Usa a mesma versão do npm declarada em package.json (packageManager).
+      - run: npm install -g "$(node -p "require('./package.json').packageManager")"
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
@@ -24,3 +26,17 @@ jobs:
         with:
           name: coverage
           path: coverage/
+
+  db-test:
+    # Testes do banco (pgTAP), incluindo a regra de RLS obrigatório.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm install -g "$(node -p "require('./package.json').packageManager")"
+      - run: npm ci
+      - run: npx supabase db start
+      - run: npm run db:test
