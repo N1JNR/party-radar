@@ -19,7 +19,7 @@ jobs:
     name: Lint e formatação
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # O commitlint precisa do histórico para ler os commits do PR.
           fetch-depth: 0
@@ -37,10 +37,10 @@ jobs:
     name: Testes e cobertura
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - run: npm run test:ci
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage
@@ -50,7 +50,7 @@ jobs:
     name: Build de produção
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - run: npm run build
 
@@ -58,7 +58,7 @@ jobs:
     name: Testes do banco (RLS)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - run: npx supabase db start
       - run: npm run db:test
