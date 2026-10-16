@@ -1,0 +1,48 @@
+# Atualizações automáticas de dependências (uma vez por semana, agrupadas para não lotar de PRs).
+# Os commits saem como "chore(deps): ..." para passar no commitlint da CI.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      # Angular e PO UI andam juntos: só sobem de versão menor ou correção, todos de uma vez.
+      angular-e-po-ui:
+        patterns: ['@angular/*', '@angular-devkit/*', '@po-ui/*', 'angular-eslint']
+        update-types: [minor, patch]
+      minor-e-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+    ignore:
+      # Versão maior do Angular só junto com a do PO UI (AGENTS.md / DESIGN.md); vira tarefa própria.
+      - dependency-name: '@angular/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@angular-devkit/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@po-ui/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'angular-eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: America/Sao_Paulo
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ['*']
