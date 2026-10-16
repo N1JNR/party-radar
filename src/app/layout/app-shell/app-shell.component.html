@@ -1,0 +1,31 @@
+<div class="po-wrapper shell" [class.shell--menu-open]="menuOpen()">
+  <header class="shell__topbar">
+    <button
+      #menuButton
+      type="button"
+      class="shell__menu-button"
+      aria-label="Abrir menu"
+      aria-controls="app-menu"
+      [attr.aria-expanded]="menuOpen()"
+      (click)="openMenu()"
+    >
+      <po-icon p-icon="an an-list" aria-hidden="true" />
+    </button>
+    <span class="shell__brand">Party Radar</span>
+  </header>
+
+  <po-menu
+    id="app-menu"
+    [p-menus]="menus()"
+    (click)="syncAfterMenuInteraction()"
+    (keydown)="syncAfterMenuInteraction()"
+  >
+    <ng-template p-menu-header-template>
+      <span class="shell__brand shell__brand--menu">Party Radar</span>
+    </ng-template>
+  </po-menu>
+
+  <div class="shell__content">
+    <router-outlet />
+  </div>
+</div>

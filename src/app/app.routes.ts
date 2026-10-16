@@ -16,11 +16,19 @@ export const routes: Routes = [
     canActivate: [anonymousOnly],
     loadComponent: () => import('./features/auth/pages/login.page').then((m) => m.LoginPage),
   },
+  // Telas autenticadas, dentro do layout com o menu (spec 002).
   {
-    path: 'inicio',
-    title: 'Início | Party Radar',
+    path: '',
     canActivate: [authenticatedOnly],
-    loadComponent: () => import('./features/home/pages/home.page').then((m) => m.HomePage),
+    loadComponent: () =>
+      import('./layout/app-shell/app-shell.component').then((m) => m.AppShellComponent),
+    children: [
+      {
+        path: 'inicio',
+        title: 'Meu card | Party Radar',
+        loadComponent: () => import('./features/home/pages/home.page').then((m) => m.HomePage),
+      },
+    ],
   },
   { path: '**', redirectTo: '' },
 ];
