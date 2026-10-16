@@ -13,7 +13,8 @@ e receberem um retrospecto mensal (Wrapped).
 - **Worker:** bot do Discord em Node (presença e chamados), a criar em `apps/discord-worker`.
 - **Futuro:** empacotamento mobile com Capacitor. Escreva código que não dependa só do navegador.
 
-Documentos de referência: `docs/plano.md` (produto) e `docs/specs/` (especificações).
+Documentos de referência: `docs/plano.md` (produto), `DESIGN.md` (visual, componentes e
+acessibilidade) e `docs/specs/` (especificações).
 
 ## 2. Fluxo de trabalho (Spec-Driven Development)
 
@@ -102,6 +103,7 @@ src/app/
 
 ### PO UI
 
+- Siga o [`DESIGN.md`](DESIGN.md): tokens, componentes, estados e checklist de qualidade visual.
 - Use componentes do PO UI para formulários, listas, modais, toasts e navegação.
 - Tema definido pelo construtor de temas, em `src/theme/`. **Não** sobrescreva estilos do PO UI
   componente a componente; ajuste o tema.
