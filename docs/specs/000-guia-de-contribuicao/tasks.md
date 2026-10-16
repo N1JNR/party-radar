@@ -9,5 +9,5 @@ po-angular ao fluxo SDD do projeto, e cobrar por ferramenta o que for possível.
       breaking change) e regras de PR
 - [x] T2 — commitlint com as regras do guia (título até 72 caracteres, corpo e rodapé quebrados
       em 72), testado com exemplos válidos e inválidos
-- [ ] T3 — AGENTS.md e template de PR apontam para o guia; campo "Área" no template
+- [x] T3 — AGENTS.md e template de PR apontam para o guia; campo "Área" no template
 - [ ] T4 — Revisar diff, rodar `npm run verify` e abrir o PR
