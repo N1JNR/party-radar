@@ -105,7 +105,7 @@ src/app/
 
 - Toda mudança de banco é uma migration em `supabase/migrations/`. Nunca altere o banco pelo painel sem migration.
 - Toda tabela nova nasce com **RLS ativado** e policies explícitas, cobertas por testes (`supabase test db`).
-- A chave `service_role` **nunca** vai para o front. Só Edge Functions e o worker a usam.
+- A secret key do Supabase (`sb_secret_…`, antiga `service_role`) **nunca** vai para o front. Só Edge Functions e o worker a usam.
 - Segredos só em `.env` (ignorado pelo Git) e nas variáveis do Supabase. Mantenha `.env.example` atualizado.
 - Tokens de terceiros (Discord, Steam) são tratados no servidor; não os grave no `localStorage`.
 

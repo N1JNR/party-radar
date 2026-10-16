@@ -9,21 +9,21 @@ vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => ({ fake: 'client' })),
 }));
 
-const config = { url: 'https://teste.supabase.co', anonKey: 'anon' };
+const config = { url: 'https://teste.supabase.co', publishableKey: 'sb_publishable_teste' };
 
 describe('createSupabaseClient', () => {
   beforeEach(() => vi.mocked(createClient).mockClear());
 
   it('persiste e renova a sessão no navegador', () => {
     createSupabaseClient(config, true);
-    expect(createClient).toHaveBeenCalledWith(config.url, config.anonKey, {
+    expect(createClient).toHaveBeenCalledWith(config.url, config.publishableKey, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
     });
   });
 
   it('não persiste sessão no servidor (SSR)', () => {
     createSupabaseClient(config, false);
-    expect(createClient).toHaveBeenCalledWith(config.url, config.anonKey, {
+    expect(createClient).toHaveBeenCalledWith(config.url, config.publishableKey, {
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
     });
   });
@@ -35,7 +35,7 @@ describe('tokens de injeção', () => {
   it('SUPABASE_CONFIG lê os valores do environment por padrão', () => {
     expect(TestBed.inject(SUPABASE_CONFIG)).toEqual({
       url: environment.supabaseUrl,
-      anonKey: environment.supabaseAnonKey,
+      publishableKey: environment.supabasePublishableKey,
     });
   });
 

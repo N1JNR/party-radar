@@ -33,7 +33,7 @@ npm start            # http://localhost:4200
 
 ## Configuração
 
-- **Front:** preencha `src/environments/environment*.ts` com a URL e a anon key do Supabase.
+- **Front:** preencha `src/environments/environment*.ts` com a URL e a publishable key (`sb_publishable_…`) do Supabase.
 - **Segredos** (worker e Edge Functions): copie `.env.example` para `.env`. O `.env` não vai para o Git.
 
 ## Estrutura

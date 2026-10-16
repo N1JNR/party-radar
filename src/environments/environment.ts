@@ -1,7 +1,8 @@
-// Valores públicos do Supabase (a anon key pode ir para o front; a service_role NUNCA).
-// Preencha com os dados do seu projeto em Supabase > Project Settings > API.
+// Valores públicos do Supabase. A publishable key (sb_publishable_…) pode ir para o front;
+// a secret key (sb_secret_…) NUNCA.
+// Preencha com os dados do projeto em Supabase > Project Settings > API Keys.
 export const environment = {
   production: true,
   supabaseUrl: 'https://SEU-PROJETO.supabase.co',
-  supabaseAnonKey: 'SUA-ANON-KEY',
+  supabasePublishableKey: 'sb_publishable_SUA-CHAVE',
 };

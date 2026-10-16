@@ -6,12 +6,15 @@ import { environment } from '../../../environments/environment';
 
 export interface SupabaseConfig {
   url: string;
-  anonKey: string;
+  publishableKey: string;
 }
 
 export const SUPABASE_CONFIG = new InjectionToken<SupabaseConfig>('SUPABASE_CONFIG', {
   providedIn: 'root',
-  factory: () => ({ url: environment.supabaseUrl, anonKey: environment.supabaseAnonKey }),
+  factory: () => ({
+    url: environment.supabaseUrl,
+    publishableKey: environment.supabasePublishableKey,
+  }),
 });
 
 /**
@@ -19,7 +22,7 @@ export const SUPABASE_CONFIG = new InjectionToken<SupabaseConfig>('SUPABASE_CONF
  * No servidor (SSR) a sessão não é persistida, porque não existe localStorage.
  */
 export function createSupabaseClient(config: SupabaseConfig, isBrowser: boolean): SupabaseClient {
-  return createClient(config.url, config.anonKey, {
+  return createClient(config.url, config.publishableKey, {
     auth: {
       persistSession: isBrowser,
       autoRefreshToken: isBrowser,
