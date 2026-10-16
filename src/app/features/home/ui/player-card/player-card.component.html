@@ -1,0 +1,109 @@
+<article class="player-card" aria-labelledby="player-card-name">
+  <header class="player-card__identity">
+    <div class="player-card__avatar" [class.player-card__avatar--playing]="playing()">
+      <po-avatar [p-src]="card().avatarUrl ?? ''" p-size="lg" />
+    </div>
+    <div class="player-card__who">
+      <h2 id="player-card-name" class="player-card__name">{{ card().name }}</h2>
+      <p class="player-card__username">&#64;{{ card().username }}</p>
+      @if (playing(); as status) {
+        <p class="player-card__status">{{ status }}</p>
+      }
+    </div>
+  </header>
+
+  <div class="player-card__rank">
+    <po-icon class="player-card__rank-icon" p-icon="an an-trophy" aria-hidden="true" />
+    <div>
+      <p class="player-card__label">Patente</p>
+      <p class="player-card__patente">{{ progress().current.name }}</p>
+    </div>
+    @if (card().title; as title) {
+      <div class="player-card__title">
+        <p class="player-card__label">Título do mês</p>
+        <p class="player-card__title-value">{{ title }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="player-card__hours">
+    <p class="player-card__hours-value">{{ hours() }}</p>
+    <p class="player-card__hours-caption">jogadas este mês, em {{ games() }}</p>
+    @if (firstAccess()) {
+      <p class="player-card__phrase">{{ phrases.hours }}</p>
+    }
+  </div>
+
+  <dl class="player-card__stats">
+    <div class="player-card__stat">
+      <dt class="player-card__label">Jogo do mês</dt>
+      <dd>
+        @if (card().gameOfMonth; as game) {
+          <span class="player-card__stat-value">{{ game.name }}</span>
+          <span class="player-card__stat-caption">{{ gameOfMonthHours() }}</span>
+        } @else {
+          <span class="player-card__phrase">{{ phrases.gameOfMonth }}</span>
+        }
+      </dd>
+    </div>
+
+    <div class="player-card__stat">
+      <dt class="player-card__label">Parceiro de squad</dt>
+      <dd>
+        @if (card().partner; as partner) {
+          <span class="player-card__stat-value">
+            {{ partner.name }}
+            @if (partner.probable) {
+              <po-tag class="player-card__probable" p-value="provável" [p-type]="tagNeutral" />
+            }
+          </span>
+          <span class="player-card__stat-caption">{{ matches() }}</span>
+        } @else {
+          <span class="player-card__phrase">{{ phrases.partner }}</span>
+        }
+      </dd>
+    </div>
+
+    <div class="player-card__stat">
+      <dt class="player-card__label">Onde joga</dt>
+      <dd>
+        @if (platforms().length > 0) {
+          <ul class="player-card__platforms">
+            @for (share of platforms(); track share.platform) {
+              <li class="player-card__platform">
+                <span class="player-card__platform-name">{{ share.label }}</span>
+                <span class="player-card__platform-bar" aria-hidden="true">
+                  <span [style.width.%]="share.percent"></span>
+                </span>
+                <span class="player-card__platform-percent">{{ share.percent }}%</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <span class="player-card__phrase">{{ phrases.platform }}</span>
+        }
+      </dd>
+    </div>
+  </dl>
+
+  <footer class="player-card__next">
+    @if (progress().next; as next) {
+      <p class="player-card__label">Próxima patente</p>
+      <p class="player-card__next-name">{{ next.name }}</p>
+      <div
+        class="player-card__progress"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-valuenow]="progress().percent"
+        [attr.aria-label]="'Progresso para ' + next.name"
+      >
+        <span [style.width.%]="progress().percent"></span>
+      </div>
+      <p class="player-card__remaining">{{ remaining() }}</p>
+    } @else {
+      <p class="player-card__next-name">Patente máxima. Não sobrou nada para subir.</p>
+    }
+    <po-button p-kind="tertiary" p-label="Ver patentes" (p-click)="seePatentes.emit()" />
+  </footer>
+</article>

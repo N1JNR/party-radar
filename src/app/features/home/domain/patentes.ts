@@ -146,3 +146,42 @@ export function progressFor(stats: PlayStats): PatenteProgress {
     percent: Math.min(100, Math.max(0, Math.floor((done / span) * 100))),
   };
 }
+
+function joinParts(parts: string[]): string {
+  return parts.length > 1
+    ? `${parts.slice(0, -1).join(', ')} e ${parts[parts.length - 1]}`
+    : parts[0];
+}
+
+/**
+ * O que falta para a próxima patente, em texto: "Falta 1h para Recruta da fila." ou
+ * "Faltam 38h e 9h com amigos para Lenda do squad." Vazio na última patente.
+ */
+export function remainingLabel(progress: PatenteProgress): string {
+  if (!progress.next) {
+    return '';
+  }
+  const parts: string[] = [];
+  if (progress.hoursRemaining > 0) {
+    parts.push(`${progress.hoursRemaining}h`);
+  }
+  if (progress.friendHoursRemaining > 0) {
+    parts.push(`${progress.friendHoursRemaining}h com amigos`);
+  }
+  if (progress.friendsRemaining > 0) {
+    parts.push(
+      progress.friendsRemaining === 1
+        ? '1 amigo diferente'
+        : `${progress.friendsRemaining} amigos diferentes`,
+    );
+  }
+  if (parts.length === 0) {
+    return '';
+  }
+  const singular =
+    parts.length === 1 &&
+    (progress.hoursRemaining === 1 ||
+      progress.friendHoursRemaining === 1 ||
+      progress.friendsRemaining === 1);
+  return `${singular ? 'Falta' : 'Faltam'} ${joinParts(parts)} para ${progress.next.name}.`;
+}

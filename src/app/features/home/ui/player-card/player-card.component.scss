@@ -1,0 +1,182 @@
+:host {
+  display: block;
+}
+.player-card {
+  display: grid;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  background: var(--pr-surface-raised);
+  color: var(--pr-text);
+}
+p,
+dd {
+  margin: 0;
+}
+
+// Identidade: o anel de radar aparece só quando a pessoa está jogando (CA5).
+.player-card__identity {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.player-card__avatar {
+  flex: none;
+  padding: 3px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+.player-card__avatar--playing {
+  border-color: var(--pr-presence-playing);
+}
+.player-card__who {
+  min-width: 0;
+}
+.player-card__name {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+  overflow-wrap: anywhere;
+}
+.player-card__username,
+.player-card__stat-caption,
+.player-card__remaining,
+.player-card__hours-caption {
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-sm);
+}
+.player-card__status {
+  margin-top: var(--spacing-xxs);
+  color: var(--pr-presence-playing);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.player-card__label {
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+// Patente e título do mês.
+.player-card__rank {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs) var(--spacing-sm);
+}
+.player-card__rank-icon {
+  font-size: 2rem;
+  color: var(--pr-highlight);
+}
+.player-card__patente,
+.player-card__next-name {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+}
+.player-card__title {
+  padding-left: var(--spacing-sm);
+  border-left: var(--border-width-sm) solid var(--color-neutral-light-30);
+}
+.player-card__title-value {
+  font-weight: 600;
+}
+
+// Horas em destaque.
+.player-card__hours-value {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+}
+.player-card__phrase {
+  color: var(--pr-text-muted);
+  font-style: italic;
+}
+.player-card__hours .player-card__phrase {
+  margin-top: var(--spacing-xs);
+}
+
+// Jogo do mês, parceiro e plataformas: uma coluna no celular, três a partir do tablet.
+.player-card__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--spacing-sm);
+  margin: 0;
+}
+.player-card__stat {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-xxs);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-lg);
+  background: var(--pr-surface-page);
+}
+.player-card__stat dd {
+  display: grid;
+  gap: var(--spacing-xxs);
+}
+.player-card__stat-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-weight: 700;
+}
+.player-card__platforms {
+  display: grid;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.player-card__platform {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr 3rem;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+.player-card__platform-name {
+  font-weight: 600;
+}
+.player-card__platform-percent {
+  text-align: right;
+}
+.player-card__platform-bar,
+.player-card__progress {
+  display: block;
+  height: 6px;
+  border-radius: var(--border-radius-pill);
+  background: var(--color-neutral-light-30);
+  overflow: hidden;
+}
+.player-card__platform-bar > span,
+.player-card__progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-brand-01-light);
+}
+
+// Próxima patente.
+.player-card__next {
+  display: grid;
+  justify-items: start;
+  gap: var(--spacing-xs);
+}
+.player-card__progress {
+  justify-self: stretch;
+  height: 8px;
+}
+
+@media (min-width: 768px) {
+  .player-card {
+    padding: var(--spacing-lg);
+  }
+}

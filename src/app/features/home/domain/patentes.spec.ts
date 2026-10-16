@@ -1,4 +1,4 @@
-import { PATENTES, PlayStats, patenteFor, progressFor } from './patentes';
+import { PATENTES, PlayStats, patenteFor, progressFor, remainingLabel } from './patentes';
 
 const stats = (hours: number, hoursWithFriends = 0, distinctFriends = 0): PlayStats => ({
   hours,
@@ -103,5 +103,53 @@ describe('progressFor', () => {
       friendsRemaining: 0,
       percent: 100,
     });
+  });
+});
+
+describe('remainingLabel', () => {
+  it('no primeiro acesso: "Falta 1h para Recruta da fila." (CA7)', () => {
+    expect(remainingLabel(progressFor(stats(0)))).toBe('Falta 1h para Recruta da fila.');
+  });
+
+  it('junta horas e horas com amigos (CA4)', () => {
+    expect(remainingLabel(progressFor(stats(42, 11, 3)))).toBe(
+      'Faltam 38h e 9h com amigos para Lenda do squad.',
+    );
+  });
+
+  it('só horas com amigos', () => {
+    expect(remainingLabel(progressFor(stats(120, 5)))).toBe(
+      'Faltam 15h com amigos para Lenda do squad.',
+    );
+    expect(remainingLabel(progressFor(stats(120, 19)))).toBe(
+      'Falta 1h com amigos para Lenda do squad.',
+    );
+  });
+
+  it('horas e amigos diferentes, no singular e no plural', () => {
+    expect(remainingLabel(progressFor(stats(150, 30, 2)))).toBe(
+      'Faltam 50h e 3 amigos diferentes para Sem vida social.',
+    );
+    expect(remainingLabel(progressFor(stats(250, 30, 4)))).toBe(
+      'Falta 1 amigo diferente para Sem vida social.',
+    );
+  });
+
+  it('três partes viram lista com vírgula e "e"', () => {
+    const progress = {
+      ...progressFor(stats(42)),
+      hoursRemaining: 2,
+      friendHoursRemaining: 3,
+      friendsRemaining: 2,
+    };
+    expect(remainingLabel(progress)).toBe(
+      'Faltam 2h, 3h com amigos e 2 amigos diferentes para Lenda do squad.',
+    );
+  });
+
+  it('vazio na última patente ou sem nada faltando', () => {
+    expect(remainingLabel(progressFor(stats(300, 50, 8)))).toBe('');
+    const nothing = { ...progressFor(stats(42)), hoursRemaining: 0, friendHoursRemaining: 0 };
+    expect(remainingLabel(nothing)).toBe('');
   });
 });
