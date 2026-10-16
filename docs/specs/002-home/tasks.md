@@ -11,7 +11,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T4 — Domain: oportunidade de squad (2+ do mesmo squad no mesmo jogo), 100% testado (CA12)
 - [x] T5 — Layout do app com `po-menu` (itens, squads, Sair) e prova da gaveta em tela estreita (CA1–CA3)
 - [x] T6 — Contrato `HomeDataSource` e fonte simulada com os cenários de `?simular=` (CA4–CA15)
-- [ ] T7 — `HomeStore` em signals: carregando, erro, tentar de novo, confirmar parceria, Steam pública (CA8, CA11, CA14, CA15)
+- [x] T7 — `HomeStore` em signals: carregando, erro, tentar de novo, confirmar parceria, Steam pública (CA8, CA11, CA14, CA15)
 - [ ] T8 — Componente do card: cheio, provável e primeiro acesso (CA4–CA7)
 - [ ] T9 — Componentes laterais: "Deixe seu card mais forte", aviso da Steam e pergunta de parceria (CA7, CA8, CA11)
 - [ ] T10 — Componentes de jogando agora e oportunidade de squad, com estados vazios (CA9, CA10, CA12)
