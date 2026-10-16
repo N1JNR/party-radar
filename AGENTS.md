@@ -22,8 +22,12 @@ O tamanho da tarefa define o processo. Classifique antes de começar e diga qual
 | Nível              | Exemplos                                                   | O que é exigido                                                    |
 | ------------------ | ---------------------------------------------------------- | ------------------------------------------------------------------ |
 | **Trivial**        | texto, cor, typo, ajuste de estilo sem lógica              | branch + commit + lint/build. Sem spec.                            |
-| **Pequena**        | bug localizado, ajuste de regra existente                  | `tasks.md` curto na pasta da spec relacionada + teste de regressão |
+| **Pequena**        | bug localizado, ajuste de regra existente, configuração    | `tasks.md` curto na pasta da spec relacionada + teste de regressão |
 | **Funcionalidade** | tela nova, integração, tabela nova, mudança de arquitetura | spec completa: `spec.md` → `plan.md` → `tasks.md`                  |
+
+Tarefa Pequena sem spec relacionada (configuração, ferramentas, CI): crie
+`docs/specs/000-<nome>/tasks.md`. O prefixo `000` marca tarefas de manutenção, fora da
+numeração das funcionalidades. Teste de regressão só é exigido quando for correção de bug.
 
 ### Etapas de uma funcionalidade
 
@@ -44,12 +48,12 @@ Mudou o escopo no meio do caminho? Atualize a spec primeiro e peça nova aprova�
 
 1. `git status` — se houver alterações locais que não são suas, **não toque nelas**: pare e informe.
 2. Descubra a branch principal: `git symbolic-ref refs/remotes/origin/HEAD` (normalmente `main`).
+   Se der erro de "not a symbolic ref", rode antes `git remote set-head origin -a`.
 3. `git fetch origin` e `git switch main && git pull --ff-only`.
 4. Crie a branch da tarefa a partir da `main` atualizada: `git switch -c <tipo>/<nome-curto>`.
 5. Confirme com `git log -1 --oneline` que a base é o último commit de `origin/main`.
 
-**Exceção de bootstrap:** enquanto o repositório não tiver remoto (`git remote -v` vazio),
-pule os passos 2, 3 e 5 e trabalhe a partir da `main` local. Avise no relatório.
+Repositório: https://github.com/N1JNR/party-radar (remoto `origin`).
 
 ### Branches
 
@@ -63,6 +67,9 @@ pule os passos 2, 3 e 5 e trabalhe a partir da `main` local. Avise no relatório
 - Pequenos e frequentes, um propósito por commit.
 - Formato [Conventional Commits](https://www.conventionalcommits.org/pt-br/), em português:
   `feat(amigos): adiciona aceite de pedido de amizade`.
+- Hooks do Git (husky) verificam cada commit: `pre-commit` roda ESLint e Prettier nos arquivos
+  do commit (lint-staged) e `commit-msg` valida o formato (commitlint).
+  **Nunca use `--no-verify`**; se o hook falhar, corrija a causa.
 - Commits locais na branch da tarefa são permitidos.
 - **Push, merge, abertura de PR, publicação e deploy: só com autorização explícita.**
 - Nunca reescreva histórico já enviado ao remoto (`push --force`, `rebase` de branch compartilhada).
@@ -105,9 +112,17 @@ src/app/
 
 - Toda mudança de banco é uma migration em `supabase/migrations/`. Nunca altere o banco pelo painel sem migration.
 - Toda tabela nova nasce com **RLS ativado** e policies explícitas, cobertas por testes (`supabase test db`).
+  O teste `supabase/tests/rls_obrigatorio.test.sql` falha se alguma tabela de `public` ficar sem RLS.
+- Views em `public` usam `with (security_invoker = true)`; sem isso, a view ignora o RLS de
+  quem consulta (o mesmo teste cobra).
+- Funções `security definer` só quando inevitável, sempre com `set search_path = ''` e nomes
+  qualificados (`public.tabela`), e com `execute` revogado de `anon`/`public` quando não forem públicas.
+- Depois de cada migration, rode `npm run db:types` e commite `database.types.ts` junto.
 - A secret key do Supabase (`sb_secret_…`, antiga `service_role`) **nunca** vai para o front. Só Edge Functions e o worker a usam.
 - Segredos só em `.env` (ignorado pelo Git) e nas variáveis do Supabase. Mantenha `.env.example` atualizado.
-- Tokens de terceiros (Discord, Steam) são tratados no servidor; não os grave no `localStorage`.
+- Tokens de terceiros (Discord, Google, Steam) são tratados no servidor; não os grave no `localStorage`.
+  Atenção: a sessão do Supabase traz `provider_token` e `provider_refresh_token` após o login
+  OAuth, e eles não podem ficar persistidos no navegador.
 
 ### UX e acessibilidade
 
@@ -151,7 +166,8 @@ As metas ficam no arquivo de configuração de testes e **são verificadas pela 
 | Banco local (Docker)    | `npm run db:start`     |
 | Testes do banco (RLS)   | `npm run db:test`      |
 | Gerar tipos do banco    | `npm run db:types`     |
-| Tudo de uma vez         | `npm run verify`       |
+| Tudo, sem o banco       | `npm run verify`       |
+| Tudo, com o banco       | `npm run verify:all`   |
 
 ## 6. Definição de pronto
 
@@ -160,8 +176,10 @@ Uma tarefa só está concluída quando **todos** os itens aplicáveis forem verd
 - [ ] Atende à spec e aos critérios de aceite aprovados.
 - [ ] Feita em branch exclusiva, criada da `main` atualizada.
 - [ ] `npm run verify` passou (lint, formatação, testes com cobertura e build).
-- [ ] Testes do banco passaram, se houve migration.
+      Se houve migration ou mudança em `supabase/`: `npm run verify:all` (inclui os testes do banco).
 - [ ] Diff revisado (`git diff main...HEAD`): nada fora do escopo, nenhum segredo, nenhum `console.log` esquecido.
+- [ ] Revisão automática feita e achados tratados: `/code-review` sempre; `/security-review`
+      também quando a mudança tocar login, RLS, Edge Functions, worker ou segredos.
 - [ ] `tasks.md` e documentação atualizados.
 
 Se algum item falhar: **não marque como concluída.** Corrija ou informe o bloqueio.
