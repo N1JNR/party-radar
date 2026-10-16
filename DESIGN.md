@@ -223,6 +223,8 @@ Toda tela e todo componente que carrega dados tem quatro versões: **carregando*
 **erro** e **com dados**.
 
 - **Carregando:** esqueleto ou `po-loading-overlay`; botões em `p-loading` durante a ação.
+  Exceção: o carregamento inicial do app (verificando a sessão) usa o indicador próprio de
+  `app.ts`, para o PO UI continuar fora do bundle inicial.
 - **Vazio:** diz o que fazer, com a ação ali mesmo: "Nenhum amigo ainda. Convide a galera
   pelo link." + botão "Copiar convite".
 - **Erro:** diz o que aconteceu e como resolver, sem pedir desculpas: "Não foi possível
