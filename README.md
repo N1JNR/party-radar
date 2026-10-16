@@ -9,15 +9,12 @@ Veja quem do seu grupo está jogando agora, chame a galera e acompanhe o que voc
 
 ## Primeiros passos
 
-Requisitos: Node 22+, npm, Git. Docker só se for rodar o Supabase local.
+Requisitos: Node 24+ (versão em `.nvmrc`), npm 11, Git e Docker Desktop (Supabase local).
 
 ```bash
-npm install
+npm ci
 npm start            # http://localhost:4200
 ```
-
-Se o `npm install` falhar com `Cannot read properties of null (reading 'edgesOut')`,
-é um bug conhecido do npm 10. Use o npm 11: `npx npm@11 install`.
 
 ## Scripts
 

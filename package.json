@@ -18,7 +18,7 @@
     "serve:ssr:party-radar": "node dist/party-radar/server/server.mjs"
   },
   "private": true,
-  "packageManager": "npm@10.9.4",
+  "packageManager": "npm@11.17.0",
   "dependencies": {
     "@angular/animations": "~21.2.0",
     "@angular/cdk": "~21.2.14",
@@ -44,7 +44,7 @@
     "@angular/cli": "^21.2.27",
     "@angular/compiler-cli": "^21.2.0",
     "@types/express": "^5.0.1",
-    "@types/node": "^20.17.19",
+    "@types/node": "^24.19.2",
     "@vitest/coverage-v8": "^4.1.12",
     "angular-eslint": "^21.4.0",
     "eslint": "^9.39.5",
@@ -56,6 +56,6 @@
     "vitest": "^4.0.8"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   }
 }
