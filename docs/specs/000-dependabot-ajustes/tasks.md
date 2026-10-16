@@ -25,5 +25,5 @@ motivo em cada um); #7 (GitHub Actions) e #11 (`jsdom` 30) passaram nos 5 checks
 nunca foi declarado.
 
 - [x] T4 — Declarar o `@eslint/js` nas `devDependencies`, na versão atual do ESLint (9)
-- [ ] T5 — Grupo `eslint` no Dependabot (`eslint` e `@eslint/*`), para os dois subirem juntos
+- [x] T5 — Grupo `eslint` no Dependabot (`eslint` e `@eslint/*`), para os dois subirem juntos
 - [ ] T6 — Revisar diff, rodar `npm run verify` e abrir o PR
