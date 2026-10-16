@@ -1,41 +1,78 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PoButtonModule } from '@po-ui/ng-components';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { PoAvatarModule, PoButtonModule } from '@po-ui/ng-components';
+
+import { AuthStore } from '../../../core/auth/auth.store';
 
 /**
- * Página provisória que confirma que Angular, SSR, PO UI e o tema estão funcionando.
- * Será substituída pela tela de login (spec 001).
+ * Tela inicial provisória (spec 001): confirma quem entrou e permite sair.
+ * Será substituída pelo Radar na spec 004.
  */
 @Component({
   selector: 'app-home-page',
-  imports: [PoButtonModule],
+  imports: [PoAvatarModule, PoButtonModule],
   template: `
-    <main class="home">
-      <h1 class="home__title">Party Radar</h1>
-      <p class="home__subtitle">Projeto configurado. A próxima etapa é a tela de login.</p>
-      <po-button p-label="Tudo certo" p-kind="primary" [p-disabled]="true" />
+    <main class="inicio">
+      @if (store.user(); as user) {
+        <po-avatar class="inicio__avatar" [p-src]="user.avatarUrl ?? ''" p-size="lg" />
+        <h1 class="inicio__title">Olá, {{ user.name }}</h1>
+        <p class="inicio__username">&#64;{{ user.username }}</p>
+        <p class="inicio__next">Em breve, aqui você vai ver quem do grupo está jogando agora.</p>
+        <po-button
+          p-label="Sair"
+          p-kind="secondary"
+          [p-loading]="leaving()"
+          (p-click)="signOut()"
+        />
+      }
     </main>
   `,
   styles: `
-    .home {
-      min-height: 100vh;
+    .inicio {
+      box-sizing: border-box;
+      min-height: 100dvh;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: var(--spacing-lg) var(--spacing-sm);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 16px;
-      padding: 24px;
       text-align: center;
     }
-    .home__title {
-      margin: 0;
+    .inicio__title {
+      margin: var(--spacing-sm) 0 0;
       font-family: var(--font-family-heading);
-      font-size: 40px;
+      font-size: var(--font-size-lg);
+      line-height: var(--line-height-xs);
+      color: var(--pr-text);
     }
-    .home__subtitle {
-      margin: 0;
-      color: var(--color-neutral-mid-60);
+    .inicio__username {
+      margin: var(--spacing-xxs) 0 0;
+      color: var(--pr-text-muted);
+      font-size: var(--font-size-sm);
+    }
+    .inicio__next {
+      max-width: 30ch;
+      margin: var(--spacing-md) 0 var(--spacing-lg);
+      color: var(--pr-text-muted);
+      line-height: var(--line-height-md);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomePage {}
+export class HomePage {
+  protected readonly store = inject(AuthStore);
+  private readonly router = inject(Router);
+  protected readonly leaving = signal(false);
+
+  protected async signOut(): Promise<void> {
+    this.leaving.set(true);
+    try {
+      await this.store.signOut();
+    } catch {
+      // A sessão local já terminou no AuthStore; seguimos para Entrar mesmo assim (CA8).
+    }
+    await this.router.navigateByUrl('/entrar', { replaceUrl: true });
+  }
+}
