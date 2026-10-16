@@ -14,7 +14,7 @@ Contexto (primeira rodada, 2026-10-16): os 6 PRs falharam no commitlint (corrigi
 | `eslint`    | `^10` aceito por `angular-eslint` | #9 (v10)         | compatível, avaliar             |
 | `jsdom`     | sem restrição                     | #11 (v30)        | avaliar                         |
 
-- [ ] T1 — Pausar `zone.js` acima de 0.15 e versão maior de `vitest`/`@vitest/*`; agrupar
+- [x] T1 — Pausar `zone.js` acima de 0.15 e versão maior de `vitest`/`@vitest/*`; agrupar
       `vitest` com `@vitest/*`
 - [ ] T2 — Revisar diff, rodar `npm run verify` e abrir o PR
 - [ ] T3 — Depois do merge: fechar #8, #10 e #12 com o motivo e pedir ao Dependabot para
