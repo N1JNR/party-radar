@@ -4,6 +4,7 @@ Veja quem do seu grupo está jogando agora, chame a galera e acompanhe o que voc
 
 - **Stack:** Angular 21 · PO UI 21 · Supabase · Vitest · ESLint · Prettier
 - **Regras do projeto (para pessoas e agentes de IA):** [`AGENTS.md`](AGENTS.md)
+- **Design (visual, componentes, acessibilidade):** [`DESIGN.md`](DESIGN.md)
 - **Plano do MVP:** [`docs/plano.md`](docs/plano.md)
 - **Especificações:** [`docs/specs/`](docs/specs/)
 
