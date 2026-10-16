@@ -1,5 +1,5 @@
 <!--
-Título do PR no padrão Conventional Commits: tipo(escopo): descrição curta
+Título do PR no padrão do CONTRIBUTING.md: tipo(escopo): descrição curta (até 72 caracteres)
 Ex.: feat(amigos): adiciona aceite de pedido de amizade · fix(radar): corrige status duplicado
 Apague as seções que não se aplicam e os comentários como este.
 -->
@@ -12,6 +12,7 @@ Apague as seções que não se aplicam e os comentários como este.
 
 - **Spec:** `docs/specs/NNN-nome/` <!-- ou docs/specs/000-nome/ para manutenção -->
 - **Nível:** Funcionalidade | Pequena | Trivial
+- **Área:** <!-- ex.: features/auth, core/auth, supabase/migrations, .github -->
 - **Tarefas:** T\_\_ a T\_\_ do `tasks.md`
 
 ## Qual o comportamento atual?
@@ -39,7 +40,8 @@ Passo a passo para quem revisa. Ex.:
 
 Definição de pronto do [`AGENTS.md`](https://github.com/N1JNR/party-radar/blob/main/AGENTS.md#6-definição-de-pronto). Marque só o que fez de verdade.
 
-- [ ] Branch criada a partir da `main` atualizada
+- [ ] Branch nova, criada a partir da `main` atualizada, no padrão `<tipo>/<NNN>-<nome>`
+- [ ] Commits no padrão do [`CONTRIBUTING.md`](https://github.com/N1JNR/party-radar/blob/main/CONTRIBUTING.md#commits)
 - [ ] `npm run verify` passou (ou `npm run verify:all`, se mexeu em `supabase/`)
 - [ ] Testes cobrem sucesso, falha e casos-limite; bug corrigido tem teste de regressão
 - [ ] Tela: estados de carregando, vazio e erro; conferida em 390, 768 e 1280 px e só pelo teclado ([`DESIGN.md`](https://github.com/N1JNR/party-radar/blob/main/DESIGN.md#7-critérios-de-qualidade))

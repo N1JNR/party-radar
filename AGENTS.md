@@ -45,13 +45,18 @@ Mudou o escopo no meio do caminho? Atualize a spec primeiro e peça nova aprova�
 
 ## 3. Git
 
+O passo a passo completo de branches, commits e PRs está no [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ### Antes de começar qualquer tarefa
+
+**Toda atividade começa numa branch nova, criada da `main` atualizada**, inclusive ajustes pedidos
+depois de um PR mergeado. Nunca continue numa branch antiga.
 
 1. `git status` — se houver alterações locais que não são suas, **não toque nelas**: pare e informe.
 2. Descubra a branch principal: `git symbolic-ref refs/remotes/origin/HEAD` (normalmente `main`).
    Se der erro de "not a symbolic ref", rode antes `git remote set-head origin -a`.
 3. `git fetch origin` e `git switch main && git pull --ff-only`.
-4. Crie a branch da tarefa a partir da `main` atualizada: `git switch -c <tipo>/<nome-curto>`.
+4. Crie a branch da tarefa a partir da `main` atualizada: `git switch -c <tipo>/<NNN>-<nome-curto>`.
 5. Confirme com `git log -1 --oneline` que a base é o último commit de `origin/main`.
 
 Repositório: https://github.com/N1JNR/party-radar (remoto `origin`).
@@ -60,16 +65,19 @@ Repositório: https://github.com/N1JNR/party-radar (remoto `origin`).
 
 - Nunca implemente direto na `main`.
 - Uma branch por tarefa independente; não reaproveite branches antigas.
-- Prefixos: `feat/`, `fix/`, `refactor/`, `test/`, `docs/`, `chore/`.
-  Nome em kebab-case, curto e descritivo: `feat/lista-de-amigos`, `fix/radar-status-duplicado`.
+- Nome `<tipo>/<NNN>-<nome-curto>`: tipo (`feat`, `fix`, `refactor`, `test`, `docs`, `chore`),
+  número da spec (`000` para manutenção) e nome em kebab-case: `feat/003-lista-de-amigos`,
+  `fix/004-radar-status-duplicado`, `chore/000-melhorar-ci`.
 
 ### Commits
 
 - Pequenos e frequentes, um propósito por commit.
 - Formato [Conventional Commits](https://www.conventionalcommits.org/pt-br/), em português:
-  `feat(amigos): adiciona aceite de pedido de amizade`.
+  `feat(amigos): adiciona aceite de pedido de amizade`. Título até 72 caracteres, minúsculo e sem
+  ponto final; corpo quebrado em 72 explicando o porquê (detalhes no `CONTRIBUTING.md`).
 - Hooks do Git (husky) verificam cada commit: `pre-commit` roda ESLint e Prettier nos arquivos
-  do commit (lint-staged) e `commit-msg` valida o formato (commitlint).
+  do commit (lint-staged) e `commit-msg` valida o formato (commitlint). A CI valida de novo os
+  commits de cada PR.
   **Nunca use `--no-verify`**; se o hook falhar, corrija a causa.
 - Commits locais na branch da tarefa são permitidos.
 - **Push, merge, abertura de PR, publicação e deploy: só com autorização explícita.**
