@@ -1,0 +1,34 @@
+:host {
+  display: block;
+}
+.question {
+  display: grid;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  background: var(--pr-surface-raised);
+  color: var(--pr-text);
+}
+.question__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+}
+.question__text {
+  margin: 0;
+  font-weight: 600;
+  line-height: var(--line-height-md);
+}
+.question__hint {
+  margin: 0;
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-sm);
+}
+.question__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+}

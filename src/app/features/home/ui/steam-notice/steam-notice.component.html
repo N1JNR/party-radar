@@ -1,0 +1,23 @@
+<section class="notice" aria-labelledby="steam-notice-title">
+  <po-icon class="notice__icon" p-icon="an an-steam-logo" aria-hidden="true" />
+  <div class="notice__body">
+    <h2 id="steam-notice-title" class="notice__title">Sua Steam está privada</h2>
+    <p class="notice__text">
+      Com o perfil público, o card mostra suas horas, o jogo do mês e com quem você mais joga.
+    </p>
+    <ol class="notice__path">
+      <li>Na Steam, abra o seu perfil e escolha <strong>Editar perfil</strong>.</li>
+      <li>Entre em <strong>Configurações de privacidade</strong>.</li>
+      <li>
+        Deixe <strong>Meu perfil</strong> e <strong>Detalhes dos jogos</strong> como
+        <strong>Público</strong>.
+      </li>
+    </ol>
+    <po-button
+      p-kind="secondary"
+      p-label="Já deixei público"
+      [p-loading]="marking()"
+      (p-click)="confirmed.emit()"
+    />
+  </div>
+</section>

@@ -1,18 +1,9 @@
 import { InjectionToken } from '@angular/core';
 
 import { FriendPresence } from '../domain/friend-presence';
+import { PartnershipQuestion } from '../domain/partnership';
 import { PlayerCard } from '../domain/player-card';
 import { Squad } from '../domain/squad-opportunity';
-
-/** Partida em que o app não tem certeza se a pessoa jogou junto com o amigo (CA11). */
-export interface PartnershipQuestion {
-  id: string;
-  friendName: string;
-  game: string;
-  /** Início e fim da partida, em ISO 8601. */
-  startedAt: string;
-  endedAt: string;
-}
 
 /** Tudo o que a home mostra (spec 002). */
 export interface HomeData {

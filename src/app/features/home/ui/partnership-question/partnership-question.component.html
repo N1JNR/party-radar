@@ -1,0 +1,19 @@
+<section class="question" aria-labelledby="partnership-title">
+  <h2 id="partnership-title" class="question__title">Jogaram juntos?</h2>
+  <p class="question__text">{{ text() }}</p>
+  <p class="question__hint">Sua resposta deixa o parceiro do mês mais certeiro.</p>
+  <div class="question__actions">
+    <po-button
+      p-kind="secondary"
+      p-label="Joguei"
+      [p-disabled]="answering()"
+      (p-click)="answered.emit(true)"
+    />
+    <po-button
+      p-kind="tertiary"
+      p-label="Não joguei"
+      [p-disabled]="answering()"
+      (p-click)="answered.emit(false)"
+    />
+  </div>
+</section>
