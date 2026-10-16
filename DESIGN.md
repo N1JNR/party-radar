@@ -308,7 +308,6 @@ Antes de declarar uma tela pronta (soma-se à seção 6 do `AGENTS.md`):
 ## 8. Perguntas em aberto
 
 - [x] **Botão primário:** ação `#8B6CFF` / `#A996FF` / `#9A82FF` (aprovado em 2026-10-16)
-      (seção 1)?
 - [ ] **Neutros:** a escala atual (`#0E1117`, `#161B22`, `#30363D`…) é praticamente a do tema
       escuro do GitHub. Manter, ou puxar os neutros levemente para o violeta da marca para
       ter identidade própria?
