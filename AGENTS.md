@@ -94,6 +94,9 @@ src/app/
 ### Angular
 
 - Componentes **standalone**, `ChangeDetectionStrategy.OnPush`, `inject()` em vez de construtor.
+- Cada componente tem **três arquivos** com o mesmo nome: `.ts` (lógica), `.html` (template) e
+  `.scss` (estilos), ligados por `templateUrl` e `styleUrl`. Nada de `template` ou `styles`
+  inline; o ESLint (`component-max-inline-declarations`) recusa.
 - Estado com **signals** (`signal`, `computed`, `effect` com parcimônia). RxJS só para streams (Realtime, eventos).
 - Novo controle de fluxo nos templates (`@if`, `@for` com `track`, `@switch`).
 - Rotas com lazy loading por feature.

@@ -15,6 +15,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body>
-    <app-root></app-root>
+    <!-- Indicador até o Angular iniciar; o Angular substitui o conteúdo de app-root (CA11). -->
+    <app-root>
+      <div class="boot-loading" role="status">
+        <span class="boot-loading__ring" aria-hidden="true"></span>
+        <span>Verificando sua sessão…</span>
+      </div>
+    </app-root>
   </body>
 </html>

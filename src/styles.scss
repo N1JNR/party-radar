@@ -1,18 +1,68 @@
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap');
+// Google Sans 500 só para o botão "Continuar com o Google" (exigência das diretrizes do Google).
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Google+Sans:wght@500&family=Manrope:wght@400;500;600;700&display=swap');
 
-// Fontes e fundo do Party Radar. As cores dos componentes vêm do tema do PO UI
-// (src/theme/party-radar.theme.ts).
+// Fontes, fundo e tokens próprios do Party Radar (DESIGN.md, seção 2).
+// As cores dos componentes vêm do tema do PO UI (src/theme/party-radar.theme.ts).
 :root {
   --font-family-theme: 'Manrope', sans-serif;
   --font-family-theme-bold: 'Manrope', sans-serif;
   --font-family-heading: 'Chakra Petch', sans-serif;
+  --pr-font-google: 'Google Sans', 'Manrope', sans-serif;
+
+  // Papéis semânticos: apontam para os tokens do PO UI, nunca para hex.
+  --pr-surface-page: var(--color-neutral-light-00);
+  --pr-surface-raised: var(--color-neutral-light-10);
+  --pr-text: var(--color-neutral-dark-90);
+  --pr-text-muted: var(--color-neutral-mid-60);
+
+  // Estados de presença (anel de radar e blips). Sempre acompanhados de texto.
+  --pr-presence-playing: var(--color-feedback-positive-base);
+  --pr-presence-online: var(--color-brand-02-base);
+  --pr-presence-away: var(--color-feedback-warning-base);
+
   color-scheme: dark;
 }
 
+// Hex direto de propósito: o tema do PO UI só é aplicado depois que o app carrega, e até lá
+// os tokens ainda têm os valores claros padrão. Assim a tela não pisca em branco.
 html,
 body {
   margin: 0;
   background: #0e1117;
   color: #e6edf3;
   font-family: var(--font-family-theme);
+}
+
+// Indicador do index.html, visível enquanto o app e o tema do PO UI carregam (spec 001, CA11).
+// O app.html reutiliza estas classes enquanto verifica a sessão.
+.boot-loading {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1rem;
+  color: #8b949e;
+  font-size: 0.875rem;
+}
+
+.boot-loading__ring {
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #30363d;
+  border-top-color: #a996ff;
+  animation: boot-loading-spin 900ms linear infinite;
+}
+
+@keyframes boot-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-loading__ring {
+    animation: none;
+  }
 }

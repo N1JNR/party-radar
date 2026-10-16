@@ -1,0 +1,30 @@
+.inicio {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.inicio__title {
+  margin: var(--spacing-sm) 0 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-xs);
+  color: var(--pr-text);
+}
+.inicio__username {
+  margin: var(--spacing-xxs) 0 0;
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-sm);
+}
+.inicio__next {
+  max-width: 30ch;
+  margin: var(--spacing-md) 0 var(--spacing-lg);
+  color: var(--pr-text-muted);
+  line-height: var(--line-height-md);
+}

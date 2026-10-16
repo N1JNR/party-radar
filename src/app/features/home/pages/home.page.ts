@@ -1,41 +1,32 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PoButtonModule } from '@po-ui/ng-components';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { PoAvatarModule, PoButtonModule } from '@po-ui/ng-components';
+
+import { AuthStore } from '../../../core/auth/auth.store';
 
 /**
- * Página provisória que confirma que Angular, SSR, PO UI e o tema estão funcionando.
- * Será substituída pela tela de login (spec 001).
+ * Tela inicial provisória (spec 001): confirma quem entrou e permite sair.
+ * Será substituída pelo Radar na spec 004.
  */
 @Component({
   selector: 'app-home-page',
-  imports: [PoButtonModule],
-  template: `
-    <main class="home">
-      <h1 class="home__title">Party Radar</h1>
-      <p class="home__subtitle">Projeto configurado. A próxima etapa é a tela de login.</p>
-      <po-button p-label="Tudo certo" p-kind="primary" [p-disabled]="true" />
-    </main>
-  `,
-  styles: `
-    .home {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 24px;
-      text-align: center;
-    }
-    .home__title {
-      margin: 0;
-      font-family: var(--font-family-heading);
-      font-size: 40px;
-    }
-    .home__subtitle {
-      margin: 0;
-      color: var(--color-neutral-mid-60);
-    }
-  `,
+  imports: [PoAvatarModule, PoButtonModule],
+  templateUrl: './home.page.html',
+  styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomePage {}
+export class HomePage {
+  protected readonly store = inject(AuthStore);
+  private readonly router = inject(Router);
+  protected readonly leaving = signal(false);
+
+  protected async signOut(): Promise<void> {
+    this.leaving.set(true);
+    try {
+      await this.store.signOut();
+    } catch {
+      // A sessão local já terminou no AuthStore; seguimos para o login mesmo assim (CA8).
+    }
+    await this.router.navigateByUrl('/login', { replaceUrl: true });
+  }
+}
