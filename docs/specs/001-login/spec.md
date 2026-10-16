@@ -1,6 +1,6 @@
 # 001 — Login com Discord e Google
 
-**Status:** aguardando aprovação (revisão 2: decisões registradas e entrega em duas partes)
+**Status:** aprovada em 2026-10-16 (revisão 2: decisões registradas e entrega em duas partes)
 **Relacionada a:** `docs/plano.md` (escopo do MVP, item 1). Prepara `002-conectar-contas` e `003-amigos`.
 
 ## Problema
