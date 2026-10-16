@@ -1,0 +1,2 @@
+-- Dados de exemplo para o banco local. Roda depois das migrations em `supabase db reset`.
+-- Nunca coloque dados reais ou segredos aqui.
