@@ -15,7 +15,9 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T8 — Componente `radar-hero` (anéis, blips, onda única, `prefers-reduced-motion`) (CA1)
 - [x] T9 — Página Entrar com aviso `aria-live` e todos os estados (CA1, CA12–CA15, CA19, CA20)
 - [x] T10 — Tela inicial provisória ("Olá, {nome}", avatar, Sair) e rotas `/login` e `/inicio` (CA1)
-- [ ] T11 — Conferência visual em 390, 768 e 1280 px e navegação por teclado, com prints para o PR (CA19, CA20)
+- [x] T11 — Conferência visual em 390, 768 e 1280 px e navegação por teclado, com prints para o PR (CA19, CA20)
+- [ ] T11a — Contraste do botão secundário "Sair": texto `#6E4BFF` sobre o fundo dá 3,7:1 (mínimo 4,5:1). Depende de aprovar `action` `#8B6CFF` no tema (DESIGN.md, seção 8)
+- [ ] T11b — O aviso de erro empurra os botões cerca de 56 px para baixo; um segundo toque rápido pode acertar o outro provedor. Depende de escolher a correção
 - [ ] T12 — `/code-review`, revisar diff, rodar `npm run verify` e escrever o relatório final
 
 ## Parte 2 — Funcionalidade
