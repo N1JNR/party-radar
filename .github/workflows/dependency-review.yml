@@ -1,0 +1,23 @@
+name: Dependências
+
+# Em todo PR, compara as dependências com a main e barra pacote novo ou atualizado com
+# vulnerabilidade conhecida de severidade alta ou crítica.
+on:
+  pull_request:
+
+concurrency:
+  group: deps-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    name: Revisão de dependências
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high

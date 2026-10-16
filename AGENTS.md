@@ -73,6 +73,8 @@ Repositório: https://github.com/N1JNR/party-radar (remoto `origin`).
   **Nunca use `--no-verify`**; se o hook falhar, corrija a causa.
 - Commits locais na branch da tarefa são permitidos.
 - **Push, merge, abertura de PR, publicação e deploy: só com autorização explícita.**
+- Todo PR usa o template `.github/pull_request_template.md`, preenchido (inclusive quando aberto
+  pelo `gh pr create --body-file`, que não carrega o template sozinho).
 - Nunca reescreva histórico já enviado ao remoto (`push --force`, `rebase` de branch compartilhada).
 
 ## 4. Arquitetura e padrões de código

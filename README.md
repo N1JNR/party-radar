@@ -38,6 +38,21 @@ npm start            # http://localhost:4200
 O `npm ci` instala hooks (husky) que rodam ESLint e Prettier nos arquivos do commit e
 validam a mensagem no formato Conventional Commits. Detalhes no [`AGENTS.md`](AGENTS.md).
 
+## CI (GitHub Actions)
+
+Todo PR roda estes checks, em paralelo:
+
+| Check                   | O que valida                                                           |
+| ----------------------- | ---------------------------------------------------------------------- |
+| Lint e formatação       | ESLint, Prettier e as mensagens de commit do PR (Conventional Commits) |
+| Testes e cobertura      | Vitest com as metas de cobertura; o relatório fica como artefato       |
+| Build de produção       | `npm run build`, com os limites de tamanho do bundle                   |
+| Testes do banco (RLS)   | Postgres local do Supabase + testes pgTAP                              |
+| Revisão de dependências | Barra pacote novo ou atualizado com vulnerabilidade alta ou crítica    |
+
+Um push novo cancela a execução anterior do mesmo PR. O Dependabot abre, toda segunda,
+PRs agrupados de atualização de npm e GitHub Actions (versão maior de Angular e PO UI fica de fora).
+
 ## Configuração
 
 - **Front:** preencha `src/environments/environment*.ts` com a URL e a publishable key (`sb_publishable_…`) do Supabase.
