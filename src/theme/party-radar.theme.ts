@@ -25,10 +25,12 @@ export const partyRadarTheme: PoTheme = {
           '02': { base: '#22D3EE' },
           '03': { base: '#FBBF24' },
         },
+        // Mais claro que a marca: o PO UI escreve texto escuro sobre a ação (botão primário) e
+        // texto na cor da ação sobre o fundo (secundário); #6E4BFF dava 3,7:1 (DESIGN.md).
         action: {
-          default: '#6E4BFF',
-          hover: '#5636E0',
-          pressed: '#3F25B0',
+          default: '#8B6CFF',
+          hover: '#A996FF',
+          pressed: '#9A82FF',
           disabled: '#30363D',
           focus: '#A996FF',
         },

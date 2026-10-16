@@ -36,34 +36,36 @@ Não use o ponto colorido no canto do avatar: ele é a marca registrada do Disco
 
 Tema único **escuro** no MVP (`PoThemeTypeEnum.dark`). Não existe modo claro por enquanto.
 
-| Papel                    | Token PO UI                      | Valor     | Uso                                                 |
-| ------------------------ | -------------------------------- | --------- | --------------------------------------------------- |
-| Fundo da página          | `--color-neutral-light-00`       | `#0E1117` | fundo de todas as telas                             |
-| Superfície 1             | `--color-neutral-light-05`       | `#121722` | faixas, cabeçalho                                   |
-| Superfície 2             | `--color-neutral-light-10`       | `#161B22` | cards, listas, modais                               |
-| Superfície 3 / divisória | `--color-neutral-light-20`       | `#21262D` | hover de linha, divisórias                          |
-| Borda / disabled         | `--color-neutral-light-30`       | `#30363D` | bordas decorativas, fundo de botão desabilitado     |
-| Texto terciário          | `--color-neutral-mid-40`         | `#6E7681` | bordas de campo, ícones inativos (não use em texto) |
-| Texto secundário         | `--color-neutral-mid-60`         | `#8B949E` | legendas, horários, "jogando há 20 min"             |
-| Texto principal          | `--color-neutral-dark-90`        | `#E6EDF3` | títulos e corpo                                     |
-| Marca (violeta)          | `--color-brand-01-base`          | `#6E4BFF` | logo, grandes áreas de destaque sem texto           |
-| Marca clara              | `--color-brand-01-light`         | `#A996FF` | foco, texto e ícone em violeta                      |
-| Ciano                    | `--color-brand-02-base`          | `#22D3EE` | links do PO UI, informação                          |
-| Âmbar                    | `--color-brand-03-base`          | `#FBBF24` | conquistas e destaques do Wrapped                   |
-| Positivo                 | `--color-feedback-positive-base` | `#22C55E` | sucesso, "jogando"                                  |
-| Alerta                   | `--color-feedback-warning-base`  | `#F59E0B` | alerta, "ausente"                                   |
-| Negativo                 | `--color-feedback-negative-base` | `#EF4444` | erro, ação destrutiva                               |
+| Papel                    | Token PO UI                      | Valor     | Uso                                                  |
+| ------------------------ | -------------------------------- | --------- | ---------------------------------------------------- |
+| Fundo da página          | `--color-neutral-light-00`       | `#0E1117` | fundo de todas as telas                              |
+| Superfície 1             | `--color-neutral-light-05`       | `#121722` | faixas, cabeçalho                                    |
+| Superfície 2             | `--color-neutral-light-10`       | `#161B22` | cards, listas, modais                                |
+| Superfície 3 / divisória | `--color-neutral-light-20`       | `#21262D` | hover de linha, divisórias                           |
+| Borda / disabled         | `--color-neutral-light-30`       | `#30363D` | bordas decorativas, fundo de botão desabilitado      |
+| Texto terciário          | `--color-neutral-mid-40`         | `#6E7681` | bordas de campo, ícones inativos (não use em texto)  |
+| Texto secundário         | `--color-neutral-mid-60`         | `#8B949E` | legendas, horários, "jogando há 20 min"              |
+| Texto principal          | `--color-neutral-dark-90`        | `#E6EDF3` | títulos e corpo                                      |
+| Marca (violeta)          | `--color-brand-01-base`          | `#6E4BFF` | logo, grandes áreas de destaque sem texto            |
+| Marca clara              | `--color-brand-01-light`         | `#A996FF` | foco, texto e ícone em violeta                       |
+| Ação                     | `--color-action-default`         | `#8B6CFF` | botões do PO UI (hover `#A996FF`, pressed `#9A82FF`) |
+| Ciano                    | `--color-brand-02-base`          | `#22D3EE` | links do PO UI, informação                           |
+| Âmbar                    | `--color-brand-03-base`          | `#FBBF24` | conquistas e destaques do Wrapped                    |
+| Positivo                 | `--color-feedback-positive-base` | `#22C55E` | sucesso, "jogando"                                   |
+| Alerta                   | `--color-feedback-warning-base`  | `#F59E0B` | alerta, "ausente"                                    |
+| Negativo                 | `--color-feedback-negative-base` | `#EF4444` | erro, ação destrutiva                                |
 
 **Contraste medido** (WCAG, sobre `#0E1117`): texto principal 16:1 · secundário 6,1:1 ·
 ciano 10,5:1 · âmbar 11,3:1 · positivo 8,3:1 · alerta 8,8:1 · negativo 5,0:1 (4,6:1 sobre card) ·
-marca clara 7,6:1. **Reprovados:** marca base como texto (3,7:1) e `mid-40` como texto (4,1:1).
+marca clara 7,6:1 · ação 5,1:1 (hover 7,6:1, pressed 6,3:1). **Reprovados:** marca base como
+texto (3,7:1) e `mid-40` como texto (4,1:1).
 
-> **Problema conhecido: botão primário.** O PO UI escreve o texto do botão primário com
-> `--color-neutral-light-00` (`#0E1117`) sobre `--color-action-default` (`#6E4BFF`): **3,7:1**,
-> abaixo de 4,5:1. No hover (`#5636E0`) cai para 2,7:1. Proposta, aguardando aprovação:
-> `action.default` `#8B6CFF` (5,1:1), `action.hover` `#A996FF` (7,6:1) e `action.pressed`
-> `#9A82FF` (6,3:1). No tema escuro, o hover clareia em vez de escurecer. A marca `#6E4BFF`
-> continua no logo e nas áreas sem texto.
+> **Decisão (2026-10-16): cor de ação separada da marca.** O PO UI escreve o texto do botão
+> primário em `--color-neutral-light-00` (`#0E1117`) sobre a cor de ação, e o texto do
+> secundário na cor de ação sobre o fundo. Com a marca `#6E4BFF` isso dava 3,7:1 (2,7:1 no
+> hover), abaixo de 4,5:1. A ação passou a `#8B6CFF` e, no tema escuro, o hover clareia em vez
+> de escurecer. A marca `#6E4BFF` continua no logo e nas áreas sem texto. O teste
+> `theme.spec.ts` mede esse contraste e falha se ele cair abaixo de 4,5:1.
 
 ### Tipografia
 
@@ -305,7 +307,7 @@ Antes de declarar uma tela pronta (soma-se à seção 6 do `AGENTS.md`):
 
 ## 8. Perguntas em aberto
 
-- [ ] **Botão primário:** aprovar o ajuste de `action` para `#8B6CFF` / `#A996FF` / `#9A82FF`
+- [x] **Botão primário:** ação `#8B6CFF` / `#A996FF` / `#9A82FF` (aprovado em 2026-10-16)
       (seção 1)?
 - [ ] **Neutros:** a escala atual (`#0E1117`, `#161B22`, `#30363D`…) é praticamente a do tema
       escuro do GitHub. Manter, ou puxar os neutros levemente para o violeta da marca para
