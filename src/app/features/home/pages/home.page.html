@@ -1,0 +1,9 @@
+<main class="inicio">
+  @if (store.user(); as user) {
+    <po-avatar class="inicio__avatar" [p-src]="user.avatarUrl ?? ''" p-size="lg" />
+    <h1 class="inicio__title">Olá, {{ user.name }}</h1>
+    <p class="inicio__username">&#64;{{ user.username }}</p>
+    <p class="inicio__next">Em breve, aqui você vai ver quem do grupo está jogando agora.</p>
+    <po-button p-label="Sair" p-kind="secondary" [p-loading]="leaving()" (p-click)="signOut()" />
+  }
+</main>

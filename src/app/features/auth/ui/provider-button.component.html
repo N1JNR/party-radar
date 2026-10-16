@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="provider-button"
+  [class]="'provider-button--' + provider()"
+  [disabled]="disabled() || opening()"
+  [attr.aria-busy]="opening()"
+  (click)="pressed.emit()"
+>
+  <img class="provider-button__logo" [src]="logo()" alt="" />
+  <span>{{ label() }}</span>
+</button>
