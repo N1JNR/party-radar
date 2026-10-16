@@ -34,7 +34,7 @@ body {
 }
 
 // Indicador do index.html, visível enquanto o app e o tema do PO UI carregam (spec 001, CA11).
-// Igual ao de app.scss, para a troca entre os dois não aparecer.
+// O app.html reutiliza estas classes enquanto verifica a sessão.
 .boot-loading {
   min-height: 100dvh;
   display: grid;
