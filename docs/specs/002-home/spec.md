@@ -1,6 +1,6 @@
 # 002 — Home: meu card de jogador
 
-**Status:** aguardando aprovação
+**Status:** aprovada em 2026-10-16
 **Relacionada a:** `001-login` (a home é para onde o login leva) · nova direção do produto
 (conversa de 2026-10-16) · canvas "Party Radar — Telas do MVP", telas **10** e **11**.
 
@@ -145,10 +145,8 @@ Frases do primeiro acesso (exemplos): "Até a geladeira tem mais tempo de tela q
 - [x] Esta entrega é **só layout**, com dados simulados.
 - [x] Parcerias **prováveis contam** no card, marcadas como "provável" até a confirmação.
 
-## Perguntas em aberto
+## Respostas às perguntas (aprovadas com a spec)
 
-- [ ] **Cores de presença:** ciano = jogando e verde = online (como no canvas e nas telas 10 e
-      11)? Se sim, o `DESIGN.md` é atualizado nesta mesma entrega.
-- [ ] **"Mobile primeiro" no AGENTS.md:** trocar por "web primeiro, funcional até 390 px"?
-- [ ] **`docs/plano.md`:** atualizar já com a nova direção (card e patentes no centro do MVP,
-      Discord obrigatório, Steam pública incentivada), num PR de documentação separado?
+- [x] **Cores de presença:** ciano = jogando, verde = online. O `DESIGN.md` foi atualizado.
+- [x] **AGENTS.md:** "web primeiro, funcional até 390 px" no lugar de "mobile primeiro".
+- [x] **`docs/plano.md`:** atualizado com a nova direção num PR de documentação separado.
