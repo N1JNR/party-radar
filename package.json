@@ -16,7 +16,8 @@
     "db:start": "supabase start",
     "db:test": "supabase test db",
     "db:types": "supabase gen types typescript --local > src/app/core/supabase/database.types.ts",
-    "serve:ssr:party-radar": "node dist/party-radar/server/server.mjs"
+    "serve:ssr:party-radar": "node dist/party-radar/server/server.mjs",
+    "prepare": "husky"
   },
   "private": true,
   "packageManager": "npm@11.17.0",
@@ -44,12 +45,16 @@
     "@angular/build": "^21.2.27",
     "@angular/cli": "^21.2.27",
     "@angular/compiler-cli": "^21.2.0",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
     "@types/express": "^5.0.1",
     "@types/node": "^24.19.2",
     "@vitest/coverage-v8": "^4.1.12",
     "angular-eslint": "^21.4.0",
     "eslint": "^9.39.5",
+    "husky": "^9.1.7",
     "jsdom": "^28.0.0",
+    "lint-staged": "^17.6.0",
     "prettier": "^3.8.1",
     "supabase": "^2.121.0",
     "typescript": "~5.9.2",
@@ -64,5 +69,12 @@
     "@parcel/watcher": false,
     "lmdb": false,
     "msgpackr-extract": false
+  },
+  "lint-staged": {
+    "*.{ts,html}": [
+      "eslint --fix --no-warn-ignored",
+      "prettier --write"
+    ],
+    "*.{js,mjs,cjs,json,md,scss,css,yml,yaml}": "prettier --write"
   }
 }
