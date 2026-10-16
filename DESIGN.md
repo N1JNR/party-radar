@@ -22,12 +22,15 @@ alguém ativo. Ela soa como um amigo do grupo, não como um console técnico nem
 loja gamer cheia de neon.
 
 - **Vivo, não barulhento:** a cor vem da presença dos amigos, não da decoração.
-- **Direto:** uma ação principal por tela ("Chamar pra jogar", "Entrar com Discord").
+- **Direto:** uma ação principal por tela ("Chamar pra jogar", "Continuar com Discord").
 - **Do grupo:** nomes, fotos e jogos dos amigos são o conteúdo; o app fica em segundo plano.
 
-**O elemento memorável é o sinal de presença** (o "radar"): o ponto de status no avatar,
-que pulsa uma vez quando um amigo começa a jogar. Toda a ousadia visual fica nele; o resto
-da interface é calmo e disciplinado.
+**O elemento memorável é o anel de radar**: um anel em volta do avatar, na cor do estado
+de presença, que emite **uma onda** (como o eco de um radar) quando um amigo começa a jogar.
+Toda a ousadia visual fica nele; o resto da interface é calmo e disciplinado.
+
+Não use o ponto colorido no canto do avatar: ele é a marca registrada do Discord, e as
+[diretrizes do Discord](https://discord.com/branding) proíbem copiar seus ícones de presença.
 
 ### Paleta
 
@@ -90,10 +93,27 @@ marca clara 7,6:1. **Reprovados:** marca base como texto (3,7:1) e `mid-40` como
 
 ### Logo e ícones
 
-- Logo: **a definir** (pergunta em aberto). Até lá, o nome "Party Radar" em Chakra Petch 700.
+- Logo: **provisório** — o nome "Party Radar" em Chakra Petch 700. O logo definitivo é
+  pergunta em aberto (seção 8).
 - Ícones: os do próprio PO UI (`p-icon`). Não misture bibliotecas de ícones.
 - Logos de Discord, Google e Steam só nos botões e cards de conexão, seguindo as regras de
-  marca de cada empresa.
+  marca de cada empresa (abaixo). Nunca recolorir, distorcer ou redesenhar esses logos.
+
+### Botões de login de terceiros
+
+Seguem as regras de marca dos provedores, **não** o botão primário do PO UI. Ficam com o
+mesmo tamanho e peso visual entre si (exigência do Google), Discord primeiro.
+
+| Botão                  | Fundo     | Borda                  | Texto                                   | Logo                    | Contraste |
+| ---------------------- | --------- | ---------------------- | --------------------------------------- | ----------------------- | --------- |
+| Continuar com Discord  | `#5865F2` | —                      | `#FFFFFF`, Manrope 600                  | símbolo oficial, branco | 4,6:1     |
+| Continuar com o Google | `#131314` | 1 px interna `#8E918F` | `#E3E3E3`, **Google Sans Medium 14/20** | "G" oficial colorido    | 14,5:1    |
+
+- Textos: o Google aceita só "Sign in / Sign up / Continue with Google" e suas traduções.
+- Os logos vêm dos pacotes oficiais (Google: [diretrizes](https://developers.google.com/identity/branding-guidelines);
+  Discord: [marca](https://discord.com/branding)) e ficam em `public/brands/`.
+- Esses hex existem só no componente dos botões de login; é a única exceção à regra de
+  "sem hex solto" (seção 6), porque as cores pertencem às marcas, não ao tema.
 
 ### Referência visual
 
@@ -168,9 +188,9 @@ Os cortes seguem os que o PO UI já usa (768 e 1200). Escreva o CSS a partir do 
 ### Movimento
 
 - Duração curta (150–250 ms) e só como resposta a uma ação: abrir, expandir, confirmar.
-- Movimento espontâneo existe em um só lugar: o **pulso único** do ponto de presença quando
+- Movimento espontâneo existe em um só lugar: a **onda única** do anel de radar quando
   um amigo passa a jogar. Nada de animações de entrada em cada card.
-- Com `prefers-reduced-motion: reduce`, o pulso vira troca de cor sem animação.
+- Com `prefers-reduced-motion: reduce`, a onda vira troca de cor sem animação.
 
 ## 3. Componentes de interface
 
@@ -183,14 +203,16 @@ Os cortes seguem os que o PO UI já usa (768 e 1200). Escreva o CSS a partir do 
 | Feedback rápido        | `PoNotificationService` (toast)                     | sucesso e erro de ações                                                                               |
 | Confirmação            | `po-modal`                                          | só para ações destrutivas ou irreversíveis                                                            |
 | Carregando             | `po-loading-overlay` (tela) ou `p-loading` do botão | nunca tela em branco                                                                                  |
-| Avatar                 | `po-avatar`                                         | com o ponto de presença sobreposto (próprio)                                                          |
+| Avatar                 | `po-avatar`                                         | com o anel de radar em volta (próprio)                                                                |
 | Chips (jogo, status)   | `po-tag`                                            |                                                                                                       |
 | Abas, menus, navegação | `po-tabs`, `po-menu`, `po-toolbar`                  |                                                                                                       |
 | Listas longas          | `po-list-view`                                      | evite `po-table` no mobile                                                                            |
 
 **Componentes próprios previstos** (em `shared/` ou na feature):
 
-- **Ponto de presença:** círculo de 10–12 px sobre o avatar, cor do estado + texto ao lado.
+- **Anel de radar:** anel de 2–3 px em volta do avatar, na cor do estado, sempre com o texto
+  do estado ao lado ("Jogando Valorant"). Offline = sem anel.
+- **Botões de login de terceiros:** Discord e Google, conforme a seção 1.
 - **Card do amigo no Radar:** avatar, nome, estado e jogo atual, ação "Chamar".
 - **Card "Chamado ativo":** quem chamou, jogo, horário e respostas.
 - **Card do Wrapped:** precisa renderizar no servidor (SSR) **sem PO UI**, para a prévia do link.
