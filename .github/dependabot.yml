@@ -18,6 +18,10 @@ updates:
       angular-e-po-ui:
         patterns: ['@angular/*', '@angular-devkit/*', '@po-ui/*', 'angular-eslint']
         update-types: [minor, patch]
+      # vitest e @vitest/* precisam estar na mesma versão: sempre no mesmo PR.
+      vitest:
+        patterns: ['vitest', '@vitest/*']
+        update-types: [major, minor, patch]
       minor-e-patch:
         patterns: ['*']
         update-types: [minor, patch]
@@ -33,6 +37,14 @@ updates:
         update-types: ['version-update:semver-major']
       - dependency-name: 'typescript'
         update-types: ['version-update:semver-major']
+      # O @angular/build 21 só aceita vitest ^4.
+      - dependency-name: 'vitest'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@vitest/*'
+        update-types: ['version-update:semver-major']
+      # O @po-ui/ng-components 21 só aceita zone.js ~0.15 (no 0.x, cada versão menor pode quebrar).
+      - dependency-name: 'zone.js'
+        versions: ['>=0.16.0']
 
   - package-ecosystem: github-actions
     directory: /
