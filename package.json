@@ -48,7 +48,7 @@
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@types/express": "^5.0.1",
-    "@types/node": "^24.19.2",
+    "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^4.1.12",
     "angular-eslint": "^21.4.0",
     "eslint": "^9.39.5",
