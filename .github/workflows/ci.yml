@@ -5,38 +5,60 @@ on:
   push:
     branches: [main]
 
+# Um push novo no mesmo PR (ou na main) cancela a execução anterior, que ficou desatualizada.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Permissão mínima: os jobs só leem o código.
+permissions:
+  contents: read
+
 jobs:
-  verify:
+  lint:
+    name: Lint e formatação
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
         with:
-          node-version-file: .nvmrc
-          cache: npm
-      # Usa a mesma versão do npm declarada em package.json (packageManager).
-      - run: npm install -g "$(node -p "require('./package.json').packageManager")"
-      - run: npm ci
+          # O commitlint precisa do histórico para ler os commits do PR.
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - name: Mensagens de commit (Conventional Commits)
+        if: github.event_name == 'pull_request'
+        run: >-
+          npx commitlint --verbose
+          --from "${{ github.event.pull_request.base.sha }}"
+          --to "${{ github.event.pull_request.head.sha }}"
       - run: npm run lint
       - run: npm run format:check
+
+  test:
+    name: Testes e cobertura
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
       - run: npm run test:ci
-      - run: npm run build
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage
           path: coverage/
 
-  db-test:
-    # Testes do banco (pgTAP), incluindo a regra de RLS obrigatório.
+  build:
+    name: Build de produção
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm install -g "$(node -p "require('./package.json').packageManager")"
-      - run: npm ci
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - run: npm run build
+
+  db-test:
+    name: Testes do banco (RLS)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
       - run: npx supabase db start
       - run: npm run db:test
