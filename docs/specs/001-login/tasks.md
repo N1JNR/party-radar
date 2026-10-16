@@ -7,7 +7,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 - [x] T1 — Tokens `--pr-*` (superfícies, texto, presença) e Google Sans 500 em `src/styles.scss` (CA1)
 - [x] T2 — Logos oficiais do Discord e do Google em `public/brands/` (**pede autorização para baixar**) (CA1)
-- [ ] T3 — Contrato `AuthGateway`, token `AUTH_GATEWAY` e tipos em `core/auth/` (base de CA1–CA15)
+- [x] T3 — Contrato `AuthGateway`, token `AUTH_GATEWAY` e tipos em `core/auth/` (base de CA1–CA15)
 - [ ] T4 — Domain: falhas de login → mensagens e estado da tela, 100% testado (CA12–CA15)
 - [ ] T5 — Gateway simulado com os cenários de `?simular=` só em desenvolvimento (CA11–CA15)
 - [ ] T6 — `AuthStore` em signals e carregamento inicial na raiz do app (CA11)
