@@ -49,7 +49,7 @@
     "@commitlint/config-conventional": "^21.2.3",
     "@types/express": "^5.0.1",
     "@types/node": "^24.19.2",
-    "@vitest/coverage-v8": "^4.1.12",
+    "@vitest/coverage-v8": "^5.0.4",
     "angular-eslint": "^21.4.0",
     "eslint": "^9.39.5",
     "husky": "^9.1.7",
