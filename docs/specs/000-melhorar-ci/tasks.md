@@ -10,3 +10,4 @@ dependências revisadas automaticamente. Referência: a esteira do po-angular, a
 - [x] T3 — Revisão de dependências no PR (`dependency-review-action`, barra severidade alta)
 - [x] T4 — Dependabot semanal para npm e GitHub Actions, agrupado; commits com prefixo `chore(deps)` e `ci`, que passam no commitlint
 - [x] T5 — README com os checks da CI; revisar diff, rodar `npm run verify` e abrir o PR
+- [ ] T6 — Template de PR inspirado no po-angular: spec e nível, comportamento atual e novo, como testar, checklist do autor (definição de pronto) e do revisor, prints e riscos
