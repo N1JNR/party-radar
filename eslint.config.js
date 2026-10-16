@@ -23,6 +23,11 @@ module.exports = tseslint.config(
         { type: 'element', prefix: 'app', style: 'kebab-case' },
       ],
       '@angular-eslint/prefer-on-push-component-change-detection': 'error',
+      // Cada componente tem .ts, .html e .scss separados (AGENTS.md, seção 4).
+      '@angular-eslint/component-max-inline-declarations': [
+        'error',
+        { template: 0, styles: 0, animations: 0 },
+      ],
       '@typescript-eslint/no-explicit-any': 'error',
       'no-console': ['error', { allow: ['warn', 'error'] }],
     },
