@@ -27,3 +27,4 @@ nunca foi declarado.
 - [x] T4 — Declarar o `@eslint/js` nas `devDependencies`, na versão atual do ESLint (9)
 - [x] T5 — Grupo `eslint` no Dependabot (`eslint` e `@eslint/*`), para os dois subirem juntos
 - [x] T6 — Revisar diff, rodar `npm run verify` e abrir o PR
+- [x] T7 — Pausar versão maior do `@types/node` (PR #15 trouxe a 26): ele precisa acompanhar o Node do `.nvmrc` (24) e sobe junto com o Node, numa atividade própria
