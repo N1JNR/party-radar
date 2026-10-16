@@ -22,6 +22,10 @@ updates:
       vitest:
         patterns: ['vitest', '@vitest/*']
         update-types: [major, minor, patch]
+      # eslint e @eslint/js andam na mesma versão: sempre no mesmo PR.
+      eslint:
+        patterns: ['eslint', '@eslint/*']
+        update-types: [major, minor, patch]
       minor-e-patch:
         patterns: ['*']
         update-types: [minor, patch]
@@ -36,6 +40,9 @@ updates:
       - dependency-name: 'angular-eslint'
         update-types: ['version-update:semver-major']
       - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
+      # @types/node acompanha o Node do .nvmrc; a versão maior sobe junto com o Node.
+      - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
       # O @angular/build 21 só aceita vitest ^4.
       - dependency-name: 'vitest'
