@@ -17,5 +17,13 @@ Contexto (primeira rodada, 2026-10-16): os 6 PRs falharam no commitlint (corrigi
 - [x] T1 — Pausar `zone.js` acima de 0.15 e versão maior de `vitest`/`@vitest/*`; agrupar
       `vitest` com `@vitest/*`
 - [x] T2 — Revisar diff, rodar `npm run verify` e abrir o PR
-- [ ] T3 — Depois do merge: fechar #8, #10 e #12 com o motivo e pedir ao Dependabot para
+- [x] T3 — Depois do merge: fechar #8, #10 e #12 com o motivo e pedir ao Dependabot para
       atualizar #7, #9 e #11; relatar o resultado dos checks deles
+
+Resultado da T3: o Dependabot fechou #8, #10 e #12 sozinho ao ler a configuração nova (deixamos o
+motivo em cada um); #7 (GitHub Actions) e #11 (`jsdom` 30) passaram nos 5 checks; #9 (`eslint` 10) falhou no lint porque o ESLint 10 não traz mais o `@eslint/js`, que o `eslint.config.js` usa e
+nunca foi declarado.
+
+- [ ] T4 — Declarar o `@eslint/js` nas `devDependencies`, na versão atual do ESLint (9)
+- [ ] T5 — Grupo `eslint` no Dependabot (`eslint` e `@eslint/*`), para os dois subirem juntos
+- [ ] T6 — Revisar diff, rodar `npm run verify` e abrir o PR
