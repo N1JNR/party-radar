@@ -49,9 +49,9 @@ Tema único **escuro** no MVP (`PoThemeTypeEnum.dark`). Não existe modo claro p
 | Marca (violeta)          | `--color-brand-01-base`          | `#6E4BFF` | logo, grandes áreas de destaque sem texto            |
 | Marca clara              | `--color-brand-01-light`         | `#A996FF` | foco, texto e ícone em violeta                       |
 | Ação                     | `--color-action-default`         | `#8B6CFF` | botões do PO UI (hover `#A996FF`, pressed `#9A82FF`) |
-| Ciano                    | `--color-brand-02-base`          | `#22D3EE` | links do PO UI, informação                           |
+| Ciano                    | `--color-brand-02-base`          | `#22D3EE` | **jogando agora**, links do PO UI, informação        |
 | Âmbar                    | `--color-brand-03-base`          | `#FBBF24` | conquistas e destaques do Wrapped                    |
-| Positivo                 | `--color-feedback-positive-base` | `#22C55E` | sucesso, "jogando"                                   |
+| Positivo                 | `--color-feedback-positive-base` | `#22C55E` | sucesso, **online**                                  |
 | Alerta                   | `--color-feedback-warning-base`  | `#F59E0B` | alerta, "ausente"                                    |
 | Negativo                 | `--color-feedback-negative-base` | `#EF4444` | erro, ação destrutiva                                |
 
@@ -135,8 +135,8 @@ Use sempre o **papel**, nunca o hex. Os papéis próprios do Party Radar ficam e
 | `--pr-surface-raised`   | `--color-neutral-light-10`       | card, modal        |
 | `--pr-text`             | `--color-neutral-dark-90`        | texto principal    |
 | `--pr-text-muted`       | `--color-neutral-mid-60`         | texto secundário   |
-| `--pr-presence-playing` | `--color-feedback-positive-base` | jogando agora      |
-| `--pr-presence-online`  | `--color-brand-02-base`          | online, sem jogo   |
+| `--pr-presence-playing` | `--color-brand-02-base`          | jogando agora      |
+| `--pr-presence-online`  | `--color-feedback-positive-base` | online, sem jogo   |
 | `--pr-presence-away`    | `--color-feedback-warning-base`  | ausente            |
 | `--pr-presence-offline` | `--color-neutral-mid-40`         | offline            |
 | `--pr-highlight`        | `--color-brand-03-base`          | conquista, Wrapped |
@@ -178,14 +178,15 @@ Modais e menus usam o overlay do próprio PO UI. Não crie `z-index` próprio.
 
 ### Breakpoints
 
-| Nome    | Largura         | Base de teste |
-| ------- | --------------- | ------------- |
-| Mobile  | até 767 px      | **390 px**    |
-| Tablet  | 768–1199 px     | 768 px        |
-| Desktop | 1200 px ou mais | 1280 px       |
+| Nome    | Largura         | Base de teste      |
+| ------- | --------------- | ------------------ |
+| Celular | até 767 px      | 390 px             |
+| Tablet  | 768–1023 px     | 768 px             |
+| Desktop | 1200 px ou mais | **1280 e 1440 px** |
 
-Os cortes seguem os que o PO UI já usa (768 e 1200). Escreva o CSS a partir do mobile
-(`min-width`).
+**Web primeiro:** desenhe para o desktop e garanta que a tela funciona até 390 px. O menu
+lateral (`po-menu`) fica fixo a partir de 1200 px e vira gaveta abaixo disso. Prefira layouts fluidos
+(`flex-wrap`, `minmax`) a muitos cortes fixos.
 
 ### Movimento
 
@@ -235,15 +236,16 @@ Toda tela e todo componente que carrega dados tem quatro versões: **carregando*
 
 ## 4. Layout e responsividade
 
-- **Mobile primeiro** (390 px): uma coluna, margem lateral `--spacing-sm`, conteúdo
-  alinhado à esquerda. Centralizado só em telas de uma ação (Entrar, vazio).
-- **Navegação (proposta):** no mobile, barra inferior fixa com quatro destinos (Radar,
-  Amigos, Chamados, Perfil), cada um com ícone **e** texto. A partir do tablet, `po-menu`
-  lateral. Respeite a área segura do celular (`env(safe-area-inset-bottom)`) por causa do
-  Capacitor.
-- **Cabeçalho:** título da tela à esquerda e no máximo uma ação à direita.
-- **Container:** largura máxima de 1200 px no desktop, centralizado; Radar em grade de cards
-  (1 coluna no mobile, 2 no tablet, 3 no desktop).
+- **Web primeiro** (1280–1440 px), funcional até 390 px: conteúdo alinhado à esquerda;
+  centralizado só em telas de uma ação (Entrar, vazio). No celular, uma coluna com margem
+  lateral `--spacing-sm`.
+- **Navegação:** menu lateral (`po-menu`) fixo a partir de 1200 px, com Meu card, Amigos, Squads, Perfil,
+  a lista dos seus squads e Sair. Abaixo de 1200 px, o menu vira gaveta aberta pelo botão de
+  menu (fecha ao escolher um destino, tocar fora ou apertar Esc, devolvendo o foco ao botão).
+  Respeite a área segura do celular (`env(safe-area-inset-bottom)`) por causa do Capacitor.
+- **Cabeçalho:** título da tela à esquerda e no máximo uma ação principal à direita.
+- **Container:** largura máxima de 1120 px na área de conteúdo, centralizado; listas em grade
+  fluida (`repeat(auto-fill, minmax(220px, 1fr))`).
 - Sem rolagem horizontal em nenhuma largura entre 320 px e 1920 px.
 - Área de toque mínima de **44 × 44 px** em tudo que é clicável.
 
@@ -313,5 +315,5 @@ Antes de declarar uma tela pronta (soma-se à seção 6 do `AGENTS.md`):
       escuro do GitHub. Manter, ou puxar os neutros levemente para o violeta da marca para
       ter identidade própria?
 - [ ] **Logo:** quem cria e em que formato (SVG para o app, PNG 512 px para o Capacitor)?
-- [ ] **Navegação:** confirmar barra inferior no mobile e menu lateral no desktop.
+- [x] **Navegação:** menu lateral fixo no desktop e gaveta abaixo de 1200 px, o corte do `po-menu` (spec 002-home).
 - [ ] **Modo claro:** fica fora do MVP?
