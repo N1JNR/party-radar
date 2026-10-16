@@ -24,6 +24,6 @@ Resultado da T3: o Dependabot fechou #8, #10 e #12 sozinho ao ler a configuraç�
 motivo em cada um); #7 (GitHub Actions) e #11 (`jsdom` 30) passaram nos 5 checks; #9 (`eslint` 10) falhou no lint porque o ESLint 10 não traz mais o `@eslint/js`, que o `eslint.config.js` usa e
 nunca foi declarado.
 
-- [ ] T4 — Declarar o `@eslint/js` nas `devDependencies`, na versão atual do ESLint (9)
+- [x] T4 — Declarar o `@eslint/js` nas `devDependencies`, na versão atual do ESLint (9)
 - [ ] T5 — Grupo `eslint` no Dependabot (`eslint` e `@eslint/*`), para os dois subirem juntos
 - [ ] T6 — Revisar diff, rodar `npm run verify` e abrir o PR
