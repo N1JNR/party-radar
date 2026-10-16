@@ -16,6 +16,6 @@ Contexto (primeira rodada, 2026-10-16): os 6 PRs falharam no commitlint (corrigi
 
 - [x] T1 — Pausar `zone.js` acima de 0.15 e versão maior de `vitest`/`@vitest/*`; agrupar
       `vitest` com `@vitest/*`
-- [ ] T2 — Revisar diff, rodar `npm run verify` e abrir o PR
+- [x] T2 — Revisar diff, rodar `npm run verify` e abrir o PR
 - [ ] T3 — Depois do merge: fechar #8, #10 e #12 com o motivo e pedir ao Dependabot para
       atualizar #7, #9 e #11; relatar o resultado dos checks deles
