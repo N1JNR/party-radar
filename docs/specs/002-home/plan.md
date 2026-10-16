@@ -28,11 +28,9 @@ O `DESIGN.md` pede PO UI primeiro, e o `po-menu` já tem o que o menu precisa: i
 e badge (Amigos), subitens (Seus squads, com quantos estão jogando), item com ação (Sair) e
 versão para tela estreita com botão de menu.
 
-**Ajuste em relação à spec (precisa de confirmação):** o `po-menu` fica fixo a partir de
-**1200 px** e vira gaveta abaixo disso; a spec diz 1024 px. Proposta: seguir o PO UI (1200 px)
-e atualizar CA2 e o `DESIGN.md`, em vez de construir um menu próprio só para mudar o corte.
-Se o `po-menu` não atender ao comportamento de teclado do CA2 (Esc, devolver o foco), isso
-aparece na T5 e volta para decisão.
+**Corte confirmado (2026-10-16):** o `po-menu` fica fixo a partir de **1200 px** e vira gaveta
+abaixo disso; a spec (CA2) e o `DESIGN.md` foram atualizados. Se o `po-menu` não atender ao
+comportamento de teclado do CA2 (Esc, devolver o foco), isso aparece na T5 e volta para decisão.
 
 ## Arquivos afetados
 

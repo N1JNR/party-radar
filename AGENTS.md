@@ -142,7 +142,7 @@ src/app/
 ### UX e acessibilidade
 
 - **Web primeiro** (desktop de 1280–1440 px), funcional até o celular (390 px). Menu lateral fixo
-  a partir de 1024 px e gaveta abaixo disso (detalhes no `DESIGN.md`).
+  a partir de 1200 px (corte do `po-menu`) e gaveta abaixo disso (detalhes no `DESIGN.md`).
 - Todo estado de tela tem versão de **carregando, vazio e erro**.
 - Elementos interativos reais (`<button>`, `<a>`), `aria-label` em botões só com ícone, contraste mínimo 4.5:1.
 - Textos em português do Brasil.

@@ -64,7 +64,7 @@ telas estiverem prontas.
 
 - **CA1** — Dado que entrei, quando a home abre, então vejo o título "Meu card", o menu com
   Meu card (marcado como página atual), Amigos, Squads, Perfil, a lista dos meus squads e Sair.
-- **CA2** — Dado uma tela com 1024 px ou mais, então o menu fica fixo à esquerda; dado uma tela
+- **CA2** — Dado uma tela com 1200 px ou mais, então o menu fica fixo à esquerda; dado uma tela
   menor, então o menu fica escondido e abre como gaveta pelo botão de menu, e fecha ao escolher
   um destino, tocar fora ou apertar Esc, devolvendo o foco ao botão.
 - **CA3** — Dado que toco em Sair, então a sessão termina e volto para o login (mesmo
