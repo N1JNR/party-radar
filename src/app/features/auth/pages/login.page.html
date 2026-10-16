@@ -1,13 +1,13 @@
-<main class="entrar">
-  <app-radar-hero class="entrar__radar" />
-  <h1 class="entrar__title">Party Radar</h1>
-  <p class="entrar__tagline">Veja quem do seu grupo está jogando agora e chame a galera.</p>
+<main class="login">
+  <app-radar-hero class="login__radar" />
+  <h1 class="login__title">Party Radar</h1>
+  <p class="login__tagline">Veja quem do seu grupo está jogando agora e chame a galera.</p>
 
-  <div class="entrar__feedback" aria-live="polite">
+  <div class="login__feedback" aria-live="polite">
     @if (feedback(); as feedback) {
-      <p class="entrar__alert" [class.entrar__alert--error]="feedback.tone === 'error'">
+      <p class="login__alert" [class.login__alert--error]="feedback.tone === 'error'">
         <po-icon
-          class="entrar__alert-icon"
+          class="login__alert-icon"
           [p-icon]="feedback.tone === 'error' ? 'an an-warning-circle' : 'an an-info'"
           aria-hidden="true"
         />
@@ -16,7 +16,7 @@
     }
   </div>
 
-  <div class="entrar__actions">
+  <div class="login__actions">
     @for (provider of providers; track provider) {
       <app-provider-button
         [attr.data-provider]="provider"
@@ -28,5 +28,5 @@
     }
   </div>
 
-  <p class="entrar__note">Usamos seu nome e foto do Discord ou do Google para criar seu perfil.</p>
+  <p class="login__note">Usamos seu nome e foto do Discord ou do Google para criar seu perfil.</p>
 </main>

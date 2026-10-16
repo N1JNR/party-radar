@@ -46,7 +46,7 @@ describe('HomePage', () => {
     expect(element.querySelector('h1')).toBeNull();
   });
 
-  it('Sair encerra a sessão e volta para Entrar sem deixar a tela no histórico (CA8)', async () => {
+  it('Sair encerra a sessão e volta para o login sem deixar a tela no histórico (CA8)', async () => {
     const signOut = vi.fn(() => Promise.resolve());
     const { fixture, element } = await render({ signOut });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
@@ -54,16 +54,16 @@ describe('HomePage', () => {
     await fixture.whenStable();
     expect(signOut).toHaveBeenCalledTimes(1);
     expect(TestBed.inject(AuthStore).isAuthenticated()).toBe(false);
-    expect(navigate).toHaveBeenCalledWith('/entrar', { replaceUrl: true });
+    expect(navigate).toHaveBeenCalledWith('/login', { replaceUrl: true });
   });
 
-  it('volta para Entrar mesmo se o servidor falhar ao sair (CA8)', async () => {
+  it('volta para o login mesmo se o servidor falhar ao sair (CA8)', async () => {
     const { fixture, element } = await render({
       signOut: () => Promise.reject(new Error('rede')),
     });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     sairButton(element).click();
     await fixture.whenStable();
-    expect(navigate).toHaveBeenCalledWith('/entrar', { replaceUrl: true });
+    expect(navigate).toHaveBeenCalledWith('/login', { replaceUrl: true });
   });
 });

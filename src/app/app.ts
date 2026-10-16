@@ -5,7 +5,7 @@ import { AuthStore } from './core/auth/auth.store';
 
 /**
  * Raiz do app. Enquanto verifica se já existe sessão, mostra só o indicador de
- * carregamento, para a tela Entrar não piscar (spec 001, CA11). O indicador é próprio, e não
+ * carregamento, para a tela de login não piscar (spec 001, CA11). O indicador é próprio, e não
  * do PO UI, para o PO UI continuar fora do bundle inicial.
  */
 @Component({

@@ -8,13 +8,13 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: () => (inject(AuthStore).isAuthenticated() ? 'inicio' : 'entrar'),
+    redirectTo: () => (inject(AuthStore).isAuthenticated() ? 'inicio' : 'login'),
   },
   {
-    path: 'entrar',
+    path: 'login',
     title: 'Entrar | Party Radar',
     canActivate: [anonymousOnly],
-    loadComponent: () => import('./features/auth/pages/entrar.page').then((m) => m.EntrarPage),
+    loadComponent: () => import('./features/auth/pages/login.page').then((m) => m.LoginPage),
   },
   {
     path: 'inicio',

@@ -280,7 +280,7 @@ Toda tela e todo componente que carrega dados tem quatro versões: **carregando*
   `angular.json`. Passou disso, extraia um componente ou use utilitários do PO UI.
 - **Nomes de classe:** BEM simples, prefixado pelo componente (`.radar-card__nome`).
 - **Arquivos:** os estilos de cada componente ficam no `.scss` dele, ao lado do `.ts` e do
-  `.html` (ex.: `entrar.page.ts`, `entrar.page.html`, `entrar.page.scss`).
+  `.html` (ex.: `login.page.ts`, `login.page.html`, `login.page.scss`).
 - **Reutilização:** antes de criar, procure em `shared/` e na feature. Repetiu em duas
   features, mova para `shared/`.
 - **SSR:** componentes de páginas públicas (perfil público, card do Wrapped) não usam PO UI

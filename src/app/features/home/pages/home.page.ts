@@ -25,8 +25,8 @@ export class HomePage {
     try {
       await this.store.signOut();
     } catch {
-      // A sessão local já terminou no AuthStore; seguimos para Entrar mesmo assim (CA8).
+      // A sessão local já terminou no AuthStore; seguimos para o login mesmo assim (CA8).
     }
-    await this.router.navigateByUrl('/entrar', { replaceUrl: true });
+    await this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 }

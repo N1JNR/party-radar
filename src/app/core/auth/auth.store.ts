@@ -50,7 +50,7 @@ export class AuthStore {
     }
   }
 
-  /** Aviso guardado para a tela Entrar (ex.: sessão expirada). Só é entregue uma vez. */
+  /** Aviso guardado para a tela de login (ex.: sessão expirada). Só é entregue uma vez. */
   consumeFailure(): LoginFailure | null {
     const failure = this.pendingFailure;
     this.pendingFailure = null;

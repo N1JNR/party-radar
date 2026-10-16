@@ -44,9 +44,9 @@ describe('guards de autenticação', () => {
     expect(run(authenticatedOnly)).toBe(true);
   });
 
-  it('authenticatedOnly manda para Entrar quem não está logado', async () => {
+  it('authenticatedOnly manda para o login quem não está logado', async () => {
     await setup(false);
-    expect(path(run(authenticatedOnly))).toBe('/entrar');
+    expect(path(run(authenticatedOnly))).toBe('/login');
   });
 
   it('anonymousOnly deixa passar quem não está logado', async () => {

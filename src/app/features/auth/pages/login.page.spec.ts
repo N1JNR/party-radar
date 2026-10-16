@@ -8,15 +8,15 @@ import {
   SignInResult,
 } from '../../../core/auth/auth.gateway';
 import { AuthStore } from '../../../core/auth/auth.store';
-import { EntrarPage } from './entrar.page';
+import { LoginPage } from './login.page';
 
-describe('EntrarPage', () => {
+describe('LoginPage', () => {
   let resolveSignIn: (result: SignInResult) => void;
   let gateway: AuthGateway;
 
   async function render(
     pendingFailure: LoginFailure | null = null,
-  ): Promise<{ fixture: ComponentFixture<EntrarPage>; element: HTMLElement }> {
+  ): Promise<{ fixture: ComponentFixture<LoginPage>; element: HTMLElement }> {
     gateway = {
       restoreSession: () =>
         Promise.resolve(
@@ -31,7 +31,7 @@ describe('EntrarPage', () => {
       providers: [provideRouter([]), { provide: AUTH_GATEWAY, useValue: gateway }],
     });
     await TestBed.inject(AuthStore).restore();
-    const fixture = TestBed.createComponent(EntrarPage);
+    const fixture = TestBed.createComponent(LoginPage);
     fixture.detectChanges();
     await fixture.whenStable();
     return { fixture, element: fixture.nativeElement as HTMLElement };
@@ -42,10 +42,10 @@ describe('EntrarPage', () => {
   }
 
   function alertText(element: HTMLElement): string | undefined {
-    return element.querySelector('.entrar__alert')?.textContent?.trim();
+    return element.querySelector('.login__alert')?.textContent?.trim();
   }
 
-  async function settle(fixture: ComponentFixture<EntrarPage>): Promise<void> {
+  async function settle(fixture: ComponentFixture<LoginPage>): Promise<void> {
     await fixture.whenStable();
     fixture.detectChanges();
   }
@@ -53,7 +53,7 @@ describe('EntrarPage', () => {
   it('mostra o nome, a proposta e os dois botões, Discord primeiro (CA1)', async () => {
     const { element } = await render();
     expect(element.querySelector('h1')?.textContent?.trim()).toBe('Party Radar');
-    expect(element.querySelector('.entrar__tagline')?.textContent).toContain('jogando agora');
+    expect(element.querySelector('.login__tagline')?.textContent).toContain('jogando agora');
     expect(buttons(element).map((b) => b.textContent?.trim())).toEqual([
       'Continuar com Discord',
       'Continuar com o Google',
@@ -63,7 +63,7 @@ describe('EntrarPage', () => {
 
   it('tem uma região aria-live para os avisos (CA20)', async () => {
     const { element } = await render();
-    expect(element.querySelector('.entrar__feedback')?.getAttribute('aria-live')).toBe('polite');
+    expect(element.querySelector('.login__feedback')?.getAttribute('aria-live')).toBe('polite');
   });
 
   it('ao tocar, desabilita os dois botões e mostra "Abrindo…" no tocado (CA12)', async () => {
@@ -106,7 +106,7 @@ describe('EntrarPage', () => {
       resolveSignIn({ ok: false, failure });
       await settle(fixture);
       expect(alertText(element)).toBe(message);
-      expect(element.querySelector('.entrar__alert--error') !== null).toBe(isError);
+      expect(element.querySelector('.login__alert--error') !== null).toBe(isError);
       expect(buttons(element).every((b) => !b.disabled)).toBe(true);
       expect(buttons(element)[0].textContent?.trim()).toBe('Continuar com Discord');
     },
@@ -126,6 +126,6 @@ describe('EntrarPage', () => {
   it('abre já com o aviso de sessão expirada (CA10)', async () => {
     const { element } = await render('session-expired');
     expect(alertText(element)).toBe('Sua sessão expirou. Entre de novo.');
-    expect(element.querySelector('.entrar__alert--error')).toBeNull();
+    expect(element.querySelector('.login__alert--error')).toBeNull();
   });
 });

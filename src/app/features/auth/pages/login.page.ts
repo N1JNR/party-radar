@@ -24,15 +24,15 @@ import {
 import { ProviderButtonComponent } from '../ui/provider-button.component';
 import { RadarHeroComponent } from '../ui/radar-hero.component';
 
-/** Tela Entrar (spec 001). Orquestra o AuthStore e os componentes de apresentação. */
+/** Tela de login (spec 001). Orquestra o AuthStore e os componentes de apresentação. */
 @Component({
-  selector: 'app-entrar-page',
+  selector: 'app-login-page',
   imports: [PoIconModule, ProviderButtonComponent, RadarHeroComponent],
-  templateUrl: './entrar.page.html',
-  styleUrl: './entrar.page.scss',
+  templateUrl: './login.page.html',
+  styleUrl: './login.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EntrarPage {
+export class LoginPage {
   private readonly store = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);

@@ -1,7 +1,7 @@
 import type { AuthProvider, LoginFailure } from '../../../core/auth/auth.gateway';
 import { LoginFeedback, feedbackFor } from './login-feedback';
 
-/** Estado da tela Entrar: esperando a escolha, ou abrindo um provedor. */
+/** Estado da tela de login: esperando a escolha, ou abrindo um provedor. */
 export type LoginScreenState =
   | { status: 'idle'; feedback: LoginFeedback | null }
   | { status: 'opening'; provider: AuthProvider };

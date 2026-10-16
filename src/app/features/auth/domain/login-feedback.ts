@@ -15,7 +15,7 @@ const FEEDBACK: Record<LoginFailure, LoginFeedback> = {
   'session-expired': { tone: 'info', message: 'Sua sessão expirou. Entre de novo.' },
 };
 
-/** Aviso mostrado na tela Entrar para cada falha (spec 001, CA10 e CA13–CA15). */
+/** Aviso mostrado na tela de login para cada falha (spec 001, CA10 e CA13–CA15). */
 export function feedbackFor(failure: LoginFailure): LoginFeedback {
   return FEEDBACK[failure];
 }

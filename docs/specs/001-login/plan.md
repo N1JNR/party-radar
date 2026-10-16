@@ -68,10 +68,10 @@ Segue o `DESIGN.md`. A única ousadia é o **anel de radar**:
 | `src/app/features/auth/domain/login-screen.ts`                         | novo: estado da tela (pronto / abrindo provedor X / falhou) como funções puras             |
 | `src/app/features/auth/ui/provider-button.component.ts`                | novo: botão de marca (Discord e Google), estados normal, abrindo e desabilitado            |
 | `src/app/features/auth/ui/radar-hero.component.ts`                     | novo: radar em SVG com os anéis, blips e a onda única                                      |
-| `src/app/features/auth/pages/entrar.page.ts`                           | novo: tela Entrar, orquestra gateway + store + ui                                          |
+| `src/app/features/auth/pages/login.page.ts`                            | novo: tela Entrar, orquestra gateway + store + ui                                          |
 | `src/app/features/home/pages/home.page.ts`                             | alterado: vira a tela inicial provisória ("Olá, {nome}", avatar, Sair)                     |
 | `src/app/app.ts`                                                       | alterado: carregamento inicial (CA11) enquanto a sessão é verificada                       |
-| `src/app/app.routes.ts`                                                | alterado: rotas `/entrar` e `/inicio`; `''` redireciona conforme a sessão                  |
+| `src/app/app.routes.ts`                                                | alterado: rotas `/login` e `/inicio`; `''` redireciona conforme a sessão                   |
 | `src/app/app.config.ts`                                                | alterado: fornece `AUTH_GATEWAY` com o gateway simulado                                    |
 | `src/styles.scss`                                                      | alterado: Google Sans 500 e primeiros tokens `--pr-*`                                      |
 | `public/brands/discord-symbol-white.svg`, `public/brands/google-g.svg` | novos: logos **oficiais** (ver Integrações)                                                |
@@ -95,17 +95,17 @@ Nenhuma migration nesta parte. O usuário de exemplo do gateway simulado fica s�
 
 ### Estratégia de testes
 
-| Critério                | Tipo de teste       | Onde                                                                  |
-| ----------------------- | ------------------- | --------------------------------------------------------------------- |
-| CA13–CA15 (mensagens)   | unitário (domain)   | `features/auth/domain/login-feedback.spec.ts`                         |
-| CA12 (estado da tela)   | unitário (domain)   | `features/auth/domain/login-screen.spec.ts`                           |
-| CA1, CA12 (botões)      | componente          | `features/auth/ui/provider-button.component.spec.ts`                  |
-| CA1, CA12–CA15, CA20    | componente (página) | `features/auth/pages/entrar.page.spec.ts` com gateway falso por teste |
-| CA11                    | componente (raiz)   | `app.spec.ts`                                                         |
-| cenários do simulado    | unitário            | `core/auth/fake-auth.gateway.spec.ts`                                 |
-| sessão em signals       | unitário            | `core/auth/auth.store.spec.ts`                                        |
-| tela inicial provisória | componente          | `features/home/pages/home.page.spec.ts`                               |
-| CA19, CA20 (visual)     | manual, com prints  | navegador do app em 390, 768 e 1280 px; navegação só por teclado      |
+| Critério                | Tipo de teste       | Onde                                                                 |
+| ----------------------- | ------------------- | -------------------------------------------------------------------- |
+| CA13–CA15 (mensagens)   | unitário (domain)   | `features/auth/domain/login-feedback.spec.ts`                        |
+| CA12 (estado da tela)   | unitário (domain)   | `features/auth/domain/login-screen.spec.ts`                          |
+| CA1, CA12 (botões)      | componente          | `features/auth/ui/provider-button.component.spec.ts`                 |
+| CA1, CA12–CA15, CA20    | componente (página) | `features/auth/pages/login.page.spec.ts` com gateway falso por teste |
+| CA11                    | componente (raiz)   | `app.spec.ts`                                                        |
+| cenários do simulado    | unitário            | `core/auth/fake-auth.gateway.spec.ts`                                |
+| sessão em signals       | unitário            | `core/auth/auth.store.spec.ts`                                       |
+| tela inicial provisória | componente          | `features/home/pages/home.page.spec.ts`                              |
+| CA19, CA20 (visual)     | manual, com prints  | navegador do app em 390, 768 e 1280 px; navegação só por teclado     |
 
 Acessibilidade nos testes: o aviso de erro fica em região `aria-live`, os botões são
 `<button>` reais com texto visível, e o foco volta para o botão tocado quando o login falha.
