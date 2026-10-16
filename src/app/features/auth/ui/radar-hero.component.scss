@@ -23,7 +23,8 @@
   overflow: visible;
 }
 
-// Varredura: um feixe que termina numa borda clara e dá uma única volta (SWEEP_MS = 2400).
+// Varredura: um feixe que termina numa borda clara e dá uma única volta. A duração vem do TS
+// (SWEEP_MS) pela variável --sweep-duration, para os amigos acenderem em sincronia.
 .radar__sweep {
   position: absolute;
   inset: 6.7%; // mesmo raio do anel externo (112 de 120)
@@ -36,8 +37,8 @@
     transparent 70.5deg
   );
   animation:
-    radar-sweep 2400ms linear 1 both,
-    radar-sweep-rest 600ms ease-out 2400ms 1 both;
+    radar-sweep var(--sweep-duration) linear 1 both,
+    radar-sweep-rest 600ms ease-out var(--sweep-duration) 1 both;
 }
 
 .radar__ring {

@@ -50,6 +50,14 @@ describe('RadarHeroComponent', () => {
     }
   });
 
+  it('a volta da varredura leva 8 s e chega ao CSS pela variável --sweep-duration', () => {
+    expect(SWEEP_MS).toBe(8000);
+    const fixture = TestBed.createComponent(RadarHeroComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.style.getPropertyValue('--sweep-duration')).toBe('8000ms');
+  });
+
   it('cada amigo acende quando a varredura passa pelo ângulo dele', () => {
     const element = render();
     const delays = Array.from(element.querySelectorAll<SVGGElement>('.radar__blip')).map((b) =>

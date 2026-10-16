@@ -21,8 +21,8 @@ interface Tick {
 
 const CENTER = 120;
 const OUTER_RADIUS = 112;
-/** Duração de uma volta da varredura; precisa ser igual à animação em radar-hero.component.scss. */
-export const SWEEP_MS = 2400;
+/** Duração de uma volta da varredura. Chega ao SCSS pela variável --sweep-duration. */
+export const SWEEP_MS = 8000;
 
 /** Converte ângulo (graus, 0 = topo, sentido horário) e raio em coordenadas do SVG. */
 export function polar(angle: number, radius: number): { x: number; y: number } {
@@ -55,9 +55,11 @@ function ticks(): Tick[] {
   selector: 'app-radar-hero',
   templateUrl: './radar-hero.component.html',
   styleUrl: './radar-hero.component.scss',
+  host: { '[style.--sweep-duration]': 'sweepDuration' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RadarHeroComponent {
+  protected readonly sweepDuration = `${SWEEP_MS}ms`;
   protected readonly rings = [28, 56, 84, OUTER_RADIUS];
   protected readonly ticks = ticks();
   protected readonly blips: readonly Blip[] = [
