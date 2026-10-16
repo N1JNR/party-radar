@@ -121,7 +121,8 @@ A Parte 1 não depende das credenciais do Discord e do Google; a Parte 2 depende
 
 - **Entrar:** nome "Party Radar" em Chakra Petch (logo provisório), frase de proposta
   ("Veja quem do seu grupo está jogando agora"), botão do Discord e botão do Google com o
-  mesmo tamanho e destaque (Discord primeiro), aviso de erro acima dos botões quando houver.
+  mesmo tamanho e destaque (Discord primeiro), aviso de erro logo abaixo dos botões quando houver, para os botões não mudarem de lugar
+  (decidido na conferência visual da Parte 1).
 - **Tela inicial provisória:** "Olá, {nome}", avatar e botão Sair. Será substituída pelo
   Radar na `004-radar`.
 

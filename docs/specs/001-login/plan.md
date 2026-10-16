@@ -37,13 +37,13 @@ Segue o `DESIGN.md`. A única ousadia é o **anel de radar**:
 │  Veja quem do seu grupo está   │  ← Manrope, texto secundário, até 2 linhas
 │  jogando agora e chame a galera│
 │                                │
-│  [aviso de erro, se houver]    │  ← aria-live; ícone + texto; nunca só cor
 │  ┌──────────────────────────┐  │
 │  │ ◆ Continuar com Discord  │  │  ← 48 px de altura, largura total (máx. 360 px)
 │  └──────────────────────────┘  │
 │  ┌──────────────────────────┐  │
 │  │ G Continuar com o Google │  │  ← mesmo tamanho e peso do Discord
 │  └──────────────────────────┘  │
+│  [aviso de erro, se houver]    │  ← aria-live, abaixo dos botões (não os empurra); ícone + texto
 │  Usamos seu nome e foto do     │  ← texto de confiança, `--font-size-xs`
 │  Discord ou do Google para     │
 │  criar seu perfil.             │

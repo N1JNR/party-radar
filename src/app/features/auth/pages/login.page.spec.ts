@@ -66,6 +66,18 @@ describe('LoginPage', () => {
     expect(element.querySelector('.login__feedback')?.getAttribute('aria-live')).toBe('polite');
   });
 
+  // Regressão da T11b: acima dos botões, o aviso os empurrava para baixo e um segundo toque
+  // rápido acertava o outro provedor.
+  it('mostra o aviso depois dos botões, para eles não mudarem de lugar', async () => {
+    const { element } = await render('session-expired');
+    const actions = element.querySelector('.login__actions');
+    const feedback = element.querySelector('.login__feedback');
+    if (!actions || !feedback) throw new Error('estrutura da tela não renderizada');
+    expect(
+      actions.compareDocumentPosition(feedback) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it('ao tocar, desabilita os dois botões e mostra "Abrindo…" no tocado (CA12)', async () => {
     const { fixture, element } = await render();
     buttons(element)[0].click();
