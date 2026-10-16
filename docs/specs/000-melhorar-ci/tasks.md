@@ -4,7 +4,7 @@
 **Objetivo:** checks separados e claros no PR, regras do AGENTS.md cobradas também na CI e
 dependências revisadas automaticamente. Referência: a esteira do po-angular, adaptada ao projeto.
 
-- [ ] T1 — Action de setup reutilizável (Node do `.nvmrc`, npm do `packageManager`, `npm ci` com cache)
+- [x] T1 — Action de setup reutilizável (Node do `.nvmrc`, npm do `packageManager`, `npm ci` com cache)
 - [ ] T2 — CI em jobs paralelos (`lint`, `test`, `build`, `db-test`), com cancelamento de execuções
       antigas, permissões mínimas e commitlint nos commits do PR
 - [ ] T3 — Revisão de dependências no PR (`dependency-review-action`, barra severidade alta)
