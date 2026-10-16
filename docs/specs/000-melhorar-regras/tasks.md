@@ -7,4 +7,4 @@
 - [x] T2 — Hooks do Git: lint-staged no `pre-commit` e commitlint no `commit-msg`
 - [x] T3 — AGENTS.md e README: tarefas `000-`, `origin/HEAD`, regras de banco
       (views, `security definer`, tipos), `provider_token`, hooks, `verify:all` e revisão com skills
-- [ ] T4 — Revisar diff, rodar `npm run verify:all` e escrever o relatório final
+- [x] T4 — Revisar diff, rodar `npm run verify:all` e escrever o relatório final
