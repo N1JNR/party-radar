@@ -9,4 +9,4 @@ antes da primeira funcionalidade (`001-login`).
 - [x] T3 — Supabase local: `site_url` e redirects na porta 4200, `seed.sql` vazio, analytics desligado
 - [x] T4 — Front usa a publishable key do Supabase (`sb_publishable_…`) em vez da anon key
 - [x] T5 — Teste pgTAP: toda tabela do schema `public` tem RLS ativado
-- [ ] T6 — Revisar diff, rodar `npm run verify` e `npm run db:test` e escrever o relatório final
+- [x] T6 — Revisar diff, rodar `npm run verify` e `npm run db:test` e escrever o relatório final

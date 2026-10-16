@@ -1,5 +1,5 @@
-// Supabase local (`npm run db:start`). A URL e a publishable key são os valores padrão
-// do Supabase CLI, iguais em toda máquina; confira com `npx supabase status`.
+// Supabase local (`npm run db:start`). Valores padrão do Supabase CLI 2.121.
+// Se as chamadas derem 401 depois de atualizar o CLI, copie a nova chave de `npx supabase status`.
 export const environment = {
   production: false,
   supabaseUrl: 'http://127.0.0.1:54321',
