@@ -89,11 +89,21 @@ describe('LoginPage', () => {
     expect(gateway.signIn).toHaveBeenCalledWith('discord');
   });
 
-  it('ignora toques repetidos enquanto abre (CA12)', async () => {
+  it('ignora um segundo toque antes de a tela atualizar (CA12)', async () => {
+    const { element } = await render();
+    const [discord, google] = buttons(element);
+    // Os dois toques acontecem antes da detecção de mudanças: o Discord ainda está habilitado.
+    google.click();
+    discord.click();
+    expect(gateway.signIn).toHaveBeenCalledTimes(1);
+    expect(gateway.signIn).toHaveBeenCalledWith('google');
+  });
+
+  it('ignora toques no outro botão enquanto abre (CA12)', async () => {
     const { fixture, element } = await render();
-    const page = fixture.componentInstance as unknown as { signIn(p: string): Promise<void> };
     buttons(element)[1].click();
-    void page.signIn('discord');
+    fixture.detectChanges();
+    buttons(element)[0].click();
     expect(gateway.signIn).toHaveBeenCalledTimes(1);
   });
 
