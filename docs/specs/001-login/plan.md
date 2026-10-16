@@ -31,9 +31,9 @@ Segue o `DESIGN.md`. A única ousadia é o **anel de radar**:
 ```
 ┌──────────── 390 px ────────────┐
 │                                │
-│        ◯  ◯  ◯   (anéis)       │  ← radar: 3 anéis concêntricos finos, violeta a 12–20%,
-│      ·      ●       ·          │    com 3 "blips" nas cores de presença (jogando, online,
-│        Party Radar             │    ausente). Uma onda única sai do centro ao abrir a tela.
+│        ◯  ◯  ◯   (anéis)       │  ← radar (revisto após a T11): 4 anéis, eixos e marcações
+│      Ⓐ      ●       Ⓜ         │    de instrumento; 3 amigos com a inicial no anel de presença.
+│        Party Radar             │    Ao abrir, a varredura dá uma volta e acende cada amigo.
 │  Veja quem do seu grupo está   │  ← Manrope, texto secundário, até 2 linhas
 │  jogando agora e chame a galera│
 │                                │
@@ -52,7 +52,7 @@ Segue o `DESIGN.md`. A única ousadia é o **anel de radar**:
 
 - Coluna única centralizada (tela de uma ação só), largura máxima de 400 px.
 - No desktop, o mesmo bloco centralizado; o radar cresce e ocupa o fundo, sem conteúdo extra.
-- Com `prefers-reduced-motion`, a onda não anima.
+- Com `prefers-reduced-motion`, a varredura não gira: o radar aparece direto no estado final.
 - Revisão contra o padrão genérico: fundo quase preto com um acento único (violeta) é um
   clichê. Por isso a cor da tela vem dos **blips de presença** (verde, ciano, âmbar), e o
   violeta fica fraco, só nos anéis.
@@ -67,7 +67,7 @@ Segue o `DESIGN.md`. A única ousadia é o **anel de radar**:
 | `src/app/features/auth/domain/login-feedback.ts`                       | novo: falhas de login → mensagem e tipo de aviso (puro, 100%)                              |
 | `src/app/features/auth/domain/login-screen.ts`                         | novo: estado da tela (pronto / abrindo provedor X / falhou) como funções puras             |
 | `src/app/features/auth/ui/provider-button.component.ts`                | novo: botão de marca (Discord e Google), estados normal, abrindo e desabilitado            |
-| `src/app/features/auth/ui/radar-hero.component.ts`                     | novo: radar em SVG com os anéis, blips e a onda única                                      |
+| `src/app/features/auth/ui/radar-hero.component.ts`                     | novo: radar em SVG com anéis, marcações, amigos e a varredura de uma volta                 |
 | `src/app/features/auth/pages/login.page.ts`                            | novo: tela Entrar, orquestra gateway + store + ui                                          |
 | `src/app/features/home/pages/home.page.ts`                             | alterado: vira a tela inicial provisória ("Olá, {nome}", avatar, Sair)                     |
 | `src/app/app.ts`                                                       | alterado: carregamento inicial (CA11) enquanto a sessão é verificada                       |

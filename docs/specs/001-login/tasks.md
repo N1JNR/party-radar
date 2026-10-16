@@ -12,7 +12,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T5 — Gateway simulado com os cenários de `?simular=` só em desenvolvimento (CA11–CA15)
 - [x] T6 — `AuthStore` em signals e carregamento inicial na raiz do app (CA11)
 - [x] T7 — Componente `provider-button` (Discord e Google: normal, abrindo, desabilitado, foco) (CA1, CA12, CA20)
-- [x] T8 — Componente `radar-hero` (anéis, blips, onda única, `prefers-reduced-motion`) (CA1)
+- [x] T8 — Componente `radar-hero` (anéis, marcações, amigos, varredura de uma volta, `prefers-reduced-motion`) (CA1)
 - [x] T9 — Página Entrar com aviso `aria-live` e todos os estados (CA1, CA12–CA15, CA19, CA20)
 - [x] T10 — Tela inicial provisória ("Olá, {nome}", avatar, Sair) e rotas `/login` e `/inicio` (CA1)
 - [x] T11 — Conferência visual em 390, 768 e 1280 px e navegação por teclado, com prints para o PR (CA19, CA20)

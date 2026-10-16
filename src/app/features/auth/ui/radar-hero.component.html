@@ -1,9 +1,47 @@
-<svg class="radar" viewBox="0 0 240 240" aria-hidden="true" focusable="false">
-  <circle class="radar__ring" cx="120" cy="120" r="108" />
-  <circle class="radar__ring" cx="120" cy="120" r="72" />
-  <circle class="radar__ring" cx="120" cy="120" r="36" />
-  <circle class="radar__echo" cx="120" cy="120" r="108" />
-  <circle class="radar__blip radar__blip--playing" cx="156" cy="86" r="5" />
-  <circle class="radar__blip radar__blip--online" cx="64" cy="150" r="4" />
-  <circle class="radar__blip radar__blip--away" cx="188" cy="166" r="4" />
-</svg>
+<div class="radar" aria-hidden="true">
+  <div class="radar__sweep"></div>
+
+  <svg class="radar__scope" viewBox="0 0 240 240" focusable="false">
+    @for (r of rings; track r; let last = $last) {
+      <circle
+        class="radar__ring"
+        [class.radar__ring--outer]="last"
+        cx="120"
+        cy="120"
+        [attr.r]="r"
+      />
+    }
+    <line class="radar__axis" x1="120" y1="8" x2="120" y2="232" />
+    <line class="radar__axis" x1="8" y1="120" x2="232" y2="120" />
+    @for (tick of ticks; track $index) {
+      <line
+        class="radar__tick"
+        [class.radar__tick--major]="tick.major"
+        [attr.x1]="tick.x1"
+        [attr.y1]="tick.y1"
+        [attr.x2]="tick.x2"
+        [attr.y2]="tick.y2"
+      />
+    }
+
+    <!-- Você, no centro. -->
+    <circle class="radar__self-halo" cx="120" cy="120" r="7" />
+    <circle class="radar__self" cx="120" cy="120" r="3.5" />
+
+    @for (blip of blips; track blip.initial) {
+      <g [attr.transform]="'translate(' + blip.x + ' ' + blip.y + ')'">
+        <g
+          class="radar__blip"
+          [class]="'radar__blip--' + blip.presence"
+          [style.--blip-delay]="blip.delay"
+        >
+          <circle class="radar__blip-echo" r="10" />
+          <circle class="radar__blip-ring" r="10" />
+          <text class="radar__blip-initial" text-anchor="middle" dominant-baseline="central">
+            {{ blip.initial }}
+          </text>
+        </g>
+      </g>
+    }
+  </svg>
+</div>

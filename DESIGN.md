@@ -190,9 +190,10 @@ Os cortes seguem os que o PO UI já usa (768 e 1200). Escreva o CSS a partir do 
 ### Movimento
 
 - Duração curta (150–250 ms) e só como resposta a uma ação: abrir, expandir, confirmar.
-- Movimento espontâneo existe em um só lugar: a **onda única** do anel de radar quando
-  um amigo passa a jogar. Nada de animações de entrada em cada card.
-- Com `prefers-reduced-motion: reduce`, a onda vira troca de cor sem animação.
+- Movimento espontâneo existe em dois momentos, ambos de uma vez só: a **varredura** do radar da
+  tela de login (uma volta ao abrir, acendendo os amigos quando passa por eles) e a **onda
+  única** do anel de radar quando um amigo passa a jogar. Nada de animações de entrada em cada card.
+- Com `prefers-reduced-motion: reduce`, os dois mostram direto o estado final, sem animação.
 
 ## 3. Componentes de interface
 
