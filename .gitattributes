@@ -1,0 +1,8 @@
+# Mantém LF no repositório e na cópia de trabalho (o Prettier exige LF).
+* text=auto eol=lf
+
+# Binários
+*.ico binary
+*.png binary
+*.jpg binary
+*.webp binary
