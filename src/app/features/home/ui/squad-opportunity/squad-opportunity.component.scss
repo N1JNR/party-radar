@@ -1,0 +1,62 @@
+:host {
+  display: block;
+}
+:host(:empty) {
+  display: none;
+}
+.panel {
+  display: grid;
+  justify-items: start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  background: var(--pr-surface-raised);
+  color: var(--pr-text);
+}
+// O destaque ganha a borda ciano de "jogando agora"; o texto diz o mesmo.
+.panel--highlight {
+  border: var(--border-width-sm) solid var(--pr-presence-playing);
+}
+.panel__label {
+  margin: 0;
+  color: var(--pr-presence-playing);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.panel__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+}
+.panel__text {
+  margin: 0;
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-md);
+}
+.members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.members__item {
+  display: inline-flex;
+  gap: var(--spacing-xxs);
+  padding: var(--spacing-xxs) var(--spacing-xs);
+  border-radius: var(--border-radius-pill);
+  background: var(--pr-surface-page);
+  font-size: var(--font-size-sm);
+}
+.members__name {
+  font-weight: 700;
+}
+.members__platform {
+  color: var(--pr-text-muted);
+}

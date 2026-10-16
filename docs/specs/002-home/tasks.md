@@ -14,7 +14,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T7 — `HomeStore` em signals: carregando, erro, tentar de novo, confirmar parceria, Steam pública (CA8, CA11, CA14, CA15)
 - [x] T8 — Componente do card: cheio, provável e primeiro acesso (CA4–CA7)
 - [x] T9 — Componentes laterais: "Deixe seu card mais forte", aviso da Steam e pergunta de parceria (CA7, CA8, CA11)
-- [ ] T10 — Componentes de jogando agora e oportunidade de squad, com estados vazios (CA9, CA10, CA12)
+- [x] T10 — Componentes de jogando agora e oportunidade de squad, com estados vazios (CA9, CA10, CA12)
 - [ ] T11 — Página "Meu card": monta tudo, esqueleto de carregamento, erro e avisos "Em breve" (CA13–CA15)
 - [ ] T12 — Conferência visual em 390, 768, 1280 e 1440 px e só pelo teclado, com prints (CA16, CA17)
 - [ ] T13 — `/code-review`, revisar diff, rodar `npm run verify` e escrever o relatório final

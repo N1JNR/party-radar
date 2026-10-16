@@ -1,0 +1,72 @@
+:host {
+  display: block;
+}
+.panel {
+  display: grid;
+  justify-items: start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  background: var(--pr-surface-raised);
+  color: var(--pr-text);
+}
+.panel__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+}
+.panel__empty {
+  margin: 0;
+  font-weight: 700;
+}
+.panel__text {
+  margin: 0;
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-md);
+}
+.friends {
+  justify-self: stretch;
+  display: grid;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.friend {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+// Anel de radar: todo mundo desta lista está jogando (o texto "Jogando" vem junto).
+.friend__avatar {
+  flex: none;
+  padding: 2px;
+  border: 2px solid var(--pr-presence-playing);
+  border-radius: 50%;
+}
+.friend__who {
+  flex: 1;
+  display: grid;
+  min-width: 0;
+}
+.friend__name {
+  font-weight: 700;
+}
+.friend__game {
+  color: var(--pr-presence-playing);
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.friend__meta {
+  flex: none;
+  display: grid;
+  justify-items: end;
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-xs);
+}

@@ -1,0 +1,26 @@
+<section class="panel" aria-labelledby="playing-now-title">
+  <h2 id="playing-now-title" class="panel__title">Jogando agora</h2>
+  @if (rows().length > 0) {
+    <ul class="friends">
+      @for (friend of rows(); track friend.id) {
+        <li class="friend">
+          <span class="friend__avatar">
+            <po-avatar [p-src]="friend.avatarUrl ?? ''" p-size="sm" />
+          </span>
+          <span class="friend__who">
+            <span class="friend__name">{{ friend.name }}</span>
+            <span class="friend__game">Jogando {{ friend.game }}</span>
+          </span>
+          <span class="friend__meta">
+            <span>{{ friend.since }}</span>
+            <span>{{ friend.platformLabel }}</span>
+          </span>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="panel__empty">Ninguém jogando por aqui</p>
+    <p class="panel__text">Chame a galera: quanto mais amigos, mais o radar acende.</p>
+    <po-button p-kind="secondary" p-label="Copiar convite" (p-click)="invite.emit()" />
+  }
+</section>
