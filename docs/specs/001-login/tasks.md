@@ -23,3 +23,10 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 ## Parte 2 — Funcionalidade
 
 Será detalhada no `plan.md` antes de começar, depois do merge da Parte 1.
+
+Pendências que a Parte 2 precisa resolver (vindas da revisão da Parte 1):
+
+- Guards e o redirect de `''` decidem antes de a sessão ser restaurada (status `checking`); com sessão real, abrir `/inicio` direto mandaria para `/login` (CA7).
+- Trocar o gateway simulado pelo do Supabase também no build de produção; hoje a `main` "loga" qualquer pessoa.
+- Telas protegidas devem reagir ao fim da sessão (ir para `/login`), em vez de depender da navegação do botão Sair.
+- Conferir o "G" do Google no Safari (o SVG oficial usa `foreignObject`); se falhar, usar o PNG do mesmo pacote.
