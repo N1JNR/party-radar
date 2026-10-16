@@ -7,7 +7,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 - [x] T1 — Tokens de presença trocados (ciano = jogando, verde = online) e conferência do radar do login (CA5)
 - [x] T2 — Domain: tabela de patentes, patente atual e progresso para a próxima, 100% testado (CA4, CA7)
-- [ ] T3 — Domain: tipos do card, divisão por plataforma em %, horas e frases do primeiro acesso, 100% testado (CA4, CA6, CA7)
+- [x] T3 — Domain: tipos do card, divisão por plataforma em %, horas e frases do primeiro acesso, 100% testado (CA4, CA6, CA7)
 - [ ] T4 — Domain: oportunidade de squad (2+ do mesmo squad no mesmo jogo), 100% testado (CA12)
 - [ ] T5 — Layout do app com `po-menu` (itens, squads, Sair) e prova da gaveta em tela estreita (CA1–CA3)
 - [ ] T6 — Contrato `HomeDataSource` e fonte simulada com os cenários de `?simular=` (CA4–CA15)
