@@ -4,6 +4,8 @@ const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 
 module.exports = tseslint.config(
+  // Tipos gerados pelo Supabase (npm run db:types): não se editam à mão.
+  { ignores: ['src/app/core/supabase/database.types.ts'] },
   {
     files: ['**/*.ts'],
     extends: [
