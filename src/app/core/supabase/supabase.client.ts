@@ -20,24 +20,28 @@ export const SUPABASE_CONFIG = new InjectionToken<SupabaseConfig>('SUPABASE_CONF
 });
 
 /**
- * Cria o cliente do Supabase.
+ * Opções de sessão do cliente do Supabase.
  * No servidor (SSR) a sessão não é persistida, porque não existe localStorage.
  * O login usa PKCE: o provedor devolve um código, trocado pela sessão no navegador.
  * A sessão é gravada sem os tokens do provedor (spec 001, CA17).
  */
+export function supabaseAuthOptions(isBrowser: boolean, storage: KeyValueStorage) {
+  return {
+    flowType: 'pkce' as const,
+    storage,
+    persistSession: isBrowser,
+    autoRefreshToken: isBrowser,
+    detectSessionInUrl: isBrowser,
+  };
+}
+
 export function createSupabaseClient(
   config: SupabaseConfig,
   isBrowser: boolean,
   storage: KeyValueStorage,
 ): SupabaseClient<Database> {
   return createClient<Database>(config.url, config.publishableKey, {
-    auth: {
-      flowType: 'pkce',
-      storage,
-      persistSession: isBrowser,
-      autoRefreshToken: isBrowser,
-      detectSessionInUrl: isBrowser,
-    },
+    auth: supabaseAuthOptions(isBrowser, storage),
   });
 }
 

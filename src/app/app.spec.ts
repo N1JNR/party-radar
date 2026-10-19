@@ -12,7 +12,13 @@ describe('App', () => {
       new Promise<RestoredSession>((resolve) => (resolveSession = resolve));
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([]), { provide: AUTH_GATEWAY, useValue: { restoreSession } }],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AUTH_GATEWAY,
+          useValue: { restoreSession, onSessionEnded: () => () => undefined },
+        },
+      ],
     }).compileComponents();
   });
 

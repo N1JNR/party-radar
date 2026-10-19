@@ -25,7 +25,11 @@ describe('AppShellComponent', () => {
         { provide: HOME_DATA_SOURCE, useValue: {} },
         {
           provide: AUTH_GATEWAY,
-          useValue: { restoreSession: () => Promise.resolve({ user }), ...gateway },
+          useValue: {
+            restoreSession: () => Promise.resolve({ user }),
+            onSessionEnded: () => () => undefined,
+            ...gateway,
+          },
         },
       ],
     });

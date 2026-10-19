@@ -42,7 +42,7 @@ retorno e chaves no `.env`). As tarefas T13 a T21 não dependem disso.
 - [x] T15 — Domain: destino seguro e falha a partir da URL de retorno, 100% testado (CA5, CA6, CA13, CA14)
 - [x] T16 — Armazenamento da sessão em `core/platform/` sem os tokens do provedor, e cliente do Supabase com PKCE (CA17)
 - [x] T17 — `SupabaseAuthGateway`: entrar com o Discord, restaurar com o perfil, sair só neste aparelho, aviso de fim de sessão e Google "em breve" (CA2, CA7, CA8, CA10, CA15, CA23)
-- [ ] T18 — `AuthStore` com promessa de "pronto" e fim de sessão; guards e redirect de `''` esperam a sessão e levam o `next` (CA5, CA7, CA9, CA10)
+- [x] T18 — `AuthStore` com promessa de "pronto" e fim de sessão; guards e redirect de `''` esperam a sessão e levam o `next` (CA5, CA7, CA9, CA10)
 - [ ] T19 — Página `/auth/retorno`: espera a sessão, trata cancelado e erro, vai ao destino seguro; login repassa o `next` (CA2, CA5, CA6, CA13, CA14)
 - [ ] T20 — App leva ao login quando a sessão termina, com o aviso de sessão expirada (CA8, CA10)
 - [ ] T21 — Fábrica do gateway: produção sempre Supabase; simulado só com `?simular-login=` em desenvolvimento (CA22)

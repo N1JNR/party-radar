@@ -61,7 +61,10 @@ describe('FakeHomeSource', () => {
         },
         {
           provide: AUTH_GATEWAY,
-          useValue: { restoreSession: () => Promise.resolve({ user: signedIn ? user : null }) },
+          useValue: {
+            restoreSession: () => Promise.resolve({ user: signedIn ? user : null }),
+            onSessionEnded: () => () => undefined,
+          },
         },
       ],
     });

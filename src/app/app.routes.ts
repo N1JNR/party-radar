@@ -1,15 +1,10 @@
-import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 
-import { anonymousOnly, authenticatedOnly } from './core/auth/auth.guards';
-import { AuthStore } from './core/auth/auth.store';
+import { anonymousOnly, authenticatedOnly, homeOrLogin } from './core/auth/auth.guards';
 
 export const routes: Routes = [
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: () => (inject(AuthStore).isAuthenticated() ? 'inicio' : 'login'),
-  },
+  // A raiz espera a sessão salva ser verificada e leva à tela inicial ou ao login (CA7).
+  { path: '', pathMatch: 'full', canActivate: [homeOrLogin], children: [] },
   {
     path: 'login',
     title: 'Entrar | Party Radar',
