@@ -46,7 +46,12 @@ retorno e chaves no `.env`). As tarefas T13 a T21 não dependem disso.
 - [x] T19 — Página `/auth/retorno`: espera a sessão, trata cancelado e erro, vai ao destino seguro; login repassa o `next` (CA2, CA5, CA6, CA13, CA14)
 - [x] T20 — App leva ao login quando a sessão termina, com o aviso de sessão expirada (CA8, CA10)
 - [x] T21 — Fábrica do gateway: produção sempre Supabase; simulado só com `?simular-login=` em desenvolvimento (CA22)
-- [ ] T22 — Conferência de ponta a ponta com a conta do Discord do Jorge: entrar, perfil criado, recarregar, Sair, cancelar; com prints (CA2, CA4, CA7, CA8, CA13)
+- [x] T22 — Conferência de ponta a ponta com a conta do Discord do Jorge: entrar, perfil criado, recarregar, Sair, cancelar; com prints (CA2, CA4, CA7, CA8, CA13)
+  - Conferido em 2026-10-19 com a conta do Jorge no Supabase local: entrou pelo Discord e caiu no
+    Meu card com nome, @usuário e foto do Discord; o perfil foi criado no banco; a sessão salva não
+    tem os tokens do Discord; recarregar mantém o login; Sair volta ao login e o voltar do
+    navegador não mostra telas com dados; cancelar no Discord mostra "Login cancelado". Prints
+    08 a 11 em `prints/`.
 - [ ] T23 — `/code-review`, `/security-review` (toca login e RLS), `npm run verify:all` e relatório final
 
 ### Parte 2b — Google
