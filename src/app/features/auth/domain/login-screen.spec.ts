@@ -36,13 +36,13 @@ describe('startOpening', () => {
   });
 
   it('tira o aviso anterior da tela ao tentar de novo', () => {
-    const next = startOpening(failOpening('failed'), 'google');
+    const next = startOpening(failOpening('failed'), 'discord');
     expect(currentFeedback(next)).toBeNull();
   });
 
-  it('ignora um segundo toque enquanto outro login está em andamento (CA12)', () => {
+  it('ignora um segundo toque enquanto o login está em andamento (CA12)', () => {
     const opening = startOpening(initialLoginScreen(), 'discord');
-    expect(startOpening(opening, 'google')).toBe(opening);
+    expect(startOpening(opening, 'discord')).toBe(opening);
   });
 });
 
@@ -55,7 +55,7 @@ describe('failOpening', () => {
 });
 
 describe('isBusy e isOpening', () => {
-  const opening: LoginScreenState = { status: 'opening', provider: 'google' };
+  const opening: LoginScreenState = { status: 'opening', provider: 'discord' };
 
   it('só está ocupado enquanto abre um provedor', () => {
     expect(isBusy(initialLoginScreen())).toBe(false);
@@ -63,9 +63,8 @@ describe('isBusy e isOpening', () => {
   });
 
   it('identifica qual provedor está abrindo', () => {
-    expect(isOpening(opening, 'google')).toBe(true);
-    expect(isOpening(opening, 'discord')).toBe(false);
-    expect(isOpening(initialLoginScreen(), 'google')).toBe(false);
+    expect(isOpening(opening, 'discord')).toBe(true);
+    expect(isOpening(initialLoginScreen(), 'discord')).toBe(false);
   });
 
   it('não mostra aviso enquanto abre', () => {

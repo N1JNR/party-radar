@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 
-/** Provedores de login aceitos no MVP. */
-export type AuthProvider = 'discord' | 'google';
+/** Provedores de login aceitos no MVP: só o Discord (spec 001, revisão 4). */
+export type AuthProvider = 'discord';
 
 /** Dados públicos de quem está logado (spec 001, CA4). */
 export interface AuthUser {
@@ -10,11 +10,8 @@ export interface AuthUser {
   avatarUrl: string | null;
 }
 
-/**
- * Por que o login não foi concluído (spec 001, CA10 e CA13–CA15). `unavailable`: provedor que
- * ainda não está ligado (o Google, até a Parte 2b, CA23).
- */
-export type LoginFailure = 'cancelled' | 'failed' | 'offline' | 'session-expired' | 'unavailable';
+/** Por que o login não foi concluído (spec 001, CA10 e CA13–CA15). */
+export type LoginFailure = 'cancelled' | 'failed' | 'offline' | 'session-expired';
 
 export type SignInResult = { ok: true; user: AuthUser } | { ok: false; failure: LoginFailure };
 

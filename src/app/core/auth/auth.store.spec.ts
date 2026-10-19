@@ -64,13 +64,13 @@ describe('AuthStore', () => {
         signIn: () => Promise.resolve({ ok: false, failure: 'cancelled' }),
       });
       await store.restore();
-      await expect(store.signIn('google')).resolves.toEqual({ ok: false, failure: 'cancelled' });
+      await expect(store.signIn('discord')).resolves.toEqual({ ok: false, failure: 'cancelled' });
       expect(store.status()).toBe('anonymous');
     });
 
     it('trata erro inesperado do gateway como falha genérica (CA14)', async () => {
       const store = setup({ signIn: () => Promise.reject(new Error('boom')) });
-      await expect(store.signIn('google')).resolves.toEqual({ ok: false, failure: 'failed' });
+      await expect(store.signIn('discord')).resolves.toEqual({ ok: false, failure: 'failed' });
     });
   });
 

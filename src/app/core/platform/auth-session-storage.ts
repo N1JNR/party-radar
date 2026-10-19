@@ -7,7 +7,7 @@ export interface KeyValueStorage {
   removeItem(key: string): void;
 }
 
-/** Campos da sessão do Supabase com os tokens do Discord e do Google (spec 001, CA17). */
+/** Campos da sessão do Supabase com os tokens do Discord (spec 001, CA17). */
 const PROVIDER_FIELDS = ['provider_token', 'provider_refresh_token'] as const;
 
 /** Tira os tokens do provedor de uma sessão em JSON. Outros valores passam como estão. */

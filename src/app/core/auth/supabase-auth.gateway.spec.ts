@@ -150,15 +150,6 @@ describe('SupabaseAuthGateway', () => {
       });
       expect(supabase.auth.signInWithOAuth).not.toHaveBeenCalled();
     });
-
-    it('o Google fica "em breve" até a Parte 2b (CA23)', async () => {
-      const supabase = fakeSupabase();
-      expect(await setup(supabase).signIn('google')).toEqual({
-        ok: false,
-        failure: 'unavailable',
-      });
-      expect(supabase.auth.signInWithOAuth).not.toHaveBeenCalled();
-    });
   });
 
   describe('signOut', () => {

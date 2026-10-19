@@ -28,23 +28,14 @@ describe('feedbackFor', () => {
       message: 'Sua sessão expirou. Entre de novo.',
     });
   });
-
-  it('provedor ainda não ligado avisa que vem em breve (CA23)', () => {
-    expect(feedbackFor('unavailable')).toEqual({
-      tone: 'info',
-      message: 'Login com o Google em breve.',
-    });
-  });
 });
 
 describe('providerButtonLabel', () => {
-  it('usa os textos aprovados para cada provedor (CA1)', () => {
+  it('usa o texto aprovado do botão (CA1)', () => {
     expect(providerButtonLabel('discord', false)).toBe('Continuar com Discord');
-    expect(providerButtonLabel('google', false)).toBe('Continuar com o Google');
   });
 
   it('diz para onde está indo enquanto redireciona (CA12)', () => {
     expect(providerButtonLabel('discord', true)).toBe('Abrindo Discord…');
-    expect(providerButtonLabel('google', true)).toBe('Abrindo Google…');
   });
 });

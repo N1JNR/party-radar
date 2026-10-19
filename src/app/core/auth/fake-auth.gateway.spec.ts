@@ -93,20 +93,20 @@ describe('FakeAuthGateway', () => {
       ['cancelled', 'cancelled'],
       ['failed', 'failed'],
     ] as const)('no cenário %s devolve a falha %s', async (scenario, failure) => {
-      const promise = setup(scenario).signIn('google');
+      const promise = setup(scenario).signIn('discord');
       await vi.advanceTimersByTimeAsync(1500);
       await expect(promise).resolves.toEqual({ ok: false, failure });
     });
 
     it('sem conexão falha na hora, sem esperar (CA15)', async () => {
-      await expect(setup('offline').signIn('google')).resolves.toEqual({
+      await expect(setup('offline').signIn('discord')).resolves.toEqual({
         ok: false,
         failure: 'offline',
       });
     });
 
     it('entra normalmente nos cenários que só afetam a sessão', async () => {
-      const promise = setup('session-expired').signIn('google');
+      const promise = setup('session-expired').signIn('discord');
       await vi.advanceTimersByTimeAsync(1500);
       await expect(promise).resolves.toMatchObject({ ok: true });
     });
