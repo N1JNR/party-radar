@@ -37,7 +37,7 @@ Pendências vindas da revisão da Parte 1 (onde cada uma é resolvida):
 Antes da T22, o dono do projeto cumpre os pré-requisitos da spec (aplicativo no Discord, URL de
 retorno e chaves no `.env`). As tarefas T13 a T21 não dependem disso.
 
-- [ ] T13 — Supabase local com o provedor Discord (`config.toml` com `env()`), `.env.example`, README e CI do banco funcionando sem as chaves (CA2)
+- [x] T13 — Supabase local com o provedor Discord (`config.toml` com `env()`), `.env.example`, README e CI do banco funcionando sem as chaves (CA2)
 - [ ] T14 — Migration `profiles`: gatilho de criação, @usuário único, RLS, pgTAP e `database.types.ts` (CA4, CA16, CA18)
 - [ ] T15 — Domain: destino seguro e falha a partir da URL de retorno, 100% testado (CA5, CA6, CA13, CA14)
 - [ ] T16 — Armazenamento da sessão em `core/platform/` sem os tokens do provedor, e cliente do Supabase com PKCE (CA17)
