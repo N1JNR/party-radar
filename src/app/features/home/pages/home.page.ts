@@ -1,32 +1,68 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { PoAvatarModule, PoButtonModule } from '@po-ui/ng-components';
+import { PoButtonModule, PoNotificationService } from '@po-ui/ng-components';
 
-import { AuthStore } from '../../../core/auth/auth.store';
+import { ClipboardService } from '../../../core/platform/clipboard.service';
+import { HomeStore } from '../data/home.store';
+import { PartnershipQuestionComponent } from '../ui/partnership-question/partnership-question.component';
+import { PlayerCardComponent } from '../ui/player-card/player-card.component';
+import { PlayingNowComponent } from '../ui/playing-now/playing-now.component';
+import { SquadOpportunityComponent } from '../ui/squad-opportunity/squad-opportunity.component';
+import { SteamNoticeComponent } from '../ui/steam-notice/steam-notice.component';
+import { StrengthenCardComponent } from '../ui/strengthen-card/strengthen-card.component';
 
-/**
- * Tela inicial provisória (spec 001): confirma quem entrou e permite sair.
- * Será substituída pelo Radar na spec 004.
- */
+/** "Meu card": a home do app (spec 002). Orquestra o estado da home e os componentes. */
 @Component({
   selector: 'app-home-page',
-  imports: [PoAvatarModule, PoButtonModule],
+  imports: [
+    PoButtonModule,
+    PlayerCardComponent,
+    StrengthenCardComponent,
+    SteamNoticeComponent,
+    PartnershipQuestionComponent,
+    PlayingNowComponent,
+    SquadOpportunityComponent,
+  ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePage {
-  protected readonly store = inject(AuthStore);
-  private readonly router = inject(Router);
-  protected readonly leaving = signal(false);
+  protected readonly store = inject(HomeStore);
+  private readonly clipboard = inject(ClipboardService);
+  private readonly notification = inject(PoNotificationService);
+  protected readonly now = signal(new Date());
 
-  protected async signOut(): Promise<void> {
-    this.leaving.set(true);
-    try {
-      await this.store.signOut();
-    } catch {
-      // A sessão local já terminou no AuthStore; seguimos para o login mesmo assim (CA8).
+  constructor() {
+    void this.store.load();
+  }
+
+  protected reload(): void {
+    this.now.set(new Date());
+    void this.store.load();
+  }
+
+  /** Telas que são entregas próprias (CA13). */
+  protected soon(feature: string): void {
+    this.notification.information(`Em breve: ${feature}.`);
+  }
+
+  protected async copyInvite(link: string): Promise<void> {
+    if (await this.clipboard.copy(link)) {
+      this.notification.success('Link de convite copiado.');
+    } else {
+      this.notification.information(`Não deu para copiar. Seu link de convite: ${link}`);
     }
-    await this.router.navigateByUrl('/login', { replaceUrl: true });
+  }
+
+  protected async answer(played: boolean): Promise<void> {
+    if (!(await this.store.answerPartnership(played))) {
+      this.notification.error('Não foi possível salvar sua resposta. Tente de novo.');
+    }
+  }
+
+  protected async markSteamPublic(): Promise<void> {
+    if (!(await this.store.markSteamPublic())) {
+      this.notification.error('Não foi possível salvar. Tente de novo.');
+    }
   }
 }

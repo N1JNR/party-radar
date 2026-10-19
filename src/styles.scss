@@ -16,9 +16,12 @@
   --pr-text-muted: var(--color-neutral-mid-60);
 
   // Estados de presença (anel de radar e blips). Sempre acompanhados de texto.
-  --pr-presence-playing: var(--color-feedback-positive-base);
-  --pr-presence-online: var(--color-brand-02-base);
+  --pr-presence-playing: var(--color-brand-02-base);
+  --pr-presence-online: var(--color-feedback-positive-base);
   --pr-presence-away: var(--color-feedback-warning-base);
+
+  // Conquista e patente (DESIGN.md, seção 2).
+  --pr-highlight: var(--color-brand-03-base);
 
   color-scheme: dark;
 }
@@ -65,4 +68,17 @@ body {
   .boot-loading__ring {
     animation: none;
   }
+}
+
+// Texto só para leitor de tela (o `po-sr-only` não vem no tema padrão do PO UI).
+.pr-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

@@ -185,7 +185,7 @@ Modais e menus usam o overlay do próprio PO UI. Não crie `z-index` próprio.
 | Desktop | 1200 px ou mais | **1280 e 1440 px** |
 
 **Web primeiro:** desenhe para o desktop e garanta que a tela funciona até 390 px. O menu
-lateral (`po-menu`) fica fixo a partir de 1200 px e vira gaveta abaixo disso. Prefira layouts fluidos
+lateral (`po-menu`) fica fixo acima de 1200 px e vira gaveta até 1200 px. Prefira layouts fluidos
 (`flex-wrap`, `minmax`) a muitos cortes fixos.
 
 ### Movimento
@@ -239,9 +239,10 @@ Toda tela e todo componente que carrega dados tem quatro versões: **carregando*
 - **Web primeiro** (1280–1440 px), funcional até 390 px: conteúdo alinhado à esquerda;
   centralizado só em telas de uma ação (Entrar, vazio). No celular, uma coluna com margem
   lateral `--spacing-sm`.
-- **Navegação:** menu lateral (`po-menu`) fixo a partir de 1200 px, com Meu card, Amigos, Squads, Perfil,
-  a lista dos seus squads e Sair. Abaixo de 1200 px, o menu vira gaveta aberta pelo botão de
+- **Navegação:** menu lateral (`po-menu`) fixo acima de 1200 px, com Meu card, Amigos, Squads, Perfil,
+  a lista dos seus squads e Sair. Até 1200 px, o menu vira gaveta aberta pelo botão de
   menu (fecha ao escolher um destino, tocar fora ou apertar Esc, devolvendo o foco ao botão).
+  O botão de abrir é nosso: o do `po-menu` é uma `div` sem teclado (exceção aceita na spec 002).
   Respeite a área segura do celular (`env(safe-area-inset-bottom)`) por causa do Capacitor.
 - **Cabeçalho:** título da tela à esquerda e no máximo uma ação principal à direita.
 - **Container:** largura máxima de 1120 px na área de conteúdo, centralizado; listas em grade
@@ -315,5 +316,5 @@ Antes de declarar uma tela pronta (soma-se à seção 6 do `AGENTS.md`):
       escuro do GitHub. Manter, ou puxar os neutros levemente para o violeta da marca para
       ter identidade própria?
 - [ ] **Logo:** quem cria e em que formato (SVG para o app, PNG 512 px para o Capacitor)?
-- [x] **Navegação:** menu lateral fixo no desktop e gaveta abaixo de 1200 px, o corte do `po-menu` (spec 002-home).
+- [x] **Navegação:** menu lateral fixo no desktop e gaveta até 1200 px, o corte do `po-menu` (spec 002-home).
 - [ ] **Modo claro:** fica fora do MVP?

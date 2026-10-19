@@ -58,7 +58,7 @@
 }
 .login__alert-icon {
   flex: none;
-  color: var(--pr-presence-online);
+  color: var(--color-feedback-info-base);
 }
 .login__alert--error .login__alert-icon {
   color: var(--color-feedback-negative-base);

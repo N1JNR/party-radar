@@ -1,0 +1,70 @@
+// O `po-wrapper` do PO UI limita a altura à janela; o conteúdo rola dentro de `.shell__content`.
+.shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--pr-surface-page);
+}
+.shell__content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+.shell__topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-bottom: var(--border-width-sm) solid var(--color-neutral-light-20);
+}
+.shell__menu-button {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--border-radius-md);
+  background: transparent;
+  color: var(--pr-text);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.shell__menu-button:hover {
+  background: var(--pr-surface-raised);
+}
+.shell__menu-button:focus-visible {
+  outline: var(--border-width-md) solid var(--color-action-focus);
+  outline-offset: 2px;
+}
+.shell__brand {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--pr-text);
+}
+.shell__brand--menu {
+  display: block;
+  padding-block: var(--spacing-xs);
+}
+
+// Gaveta (até 1200 px, o corte do `po-menu`): o botão próprio substitui a `div` de abrir do PO UI,
+// que não recebe foco. Fechada, a gaveta sai da ordem de foco.
+@media (max-width: 1200px) {
+  :host ::ng-deep .po-menu-mobile {
+    display: none;
+  }
+  .shell:not(.shell--menu-open) ::ng-deep .po-menu {
+    visibility: hidden;
+  }
+}
+
+// Menu fixo: o conteúdo começa depois dele.
+@media (min-width: 1201px) {
+  .shell__topbar {
+    display: none;
+  }
+  .shell__content {
+    margin-left: var(--menu-width);
+  }
+}

@@ -1,0 +1,20 @@
+<section class="panel" aria-labelledby="strengthen-title">
+  <h2 id="strengthen-title" class="panel__title">Deixe seu card mais forte</h2>
+  <p class="panel__text">Quanto mais dados, mais o seu card tem para mostrar.</p>
+  <ul class="steps">
+    @for (step of steps(); track step.id) {
+      <li class="steps__item" [class.steps__item--done]="step.done">
+        <po-icon
+          class="steps__icon"
+          [p-icon]="step.done ? 'an an-check-circle' : 'an an-circle'"
+          aria-hidden="true"
+        />
+        <span class="steps__label">{{ step.label }}</span>
+        <span class="steps__state">{{ step.done ? 'Feito' : 'Falta' }}</span>
+      </li>
+    }
+  </ul>
+  @if (needsFriends()) {
+    <po-button p-kind="secondary" p-label="Copiar convite" (p-click)="invite.emit()" />
+  }
+</section>

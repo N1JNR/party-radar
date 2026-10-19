@@ -13,6 +13,8 @@ import { routes } from './app.routes';
 import { AUTH_GATEWAY } from './core/auth/auth.gateway';
 import { FakeAuthGateway } from './core/auth/fake-auth.gateway';
 import { initTheme } from './core/theme/theme.initializer';
+import { FakeHomeSource } from './features/home/data/fake-home.source';
+import { HOME_DATA_SOURCE } from './features/home/data/home.source';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,5 +28,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(initTheme),
     // Login simulado (spec 001, Parte 1). A Parte 2 troca pelo gateway do Supabase.
     { provide: AUTH_GATEWAY, useClass: FakeAuthGateway },
+    // Home simulada (spec 002, layout). A integração troca pela fonte do Supabase.
+    { provide: HOME_DATA_SOURCE, useClass: FakeHomeSource },
   ],
 };

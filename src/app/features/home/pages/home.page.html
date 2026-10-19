@@ -1,9 +1,83 @@
-<main class="inicio">
-  @if (store.user(); as user) {
-    <po-avatar class="inicio__avatar" [p-src]="user.avatarUrl ?? ''" p-size="lg" />
-    <h1 class="inicio__title">Olá, {{ user.name }}</h1>
-    <p class="inicio__username">&#64;{{ user.username }}</p>
-    <p class="inicio__next">Em breve, aqui você vai ver quem do grupo está jogando agora.</p>
-    <po-button p-label="Sair" p-kind="secondary" [p-loading]="leaving()" (p-click)="signOut()" />
+<main class="home">
+  <header class="home__header">
+    <h1 class="home__title">Meu card</h1>
+    @if (store.status() === 'ready') {
+      <po-button
+        p-kind="primary"
+        p-icon="an an-share-network"
+        p-label="Compartilhar card"
+        (p-click)="soon('Compartilhar card')"
+      />
+    }
+  </header>
+
+  @switch (store.status()) {
+    @case ('loading') {
+      <div class="home__grid" aria-hidden="true">
+        <div class="home__main">
+          <div class="skeleton skeleton--card"></div>
+        </div>
+        <div class="home__side">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+      </div>
+      <p class="pr-sr-only" role="status">Carregando seu card…</p>
+    }
+    @case ('error') {
+      <section class="home__error" role="alert">
+        <p class="home__error-title">Não foi possível carregar seu card.</p>
+        <p class="home__error-text">Verifique sua conexão e tente de novo.</p>
+        <po-button p-kind="secondary" p-label="Tentar de novo" (p-click)="reload()" />
+      </section>
+    }
+    @default {
+      @if (store.data(); as data) {
+        <div class="home__grid">
+          <div class="home__main">
+            @if (store.progress(); as progress) {
+              <app-player-card
+                [card]="data.card"
+                [progress]="progress"
+                [platforms]="store.platforms()"
+                [firstAccess]="store.firstAccess()"
+                (seePatentes)="soon('Ver patentes')"
+              />
+            }
+            <app-squad-opportunity
+              [hasSquads]="data.squads.length > 0"
+              [opportunity]="store.opportunities().at(0) ?? null"
+              (callSquad)="soon('Chamar o squad')"
+              (formSquad)="soon('Formar squad')"
+            />
+          </div>
+          <div class="home__side">
+            @if (store.firstAccess()) {
+              <app-strengthen-card
+                [steamPublic]="data.steamPublic"
+                [friendsCount]="data.friendsCount"
+                (invite)="copyInvite(data.inviteLink)"
+              />
+            }
+            @if (!data.steamPublic) {
+              <app-steam-notice [marking]="store.markingSteam()" (confirmed)="markSteamPublic()" />
+            }
+            @if (data.question; as question) {
+              <app-partnership-question
+                [question]="question"
+                [now]="now()"
+                [answering]="store.answering()"
+                (answered)="answer($event)"
+              />
+            }
+            <app-playing-now
+              [friends]="data.friendsPlaying"
+              [now]="now()"
+              (invite)="copyInvite(data.inviteLink)"
+            />
+          </div>
+        </div>
+      }
+    }
   }
 </main>

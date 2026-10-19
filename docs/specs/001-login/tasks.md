@@ -29,4 +29,5 @@ Pendências que a Parte 2 precisa resolver (vindas da revisão da Parte 1):
 - Guards e o redirect de `''` decidem antes de a sessão ser restaurada (status `checking`); com sessão real, abrir `/inicio` direto mandaria para `/login` (CA7).
 - Trocar o gateway simulado pelo do Supabase também no build de produção; hoje a `main` "loga" qualquer pessoa.
 - Telas protegidas devem reagir ao fim da sessão (ir para `/login`), em vez de depender da navegação do botão Sair.
+- Manter a sessão simulada ao recarregar em desenvolvimento (ou levar o `?simular=` pelo login), para os cenários de `?simular=` da home (spec 002) funcionarem pela URL.
 - Conferir o "G" do Google no Safari (o SVG oficial usa `foreignObject`); se falhar, usar o PNG do mesmo pacote.

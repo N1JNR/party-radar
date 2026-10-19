@@ -1,0 +1,27 @@
+@if (!hasSquads()) {
+  <section class="panel" aria-labelledby="squads-empty-title">
+    <h2 id="squads-empty-title" class="panel__title">Nenhum squad ainda</h2>
+    <p class="panel__text">Junte a galera que joga junto e chame todo mundo de uma vez.</p>
+    <po-button p-kind="secondary" p-label="Formar squad" (p-click)="formSquad.emit()" />
+  </section>
+} @else if (opportunity(); as opportunity) {
+  <section class="panel panel--highlight" aria-labelledby="opportunity-title">
+    <p class="panel__label">Oportunidade de squad</p>
+    <h2 id="opportunity-title" class="panel__title">
+      {{ opportunity.members.length }} do {{ opportunity.squad.name }} no {{ opportunity.game }}
+    </h2>
+    <ul class="members">
+      @for (member of members(); track member.id) {
+        <li class="members__item">
+          <span class="members__name">{{ member.name }}</span>
+          <span class="members__platform">{{ member.platform }}</span>
+        </li>
+      }
+    </ul>
+    <po-button
+      p-kind="secondary"
+      p-label="Chamar o squad"
+      (p-click)="callSquad.emit(opportunity)"
+    />
+  </section>
+}
