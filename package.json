@@ -18,7 +18,7 @@
     "db:types": "supabase gen types typescript --local > src/app/core/supabase/database.types.ts && prettier --write src/app/core/supabase/database.types.ts",
     "serve:ssr:party-radar": "node dist/party-radar/server/server.mjs",
     "prepare": "husky",
-    "fn:test": "deno test --no-prompt supabase/functions"
+    "fn:test": "deno check supabase/functions/steam-connect/index.ts && deno test --no-prompt supabase/functions"
   },
   "private": true,
   "packageManager": "npm@11.17.0",
