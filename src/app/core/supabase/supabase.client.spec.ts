@@ -1,37 +1,46 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { createClient } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 import { environment } from '../../../environments/environment';
-import { SUPABASE, SUPABASE_CONFIG, createSupabaseClient } from './supabase.client';
-
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn(() => ({ fake: 'client' })),
-}));
+import { AUTH_SESSION_STORAGE } from '../platform/auth-session-storage';
+import {
+  SUPABASE,
+  SUPABASE_CONFIG,
+  createSupabaseClient,
+  supabaseAuthOptions,
+} from './supabase.client';
 
 const config = { url: 'https://teste.supabase.co', publishableKey: 'sb_publishable_teste' };
+const storage = { getItem: () => null, setItem: () => undefined, removeItem: () => undefined };
 
-describe('createSupabaseClient', () => {
-  beforeEach(() => vi.mocked(createClient).mockClear());
-
-  it('persiste e renova a sessão no navegador', () => {
-    createSupabaseClient(config, true);
-    expect(createClient).toHaveBeenCalledWith(config.url, config.publishableKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+describe('supabaseAuthOptions', () => {
+  it('no navegador: PKCE, armazenamento sem tokens, sessão persistida e renovada', () => {
+    expect(supabaseAuthOptions(true, storage)).toEqual({
+      flowType: 'pkce',
+      storage,
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
     });
   });
 
-  it('não persiste sessão no servidor (SSR)', () => {
-    createSupabaseClient(config, false);
-    expect(createClient).toHaveBeenCalledWith(config.url, config.publishableKey, {
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  it('no servidor (SSR): não persiste nem renova a sessão', () => {
+    expect(supabaseAuthOptions(false, storage)).toMatchObject({
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
     });
   });
 });
 
-describe('tokens de injeção', () => {
-  beforeEach(() => vi.mocked(createClient).mockClear());
+describe('createSupabaseClient', () => {
+  it('cria um cliente do Supabase', () => {
+    expect(createSupabaseClient(config, false, storage)).toBeInstanceOf(SupabaseClient);
+  });
+});
 
+describe('tokens de injeção', () => {
   it('SUPABASE_CONFIG lê os valores do environment por padrão', () => {
     expect(TestBed.inject(SUPABASE_CONFIG)).toEqual({
       url: environment.supabaseUrl,
@@ -39,25 +48,14 @@ describe('tokens de injeção', () => {
     });
   });
 
-  it('SUPABASE cria o cliente de navegador quando roda no browser', () => {
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: SUPABASE_CONFIG, useValue: config },
-      ],
-    });
-    expect(TestBed.inject(SUPABASE)).toEqual({ fake: 'client' });
-    expect(vi.mocked(createClient).mock.calls[0][2]?.auth?.persistSession).toBe(true);
-  });
-
-  it('SUPABASE cria o cliente sem sessão quando roda no servidor', () => {
+  it('SUPABASE cria o cliente com a configuração e o armazenamento do app', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: PLATFORM_ID, useValue: 'server' },
         { provide: SUPABASE_CONFIG, useValue: config },
+        { provide: AUTH_SESSION_STORAGE, useValue: storage },
       ],
     });
-    TestBed.inject(SUPABASE);
-    expect(vi.mocked(createClient).mock.calls[0][2]?.auth?.persistSession).toBe(false);
+    expect(TestBed.inject(SUPABASE)).toBeInstanceOf(SupabaseClient);
   });
 });

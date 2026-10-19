@@ -37,17 +37,30 @@ Pendências vindas da revisão da Parte 1 (onde cada uma é resolvida):
 Antes da T22, o dono do projeto cumpre os pré-requisitos da spec (aplicativo no Discord, URL de
 retorno e chaves no `.env`). As tarefas T13 a T21 não dependem disso.
 
-- [ ] T13 — Supabase local com o provedor Discord (`config.toml` com `env()`), `.env.example`, README e CI do banco funcionando sem as chaves (CA2)
-- [ ] T14 — Migration `profiles`: gatilho de criação, @usuário único, RLS, pgTAP e `database.types.ts` (CA4, CA16, CA18)
-- [ ] T15 — Domain: destino seguro e falha a partir da URL de retorno, 100% testado (CA5, CA6, CA13, CA14)
-- [ ] T16 — Armazenamento da sessão em `core/platform/` sem os tokens do provedor, e cliente do Supabase com PKCE (CA17)
-- [ ] T17 — `SupabaseAuthGateway`: entrar com o Discord, restaurar com o perfil, sair só neste aparelho, aviso de fim de sessão e Google "em breve" (CA2, CA7, CA8, CA10, CA15, CA23)
-- [ ] T18 — `AuthStore` com promessa de "pronto" e fim de sessão; guards e redirect de `''` esperam a sessão e levam o `next` (CA5, CA7, CA9, CA10)
-- [ ] T19 — Página `/auth/retorno`: espera a sessão, trata cancelado e erro, vai ao destino seguro; login repassa o `next` (CA2, CA5, CA6, CA13, CA14)
-- [ ] T20 — App leva ao login quando a sessão termina, com o aviso de sessão expirada (CA8, CA10)
-- [ ] T21 — Fábrica do gateway: produção sempre Supabase; simulado só com `?simular-login=` em desenvolvimento (CA22)
-- [ ] T22 — Conferência de ponta a ponta com a conta do Discord do Jorge: entrar, perfil criado, recarregar, Sair, cancelar; com prints (CA2, CA4, CA7, CA8, CA13)
-- [ ] T23 — `/code-review`, `/security-review` (toca login e RLS), `npm run verify:all` e relatório final
+- [x] T13 — Supabase local com o provedor Discord (`config.toml` com `env()`), `.env.example`, README e CI do banco funcionando sem as chaves (CA2)
+- [x] T14 — Migration `profiles`: gatilho de criação, @usuário único, RLS, pgTAP e `database.types.ts` (CA4, CA16, CA18)
+- [x] T15 — Domain: destino seguro e falha a partir da URL de retorno, 100% testado (CA5, CA6, CA13, CA14)
+- [x] T16 — Armazenamento da sessão em `core/platform/` sem os tokens do provedor, e cliente do Supabase com PKCE (CA17)
+- [x] T17 — `SupabaseAuthGateway`: entrar com o Discord, restaurar com o perfil, sair só neste aparelho, aviso de fim de sessão e Google "em breve" (CA2, CA7, CA8, CA10, CA15, CA23)
+- [x] T18 — `AuthStore` com promessa de "pronto" e fim de sessão; guards e redirect de `''` esperam a sessão e levam o `next` (CA5, CA7, CA9, CA10)
+- [x] T19 — Página `/auth/retorno`: espera a sessão, trata cancelado e erro, vai ao destino seguro; login repassa o `next` (CA2, CA5, CA6, CA13, CA14)
+- [x] T20 — App leva ao login quando a sessão termina, com o aviso de sessão expirada (CA8, CA10)
+- [x] T21 — Fábrica do gateway: produção sempre Supabase; simulado só com `?simular-login=` em desenvolvimento (CA22)
+- [x] T22 — Conferência de ponta a ponta com a conta do Discord do Jorge: entrar, perfil criado, recarregar, Sair, cancelar; com prints (CA2, CA4, CA7, CA8, CA13)
+  - Conferido em 2026-10-19 com a conta do Jorge no Supabase local: entrou pelo Discord e caiu no
+    Meu card com nome, @usuário e foto do Discord; o perfil foi criado no banco; a sessão salva não
+    tem os tokens do Discord; recarregar mantém o login; Sair volta ao login e o voltar do
+    navegador não mostra telas com dados; cancelar no Discord mostra "Login cancelado". Prints
+    08 a 11 em `prints/`.
+- [x] T23 — `/code-review`, `/security-review` (toca login e RLS), `npm run verify:all` e relatório final
+  - `/code-review` (high) em 2026-10-19: 9 achados. Corrigidos 3 com testes: cadastro por e-mail e
+    senha desligado no Supabase, botões travados ao voltar do Discord pelo navegador, e aviso de
+    falha guardado para quem já estava logado. `/security-review`: nenhuma vulnerabilidade de
+    confiança alta.
+  - Ficam para depois: pacote inicial com o `supabase-js` passa do limite de aviso (1,27 MB, limite
+    1,2 MB; erro só em 1,5 MB), a decidir entre carregar o cliente sob demanda ou subir o limite; o
+    gateway simulado vai no build de produção (inalcançável); falha ao ler o perfil deixa a sessão
+    guardada; Sair em outra aba mostra "sessão expirou"; verificadores PKCE antigos no navegador.
 
 ### Parte 2b — Google
 

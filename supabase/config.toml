@@ -219,7 +219,9 @@ web3 = 30
 
 [auth.email]
 # Allow/disallow new user signups via email to your project.
-enable_signup = true
+# Party Radar: só se entra com o Discord ou o Google (spec 001); cadastro por e-mail e senha fica
+# desligado, para ninguém criar conta direto pela API.
+enable_signup = false
 # If enabled, a user will be required to confirm any email change on both the old, and new email
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
@@ -320,6 +322,13 @@ max_frequency = "5s"
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin_oidc`, `notion`, `twitch`,
 # `twitter`, `x`, `slack`, `spotify`, `workos`, `zoom`.
+# Login com o Discord (spec 001, Parte 2a). As chaves vêm do .env da raiz do projeto, que o CLI lê
+# com env(). Sem elas, o Supabase sobe normalmente; só o login com o Discord falha.
+[auth.external.discord]
+enabled = true
+client_id = "env(DISCORD_CLIENT_ID)"
+secret = "env(DISCORD_CLIENT_SECRET)"
+
 [auth.external.apple]
 enabled = false
 client_id = ""

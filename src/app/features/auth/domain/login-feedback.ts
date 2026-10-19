@@ -13,9 +13,10 @@ const FEEDBACK: Record<LoginFailure, LoginFeedback> = {
   failed: { tone: 'error', message: 'Não foi possível entrar agora. Tente de novo em instantes.' },
   offline: { tone: 'error', message: 'Sem conexão. Verifique sua internet.' },
   'session-expired': { tone: 'info', message: 'Sua sessão expirou. Entre de novo.' },
+  unavailable: { tone: 'info', message: 'Login com o Google em breve.' },
 };
 
-/** Aviso mostrado na tela de login para cada falha (spec 001, CA10 e CA13–CA15). */
+/** Aviso mostrado na tela de login para cada falha (spec 001, CA10, CA13–CA15 e CA23). */
 export function feedbackFor(failure: LoginFailure): LoginFeedback {
   return FEEDBACK[failure];
 }

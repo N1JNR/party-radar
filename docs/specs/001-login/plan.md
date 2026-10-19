@@ -13,7 +13,8 @@ A tela Entrar e a tela inicial provisória são construídas por completo, mas f
 na Parte 2 a implementação simulada é trocada pela do Supabase sem mexer nas telas.
 
 Para revisar todos os estados sem backend, o gateway simulado lê o parâmetro
-`?simular=` da URL **apenas em desenvolvimento** (`environment.production === false`):
+`?simular=` da URL **apenas em desenvolvimento** (`environment.production === false`). A partir da
+Parte 2a, o parâmetro passa a ser `?simular-login=` (veja a seção da Parte 2a):
 
 | `?simular=`       | O que acontece ao tocar em um botão de login              | Critério           |
 | ----------------- | --------------------------------------------------------- | ------------------ |

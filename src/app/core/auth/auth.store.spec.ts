@@ -7,7 +7,12 @@ const user: AuthUser = { name: 'Ana', username: 'ana', avatarUrl: null };
 
 function setup(gateway: Partial<AuthGateway>): AuthStore {
   TestBed.configureTestingModule({
-    providers: [{ provide: AUTH_GATEWAY, useValue: gateway }],
+    providers: [
+      {
+        provide: AUTH_GATEWAY,
+        useValue: { onSessionEnded: () => () => undefined, ...gateway },
+      },
+    ],
   });
   return TestBed.inject(AuthStore);
 }
@@ -89,6 +94,74 @@ describe('AuthStore', () => {
       await store.signIn('discord');
       await expect(store.signOut()).rejects.toThrow('rede');
       expect(store.isAuthenticated()).toBe(false);
+    });
+  });
+
+  it('guarda um aviso para a tela de login, entregue uma vez', () => {
+    const store = setup({});
+    store.rememberFailure('cancelled');
+    expect(store.consumeFailure()).toBe('cancelled');
+    expect(store.consumeFailure()).toBeNull();
+  });
+
+  describe('whenReady', () => {
+    it('resolve só depois de verificar a sessão salva (CA7)', async () => {
+      let finish: (value: { user: AuthUser | null }) => void = () => undefined;
+      const store = setup({ restoreSession: () => new Promise((resolve) => (finish = resolve)) });
+      let ready = false;
+      void store.whenReady().then(() => (ready = true));
+      const restoring = store.restore();
+      await Promise.resolve();
+      expect(ready).toBe(false);
+      finish({ user });
+      await restoring;
+      await Promise.resolve();
+      expect(ready).toBe(true);
+      expect(store.isAuthenticated()).toBe(true);
+    });
+
+    it('resolve também quando a verificação falha', async () => {
+      const store = setup({ restoreSession: () => Promise.reject(new Error('rede')) });
+      await store.restore();
+      await expect(store.whenReady()).resolves.toBeUndefined();
+      expect(store.status()).toBe('anonymous');
+    });
+  });
+
+  describe('fim da sessão', () => {
+    function setupEnding(): { store: AuthStore; end: () => void; stop: ReturnType<typeof vi.fn> } {
+      let end: () => void = () => undefined;
+      const stop = vi.fn();
+      const store = setup({
+        restoreSession: () => Promise.resolve({ user }),
+        onSessionEnded: (listener) => {
+          end = listener;
+          return stop;
+        },
+      });
+      return { store, end: () => end(), stop };
+    }
+
+    it('quando a sessão termina sozinha, fica anônimo e avisa que expirou (CA10)', async () => {
+      const { store, end } = setupEnding();
+      await store.restore();
+      end();
+      expect(store.status()).toBe('anonymous');
+      expect(store.user()).toBeNull();
+      expect(store.consumeFailure()).toBe('session-expired');
+    });
+
+    it('sem sessão ativa, o aviso de fim é ignorado', () => {
+      const { store, end } = setupEnding();
+      end();
+      expect(store.status()).toBe('checking');
+      expect(store.consumeFailure()).toBeNull();
+    });
+
+    it('para de ouvir quando o app é destruído', () => {
+      const { stop } = setupEnding();
+      TestBed.resetTestingModule();
+      expect(stop).toHaveBeenCalledTimes(1);
     });
   });
 });

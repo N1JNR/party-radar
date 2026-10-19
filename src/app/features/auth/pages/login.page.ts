@@ -1,6 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DOCUMENT,
+  DestroyRef,
   ElementRef,
   Injector,
   afterNextRender,
@@ -8,11 +10,12 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PoIconModule } from '@po-ui/ng-components';
 
 import type { AuthProvider } from '../../../core/auth/auth.gateway';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { returnUrl, safeDestination } from '../domain/auth-return';
 import {
   currentFeedback,
   failOpening,
@@ -35,6 +38,8 @@ import { RadarHeroComponent } from '../ui/radar-hero.component';
 export class LoginPage {
   private readonly store = inject(AuthStore);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly document = inject(DOCUMENT);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
 
@@ -43,6 +48,19 @@ export class LoginPage {
 
   protected readonly busy = computed(() => isBusy(this.screen()));
   protected readonly feedback = computed(() => currentFeedback(this.screen()));
+
+  constructor() {
+    // Ao voltar do provedor pelo botão "voltar", o navegador pode restaurar esta tela da memória
+    // (bfcache) ainda em "Abrindo…". Nesse caso, os botões voltam a funcionar.
+    const view = this.document.defaultView;
+    const restored = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        this.screen.set(initialLoginScreen());
+      }
+    };
+    view?.addEventListener('pageshow', restored);
+    inject(DestroyRef).onDestroy(() => view?.removeEventListener('pageshow', restored));
+  }
 
   protected opening(provider: AuthProvider): boolean {
     return isOpening(this.screen(), provider);
@@ -53,9 +71,13 @@ export class LoginPage {
       return;
     }
     this.screen.update((state) => startOpening(state, provider));
-    const result = await this.store.signIn(provider);
+    // O destino pedido antes do login viaja até a volta do provedor (CA5).
+    const next = this.route.snapshot.queryParamMap.get('next');
+    const origin = this.document.defaultView?.location.origin ?? '';
+    const result = await this.store.signIn(provider, returnUrl(origin, next));
     if (result.ok) {
-      await this.router.navigateByUrl('/inicio');
+      // Login sem sair do app (o simulado): vai direto ao destino seguro.
+      await this.router.navigateByUrl(safeDestination(next));
       return;
     }
     this.screen.set(failOpening(result.failure));

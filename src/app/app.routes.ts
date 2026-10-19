@@ -1,20 +1,22 @@
-import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 
-import { anonymousOnly, authenticatedOnly } from './core/auth/auth.guards';
-import { AuthStore } from './core/auth/auth.store';
+import { anonymousOnly, authenticatedOnly, homeOrLogin } from './core/auth/auth.guards';
 
 export const routes: Routes = [
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: () => (inject(AuthStore).isAuthenticated() ? 'inicio' : 'login'),
-  },
+  // A raiz espera a sessão salva ser verificada e leva à tela inicial ou ao login (CA7).
+  { path: '', pathMatch: 'full', canActivate: [homeOrLogin], children: [] },
   {
     path: 'login',
     title: 'Entrar | Party Radar',
     canActivate: [anonymousOnly],
     loadComponent: () => import('./features/auth/pages/login.page').then((m) => m.LoginPage),
+  },
+  // Volta do Discord: sem guard, espera a sessão e decide o destino (spec 001, Parte 2a).
+  {
+    path: 'auth/retorno',
+    title: 'Entrando | Party Radar',
+    loadComponent: () =>
+      import('./features/auth/pages/auth-return.page').then((m) => m.AuthReturnPage),
   },
   // Telas autenticadas, dentro do layout com o menu (spec 002).
   {

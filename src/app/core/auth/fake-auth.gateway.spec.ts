@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
+import type { AuthGateway } from './auth.gateway';
 import {
   FAKE_AUTH_OPTIONS,
   FAKE_USER,
@@ -11,19 +12,19 @@ import {
 describe('fakeScenarioFrom', () => {
   it.each([
     ['', 'success'],
-    ['?simular=cancelado', 'cancelled'],
-    ['?simular=erro', 'failed'],
-    ['?simular=sem-conexao', 'offline'],
-    ['?simular=sessao-expirada', 'session-expired'],
-    ['?simular=verificando', 'checking'],
-    ['?simular=qualquer-coisa', 'success'],
+    ['?simular-login=cancelado', 'cancelled'],
+    ['?simular-login=erro', 'failed'],
+    ['?simular-login=sem-conexao', 'offline'],
+    ['?simular-login=sessao-expirada', 'session-expired'],
+    ['?simular-login=verificando', 'checking'],
+    ['?simular-login=qualquer-coisa', 'success'],
     ['?outro=1', 'success'],
   ])('em desenvolvimento, "%s" vira %s', (search, expected) => {
     expect(fakeScenarioFrom(search, false)).toBe(expected);
   });
 
   it('em produção ignora a URL', () => {
-    expect(fakeScenarioFrom('?simular=erro', true)).toBe('success');
+    expect(fakeScenarioFrom('?simular-login=erro', true)).toBe('success');
   });
 });
 
@@ -115,5 +116,13 @@ describe('FakeAuthGateway', () => {
     const promise = setup('success').signOut();
     await vi.advanceTimersByTimeAsync(0);
     await expect(promise).resolves.toBeUndefined();
+  });
+
+  it('a sessão simulada só termina pelo Sair: o aviso de fim nunca dispara', () => {
+    const listener = vi.fn();
+    const gateway: AuthGateway = setup('success');
+    const stop = gateway.onSessionEnded(listener);
+    expect(() => stop()).not.toThrow();
+    expect(listener).not.toHaveBeenCalled();
   });
 });

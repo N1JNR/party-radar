@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   computed,
+  effect,
   inject,
   signal,
   viewChild,
@@ -50,12 +51,25 @@ export class AppShellComponent {
   private readonly menuButton = viewChild.required<ElementRef<HTMLButtonElement>>('menuButton');
 
   protected readonly menuOpen = signal(false);
+  /** A própria pessoa tocou em Sair: a navegação já está a caminho. */
+  private leaving = false;
   protected readonly menus = computed(() =>
     buildAppMenu(this.home.menuSquads(), {
       soon: (feature) => this.soon(feature),
       signOut: () => void this.signOut(),
     }),
   );
+
+  constructor() {
+    // A sessão terminou sem a pessoa tocar em Sair (renovação falhou, saiu em outra aba): as telas
+    // com dados saem de cena e o login avisa que a sessão expirou (spec 001, CA10).
+    effect(() => {
+      if (this.auth.status() === 'anonymous' && !this.leaving) {
+        this.home.reset();
+        void this.router.navigateByUrl('/login', { replaceUrl: true });
+      }
+    });
+  }
 
   protected openMenu(): void {
     if (!this.menu().mobileOpened) {
@@ -96,6 +110,7 @@ export class AppShellComponent {
   }
 
   private async signOut(): Promise<void> {
+    this.leaving = true;
     try {
       await this.auth.signOut();
     } catch {

@@ -57,7 +57,16 @@ PRs agrupados de atualização de npm e GitHub Actions (versão maior de Angular
 ## Configuração
 
 - **Front:** preencha `src/environments/environment*.ts` com a URL e a publishable key (`sb_publishable_…`) do Supabase.
-- **Segredos** (worker e Edge Functions): copie `.env.example` para `.env`. O `.env` não vai para o Git.
+- **Segredos** (Supabase local, worker e Edge Functions): copie `.env.example` para `.env`. O `.env` não vai para o Git.
+
+### Login com o Discord (desenvolvimento)
+
+1. Crie um aplicativo no [Discord Developer Portal](https://discord.com/developers/applications).
+2. Em **OAuth2 > Redirects**, adicione `http://127.0.0.1:54321/auth/v1/callback`.
+3. Copie o **Client ID** e o **Client Secret** para `DISCORD_CLIENT_ID` e `DISCORD_CLIENT_SECRET` no `.env`.
+4. Reinicie o Supabase local: `npx supabase stop` e `npm run db:start`.
+
+Sem as chaves, o Supabase sobe normalmente; só o botão "Continuar com Discord" não conclui o login.
 
 ## Estrutura
 

@@ -31,7 +31,7 @@ Apague as seções que não se aplicam e os comentários como este.
 
 <!--
 Passo a passo para quem revisa. Ex.:
-1. npm start e abrir http://localhost:4200/login?simular=erro
+1. npm start e abrir http://localhost:4200/login?simular-login=erro
 2. Tocar em "Continuar com o Google"
 3. Ver o aviso abaixo dos botões
 -->
