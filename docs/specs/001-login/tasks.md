@@ -52,7 +52,15 @@ retorno e chaves no `.env`). As tarefas T13 a T21 não dependem disso.
     tem os tokens do Discord; recarregar mantém o login; Sair volta ao login e o voltar do
     navegador não mostra telas com dados; cancelar no Discord mostra "Login cancelado". Prints
     08 a 11 em `prints/`.
-- [ ] T23 — `/code-review`, `/security-review` (toca login e RLS), `npm run verify:all` e relatório final
+- [x] T23 — `/code-review`, `/security-review` (toca login e RLS), `npm run verify:all` e relatório final
+  - `/code-review` (high) em 2026-10-19: 9 achados. Corrigidos 3 com testes: cadastro por e-mail e
+    senha desligado no Supabase, botões travados ao voltar do Discord pelo navegador, e aviso de
+    falha guardado para quem já estava logado. `/security-review`: nenhuma vulnerabilidade de
+    confiança alta.
+  - Ficam para depois: pacote inicial com o `supabase-js` passa do limite de aviso (1,27 MB, limite
+    1,2 MB; erro só em 1,5 MB), a decidir entre carregar o cliente sob demanda ou subir o limite; o
+    gateway simulado vai no build de produção (inalcançável); falha ao ler o perfil deixa a sessão
+    guardada; Sair em outra aba mostra "sessão expirou"; verificadores PKCE antigos no navegador.
 
 ### Parte 2b — Google
 
