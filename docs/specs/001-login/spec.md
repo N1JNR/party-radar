@@ -1,26 +1,25 @@
-# 001 — Login com Discord e Google
+# 001 — Login com o Discord
 
-**Status:** revisão 3 aprovada em 2026-10-19 (a Parte 2 vira duas entregas, Discord primeiro e
-Google depois). Revisão 2 aprovada em 2026-10-16.
+**Status:** revisão 4 aprovada em 2026-10-19: o login é só com o Discord (o Google sai; a Steam
+entra como conta conectada na spec 003). Revisões anteriores: 3 (Parte 2 em duas entregas) e 2.
 **Relacionada a:** `docs/plano.md` (escopo do MVP, item 1) · `002-home` (para onde o login leva).
 Prepara a spec da Steam (dados reais no card) e a de amigos.
 
 ## Problema
 
 Para ver quem do grupo está jogando, a pessoa precisa ter uma conta no Party Radar. Criar
-mais uma senha afasta gente; quem joga já tem Discord ou Google e quer entrar com um toque.
+mais uma senha afasta gente; quem joga já tem Discord e quer entrar com um toque.
 
 ## Comportamento esperado
 
 - Quem abre o app sem estar logado vê a tela **Entrar**, com o nome e a proposta do app e
-  dois botões: **Continuar com Discord** e **Continuar com o Google**.
-- Ao tocar em um botão, a pessoa vai para a tela de autorização do Discord ou do Google e,
-  ao autorizar, volta para o app já logada.
+  o botão **Continuar com Discord**.
+- Ao tocar no botão, a pessoa vai para a tela de autorização do Discord e, ao autorizar, volta
+  para o app já logada.
 - No primeiro acesso, o app cria um **perfil básico** com nome, foto e um **@usuário**
   gerado a partir do nome. A pessoa não precisa preencher nada para começar.
 - O perfil básico (nome, foto e @usuário) é visível para **qualquer pessoa logada**, para
   que amigos possam se encontrar pela busca por nome ou @usuário (a busca em si é da `003`).
-- Quem entra pelo Discord e pelo Google com o **mesmo e-mail** cai na **mesma conta**.
 - Depois de entrar, a pessoa cai na tela inicial do app, o **Meu card** (spec 002). Se ela tinha aberto um link específico antes de entrar
   (por exemplo, um convite de amigo no futuro), volta para esse link.
 - A sessão continua ativa ao fechar e reabrir o navegador, e se renova sozinha enquanto
@@ -37,11 +36,10 @@ Cada parte tem branch e PR próprios; o `plan.md` e o `tasks.md` seguem a mesma 
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
 | **1 — Layout**   | Tela Entrar e tela inicial provisória com todos os estados visuais (padrão, carregando, cancelado, erro, sem conexão, sessão expirada), ligadas a um serviço de login **simulado**. Sem Supabase Auth. | CA1 (visual), CA11, CA12, CA13–CA15 (visual), CA19, CA20 |
 | **2a — Discord** | Login real com o Discord pelo Supabase, tabela de perfil com RLS, @usuário, sessão que sobrevive ao recarregar, proteção de rotas, Sair e o fim do login simulado no build de produção.                | CA2, CA4–CA10, CA13–CA18, CA22, CA23                     |
-| **2b — Google**  | Login real com o Google e a mesma conta para o mesmo e-mail.                                                                                                                                           | CA1, CA3, CA21                                           |
+| **2b — Google**  | ~~Login real com o Google~~ — **cancelada na revisão 4**: o login é só com o Discord.                                                                                                                  | —                                                        |
 
-A Parte 1 não depende das credenciais do Discord e do Google; a 2a depende das do Discord e a 2b,
-das do Google. Enquanto a 2b não sai, o botão do Google continua na tela e, ao ser tocado, mostra
-"Login com o Google em breve." sem sair do app.
+A Parte 1 não depende das credenciais do Discord; a 2a depende delas. A revisão 4 tira o botão do
+Google da tela Entrar.
 
 ### Pré-requisitos da Parte 2a (fora do código)
 
@@ -71,12 +69,10 @@ Feitos pelo dono do projeto, com a conta dele; o agente não cria contas nem man
 **Entrar**
 
 - **CA1** — Dado que não estou logado, quando abro qualquer endereço do app, então vejo a
-  tela Entrar com os botões "Continuar com Discord" e "Continuar com o Google", do mesmo
-  tamanho e com o mesmo destaque visual.
+  tela Entrar com o botão "Continuar com Discord".
 - **CA2** — Dado que estou na tela Entrar, quando toco em "Continuar com Discord" e autorizo
   no Discord, então volto ao app logado e vejo a tela inicial com o meu nome do Discord.
-- **CA3** — Dado que estou na tela Entrar, quando toco em "Continuar com o Google" e autorizo
-  no Google, então volto ao app logado e vejo a tela inicial com o meu nome do Google.
+- ~~**CA3**~~ — Removido na revisão 4 (login com o Google).
 - **CA4** — Dado que é o meu primeiro login, quando volto ao app, então existe um perfil meu
   com nome, foto do provedor e um @usuário único gerado a partir do nome (ex.: `@ana`; se
   já existir, `@ana2`); se o provedor não enviar foto, vejo um avatar com a inicial do meu nome.
@@ -96,16 +92,14 @@ Feitos pelo dono do projeto, com a conta dele; o agente não cria contas nem man
   tela inicial.
 - **CA10** — Dado que minha sessão expirou e não pôde ser renovada, quando uso o app, então
   volto para a tela Entrar com o aviso "Sua sessão expirou. Entre de novo."
-- **CA21** — Dado que já entrei com o Discord usando um e-mail, quando entro com o Google
-  usando o mesmo e-mail, então caio na mesma conta e no mesmo perfil.
+- ~~**CA21**~~ — Removido na revisão 4 (mesma conta no Discord e no Google).
 
 **Carregando, erro e vazio**
 
 - **CA11 (carregando)** — Dado que abri o app, enquanto ele verifica se já existe sessão,
   então vejo um indicador de carregamento e não vejo a tela Entrar piscar.
 - **CA12 (carregando)** — Dado que toquei em um botão de login, enquanto o app me
-  redireciona, então os dois botões ficam desabilitados e o botão tocado mostra
-  "Abrindo Discord…" ou "Abrindo Google…".
+  redireciona, então o botão fica desabilitado e mostra "Abrindo Discord…".
 - **CA13 (erro)** — Dado que cancelei ou neguei a autorização no provedor, quando volto ao
   app, então vejo a tela Entrar com o aviso "Login cancelado. Tente de novo quando quiser."
 - **CA14 (erro)** — Dado que o login falhou por erro do provedor ou do servidor, quando
@@ -118,15 +112,14 @@ Feitos pelo dono do projeto, com a conta dele; o agente não cria contas nem man
 
 **Privacidade e segurança**
 
-- **CA17** — Dado que estou logado, então o navegador não guarda os tokens do Discord ou do
-  Google; só guarda a sessão do próprio Party Radar.
+- **CA17** — Dado que estou logado, então o navegador não guarda os tokens do Discord; só
+  guarda a sessão do próprio Party Radar.
 - **CA18** — Dado dois usuários logados A e B, quando A consulta o perfil de B, então vê só
   nome, foto e @usuário (nunca o e-mail); quando A tenta alterar ou apagar o perfil de B, a
   operação é recusada; quem não está logado não lê nem altera nenhum perfil.
 - **CA22 (segurança)** — Dado o build de produção, então não existe login simulado: só entra
   quem autorizou no provedor; o `?simular-login=` só funciona em desenvolvimento.
-- **CA23** — Dado que a Parte 2b ainda não saiu, quando toco em "Continuar com o Google", então
-  vejo "Login com o Google em breve." e continuo na tela Entrar.
+- ~~**CA23**~~ — Removido na revisão 4 (aviso "Login com o Google em breve.").
 
 **Acessibilidade e mobile**
 
@@ -140,19 +133,14 @@ Feitos pelo dono do projeto, com a conta dele; o agente não cria contas nem man
 ## Telas
 
 - **Entrar:** nome "Party Radar" em Chakra Petch (logo provisório), frase de proposta
-  ("Veja quem do seu grupo está jogando agora"), botão do Discord e botão do Google com o
-  mesmo tamanho e destaque (Discord primeiro), aviso de erro logo abaixo dos botões quando houver, para os botões não mudarem de lugar
+  ("Veja quem do seu grupo está jogando agora"), botão do Discord, aviso de erro logo abaixo dos botões quando houver, para os botões não mudarem de lugar
   (decidido na conferência visual da Parte 1).
 - **Tela inicial:** o Meu card da spec 002, com o Sair no menu.
 
-### Botões dos provedores (diretrizes de marca)
+### Botão do Discord (diretrizes de marca)
 
-Os dois botões seguem as regras de marca de cada empresa, e não o botão primário do PO UI:
+O botão segue as regras de marca do Discord, e não o botão primário do PO UI:
 
-- **Google** ([diretrizes](https://developers.google.com/identity/branding-guidelines)):
-  versão escura — fundo `#131314`, borda interna de 1 px `#8E918F`, texto `#E3E3E3` em
-  Google Sans Medium 14/20, logo "G" colorido oficial sem alterações. Texto localizado de
-  "Continue with Google". Precisa ter tamanho e peso visual iguais aos de outras opções.
 - **Discord** ([marca](https://discord.com/branding)): fundo blurple `#5865F2`, logo
   branco oficial sem alterações, texto branco (contraste 4,6:1). Não imitar a aparência
   do Discord no resto do app.
@@ -161,7 +149,6 @@ Artboard no canvas "Party Radar — Telas do MVP": link a adicionar.
 
 ## Decisões
 
-- [x] Mesmo e-mail no Discord e no Google → **mesma conta**.
 - [x] @usuário → **gerado automaticamente** no primeiro login; editável na `006-perfil`.
 - [x] Perfil básico (nome, foto, @usuário) → **visível para qualquer pessoa logada**, como
       na busca do Instagram; o e-mail nunca é exposto a outros usuários.
@@ -170,3 +157,5 @@ Artboard no canvas "Party Radar — Telas do MVP": link a adicionar.
 - [x] Termos de uso → **fora do MVP** até existirem os textos.
 - [x] Entrega → **duas partes**: layout (Parte 1) e funcionalidade (Parte 2).
 - [x] Parte 2 → **duas entregas**: Discord (2a) e depois Google (2b) (aprovado em 2026-10-19).
+- [x] Revisão 4 → **só Discord**: o Google sai do login e a Parte 2b é cancelada; a Steam entra
+      como conta conectada na spec 003 (aprovado em 2026-10-19).
