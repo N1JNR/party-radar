@@ -26,7 +26,14 @@ Marque `[x]` só depois que os testes da tarefa passarem.
   - Para decidir: botão próprio da gaveta (o do `po-menu` é uma `div` sem teclado), corte do
     `po-menu` em 1201 px e não 1200, item atual sem `aria-current`, e os cenários de `?simular=`
     da home somem no login simulado (a sessão não sobrevive ao recarregar).
-- [ ] T13 — `/code-review`, revisar diff, rodar `npm run verify` e escrever o relatório final
+- [x] T13 — `/code-review`, revisar diff, rodar `npm run verify` e escrever o relatório final
+  - `/code-review` (high) em 2026-10-19: 10 achados. Corrigidos 6 (dados de quem saiu, "Nenhum
+    squad ainda" ao carregar, menu recriado à toa, parceria por nome, resposta sobre dados
+    recarregados, gaveta ao redimensionar), com testes.
+  - Ficam para depois: o card lê as frases por um `computed` porque, na suíte inteira, a constante
+    chegava `undefined` no construtor (causa não achada; `import type` não resolveu); o aviso
+    "Em breve" montado em dois lugares; estilos de painel repetidos em cinco componentes; e o
+    "há X min" que não anda com a página aberta (resolver junto com o Realtime, na integração).
 
 ## Integração
 
