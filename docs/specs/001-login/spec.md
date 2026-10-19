@@ -124,7 +124,7 @@ Feitos pelo dono do projeto, com a conta dele; o agente não cria contas nem man
   nome, foto e @usuário (nunca o e-mail); quando A tenta alterar ou apagar o perfil de B, a
   operação é recusada; quem não está logado não lê nem altera nenhum perfil.
 - **CA22 (segurança)** — Dado o build de produção, então não existe login simulado: só entra
-  quem autorizou no provedor; o `?simular=` só funciona em desenvolvimento.
+  quem autorizou no provedor; o `?simular-login=` só funciona em desenvolvimento.
 - **CA23** — Dado que a Parte 2b ainda não saiu, quando toco em "Continuar com o Google", então
   vejo "Login com o Google em breve." e continuo na tela Entrar.
 

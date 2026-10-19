@@ -5,7 +5,8 @@ import { AuthGateway, AuthProvider, AuthUser, RestoredSession, SignInResult } fr
 
 /**
  * Login simulado da Parte 1 da spec 001. Não fala com nenhum servidor.
- * Em desenvolvimento, `?simular=` na URL escolhe o cenário, para revisar cada estado da tela.
+ * Em desenvolvimento, `?simular-login=` na URL liga este gateway (veja `auth-gateway.provider.ts`)
+ * e escolhe o cenário, para revisar cada estado da tela.
  */
 export type FakeScenario =
   'success' | 'cancelled' | 'failed' | 'offline' | 'session-expired' | 'checking';
@@ -18,12 +19,15 @@ const SCENARIO_BY_PARAM: Record<string, FakeScenario> = {
   verificando: 'checking',
 };
 
+/** Parâmetro da URL que liga o login simulado em desenvolvimento (spec 001, CA22). */
+export const FAKE_LOGIN_PARAM = 'simular-login';
+
 /** Cenário a partir da query string. Em produção é sempre `success`. */
 export function fakeScenarioFrom(search: string, production: boolean): FakeScenario {
   if (production) {
     return 'success';
   }
-  const param = new URLSearchParams(search).get('simular') ?? '';
+  const param = new URLSearchParams(search).get(FAKE_LOGIN_PARAM) ?? '';
   return SCENARIO_BY_PARAM[param] ?? 'success';
 }
 

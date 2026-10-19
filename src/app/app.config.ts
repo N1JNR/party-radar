@@ -10,8 +10,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
-import { AUTH_GATEWAY } from './core/auth/auth.gateway';
-import { FakeAuthGateway } from './core/auth/fake-auth.gateway';
+import { provideAuthGateway } from './core/auth/auth-gateway.provider';
 import { initTheme } from './core/theme/theme.initializer';
 import { FakeHomeSource } from './features/home/data/fake-home.source';
 import { HOME_DATA_SOURCE } from './features/home/data/home.source';
@@ -26,8 +25,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideClientHydration(withEventReplay()),
     provideAppInitializer(initTheme),
-    // Login simulado (spec 001, Parte 1). A Parte 2 troca pelo gateway do Supabase.
-    { provide: AUTH_GATEWAY, useClass: FakeAuthGateway },
+    // Login com o Discord pelo Supabase; o simulado só em desenvolvimento, com ?simular-login=.
+    ...provideAuthGateway(),
     // Home simulada (spec 002, layout). A integração troca pela fonte do Supabase.
     { provide: HOME_DATA_SOURCE, useClass: FakeHomeSource },
   ],

@@ -12,19 +12,19 @@ import {
 describe('fakeScenarioFrom', () => {
   it.each([
     ['', 'success'],
-    ['?simular=cancelado', 'cancelled'],
-    ['?simular=erro', 'failed'],
-    ['?simular=sem-conexao', 'offline'],
-    ['?simular=sessao-expirada', 'session-expired'],
-    ['?simular=verificando', 'checking'],
-    ['?simular=qualquer-coisa', 'success'],
+    ['?simular-login=cancelado', 'cancelled'],
+    ['?simular-login=erro', 'failed'],
+    ['?simular-login=sem-conexao', 'offline'],
+    ['?simular-login=sessao-expirada', 'session-expired'],
+    ['?simular-login=verificando', 'checking'],
+    ['?simular-login=qualquer-coisa', 'success'],
     ['?outro=1', 'success'],
   ])('em desenvolvimento, "%s" vira %s', (search, expected) => {
     expect(fakeScenarioFrom(search, false)).toBe(expected);
   });
 
   it('em produção ignora a URL', () => {
-    expect(fakeScenarioFrom('?simular=erro', true)).toBe('success');
+    expect(fakeScenarioFrom('?simular-login=erro', true)).toBe('success');
   });
 });
 
