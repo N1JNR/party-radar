@@ -72,13 +72,14 @@ select is(
 
 select hasnt_column('public', 'profiles', 'email', 'o perfil não guarda e-mail');
 
--- CA18: Ana logada.
+-- CA18: Ana logada. O total vem do banco, que pode ter perfis de quem já entrou no ambiente local.
+select set_config('teste.total_perfis', (select count(*)::text from public.profiles), true);
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub": "00000000-0000-0000-0000-00000000000a", "role": "authenticated"}', true);
 
 select is(
   (select count(*)::integer from public.profiles),
-  7,
+  current_setting('teste.total_perfis')::integer,
   'quem está logado vê todos os perfis'
 );
 

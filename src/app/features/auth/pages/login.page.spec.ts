@@ -141,6 +141,20 @@ describe('LoginPage', () => {
     expect(navigate).toHaveBeenCalledWith('/amigos');
   });
 
+  it('voltar do Discord pelo botão do navegador libera os botões (bfcache)', async () => {
+    const { fixture, element } = await render();
+    buttons(element)[0].click();
+    fixture.detectChanges();
+    expect(buttons(element).every((button) => button.disabled)).toBe(true);
+    window.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: false }));
+    fixture.detectChanges();
+    expect(buttons(element)[0].disabled).toBe(true);
+    window.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: true }));
+    fixture.detectChanges();
+    expect(buttons(element).every((button) => !button.disabled)).toBe(true);
+    expect(buttons(element)[0].textContent?.trim()).toBe('Continuar com Discord');
+  });
+
   it('com o Google ainda "em breve", mostra o aviso e continua na tela (CA23)', async () => {
     const { fixture, element } = await render();
     buttons(element)[1].click();

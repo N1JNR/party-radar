@@ -27,8 +27,10 @@ export class AuthReturnPage {
   private async finish(): Promise<void> {
     await this.store.whenReady();
     const query = this.route.snapshot.queryParamMap;
-    const failure =
-      returnFailure(query.get('error')) ?? (this.store.isAuthenticated() ? null : 'failed');
+    // Já logado (ex.: uma volta antiga reaberta pelo histórico): segue para o destino, sem aviso.
+    const failure = this.store.isAuthenticated()
+      ? null
+      : (returnFailure(query.get('error')) ?? 'failed');
     if (failure) {
       this.store.rememberFailure(failure);
       await this.router.navigateByUrl('/login', { replaceUrl: true });

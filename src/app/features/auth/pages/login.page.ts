@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DOCUMENT,
+  DestroyRef,
   ElementRef,
   Injector,
   afterNextRender,
@@ -47,6 +48,19 @@ export class LoginPage {
 
   protected readonly busy = computed(() => isBusy(this.screen()));
   protected readonly feedback = computed(() => currentFeedback(this.screen()));
+
+  constructor() {
+    // Ao voltar do provedor pelo botão "voltar", o navegador pode restaurar esta tela da memória
+    // (bfcache) ainda em "Abrindo…". Nesse caso, os botões voltam a funcionar.
+    const view = this.document.defaultView;
+    const restored = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        this.screen.set(initialLoginScreen());
+      }
+    };
+    view?.addEventListener('pageshow', restored);
+    inject(DestroyRef).onDestroy(() => view?.removeEventListener('pageshow', restored));
+  }
 
   protected opening(provider: AuthProvider): boolean {
     return isOpening(this.screen(), provider);

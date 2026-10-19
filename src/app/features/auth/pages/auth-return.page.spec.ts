@@ -87,6 +87,12 @@ describe('AuthReturnPage', () => {
     expect(store.consumeFailure()).toBe('failed');
   });
 
+  it('já logado, uma volta antiga com erro segue para o destino, sem aviso guardado', async () => {
+    const { navigate, store } = await render({ error: 'access_denied', next: '/inicio' }, jorge);
+    expect(navigate).toHaveBeenCalledWith('/inicio', { replaceUrl: true });
+    expect(store.consumeFailure()).toBeNull();
+  });
+
   it('sem erro e sem sessão (a troca do código falhou): volta ao login com falha (CA14)', async () => {
     const { navigate, store } = await render({ code: 'vencido' }, null);
     expect(navigate).toHaveBeenCalledWith('/login', { replaceUrl: true });
