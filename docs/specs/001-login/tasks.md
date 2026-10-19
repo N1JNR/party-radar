@@ -71,4 +71,4 @@ Cancelada na revisão 4 da spec: o login é só com o Discord.
 - [x] T24 — Spec 001 revisão 4 e tarefas (CA1, CA3, CA21 e CA23 revistos)
 - [x] T25 — Tirar o Google do app: botão, tipos, aviso "em breve", logo, fonte Google Sans e testes (CA1, CA12, CA17)
 - [x] T26 — Tirar o Google da documentação: `AGENTS.md`, `DESIGN.md`, `README` de `public/brands/`, `.env.example` e `docs/plano.md`
-- [ ] T27 — Conferência visual do login em 390 e 1280 px, `/code-review` e `npm run verify`
+- [x] T27 — Conferência visual do login em 390 e 1280 px, `/code-review` e `npm run verify`
