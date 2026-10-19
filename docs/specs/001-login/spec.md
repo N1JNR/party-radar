@@ -1,7 +1,9 @@
 # 001 — Login com Discord e Google
 
-**Status:** aprovada em 2026-10-16 (revisão 2: decisões registradas e entrega em duas partes)
-**Relacionada a:** `docs/plano.md` (escopo do MVP, item 1). Prepara `002-conectar-contas` e `003-amigos`.
+**Status:** revisão 3 aguardando aprovação (2026-10-19): a Parte 2 vira duas entregas, Discord
+primeiro e Google depois. Revisão 2 aprovada em 2026-10-16.
+**Relacionada a:** `docs/plano.md` (escopo do MVP, item 1) · `002-home` (para onde o login leva).
+Prepara a spec da Steam (dados reais no card) e a de amigos.
 
 ## Problema
 
@@ -19,8 +21,7 @@ mais uma senha afasta gente; quem joga já tem Discord ou Google e quer entrar c
 - O perfil básico (nome, foto e @usuário) é visível para **qualquer pessoa logada**, para
   que amigos possam se encontrar pela busca por nome ou @usuário (a busca em si é da `003`).
 - Quem entra pelo Discord e pelo Google com o **mesmo e-mail** cai na **mesma conta**.
-- Depois de entrar, a pessoa cai na tela inicial do app (por enquanto, um Radar provisório
-  que diz "Olá, {nome}"). Se ela tinha aberto um link específico antes de entrar
+- Depois de entrar, a pessoa cai na tela inicial do app, o **Meu card** (spec 002). Se ela tinha aberto um link específico antes de entrar
   (por exemplo, um convite de amigo no futuro), volta para esse link.
 - A sessão continua ativa ao fechar e reabrir o navegador, e se renova sozinha enquanto
   a pessoa usa o app.
@@ -32,17 +33,32 @@ mais uma senha afasta gente; quem joga já tem Discord ou Google e quer entrar c
 
 Cada parte tem branch e PR próprios; o `plan.md` e o `tasks.md` seguem a mesma divisão.
 
-| Parte                  | O que entrega                                                                                                                                                                                          | Critérios                                                |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
-| **1 — Layout**         | Tela Entrar e tela inicial provisória com todos os estados visuais (padrão, carregando, cancelado, erro, sem conexão, sessão expirada), ligadas a um serviço de login **simulado**. Sem Supabase Auth. | CA1 (visual), CA11, CA12, CA13–CA15 (visual), CA19, CA20 |
-| **2 — Funcionalidade** | Login real com Discord e Google pelo Supabase, tabela de perfil com RLS, @usuário, sessão, proteção de rotas e Sair.                                                                                   | CA1–CA10, CA13–CA18, CA21                                |
+| Parte            | O que entrega                                                                                                                                                                                          | Critérios                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| **1 — Layout**   | Tela Entrar e tela inicial provisória com todos os estados visuais (padrão, carregando, cancelado, erro, sem conexão, sessão expirada), ligadas a um serviço de login **simulado**. Sem Supabase Auth. | CA1 (visual), CA11, CA12, CA13–CA15 (visual), CA19, CA20 |
+| **2a — Discord** | Login real com o Discord pelo Supabase, tabela de perfil com RLS, @usuário, sessão que sobrevive ao recarregar, proteção de rotas, Sair e o fim do login simulado no build de produção.                | CA2, CA4–CA10, CA13–CA18, CA22, CA23                     |
+| **2b — Google**  | Login real com o Google e a mesma conta para o mesmo e-mail.                                                                                                                                           | CA1, CA3, CA21                                           |
 
-A Parte 1 não depende das credenciais do Discord e do Google; a Parte 2 depende.
+A Parte 1 não depende das credenciais do Discord e do Google; a 2a depende das do Discord e a 2b,
+das do Google. Enquanto a 2b não sai, o botão do Google continua na tela e, ao ser tocado, mostra
+"Login com o Google em breve." sem sair do app.
+
+### Pré-requisitos da Parte 2a (fora do código)
+
+Feitos pelo dono do projeto, com a conta dele; o agente não cria contas nem manuseia segredos:
+
+1. Criar um aplicativo no [Discord Developer Portal](https://discord.com/developers/applications)
+   (nome "Party Radar").
+2. Em **OAuth2 > Redirects**, cadastrar o retorno do Supabase local:
+   `http://127.0.0.1:54321/auth/v1/callback` (e, quando houver projeto na nuvem,
+   `https://<projeto>.supabase.co/auth/v1/callback`).
+3. Copiar o **Client ID** e o **Client Secret** para o `.env` da raiz do projeto
+   (`DISCORD_CLIENT_ID` e `DISCORD_CLIENT_SECRET`, já previstos no `.env.example`).
 
 ## Fora do escopo
 
 - Login com e-mail e senha, link mágico, telefone ou Steam.
-- Conectar Discord (servidores e presença) e Steam ao perfil — isso é a `002-conectar-contas`.
+- Conectar Discord (servidores e presença) e Steam ao perfil — isso é a spec da Steam (a próxima).
 - Buscar pessoas por nome ou @usuário — isso é a `003-amigos`.
 - Editar @usuário, nome ou foto — fica para `006-perfil`.
 - Aviso de termos de uso e política de privacidade (entra quando houver os textos).
@@ -107,6 +123,10 @@ A Parte 1 não depende das credenciais do Discord e do Google; a Parte 2 depende
 - **CA18** — Dado dois usuários logados A e B, quando A consulta o perfil de B, então vê só
   nome, foto e @usuário (nunca o e-mail); quando A tenta alterar ou apagar o perfil de B, a
   operação é recusada; quem não está logado não lê nem altera nenhum perfil.
+- **CA22 (segurança)** — Dado o build de produção, então não existe login simulado: só entra
+  quem autorizou no provedor; o `?simular=` só funciona em desenvolvimento.
+- **CA23** — Dado que a Parte 2b ainda não saiu, quando toco em "Continuar com o Google", então
+  vejo "Login com o Google em breve." e continuo na tela Entrar.
 
 **Acessibilidade e mobile**
 
@@ -123,8 +143,7 @@ A Parte 1 não depende das credenciais do Discord e do Google; a Parte 2 depende
   ("Veja quem do seu grupo está jogando agora"), botão do Discord e botão do Google com o
   mesmo tamanho e destaque (Discord primeiro), aviso de erro logo abaixo dos botões quando houver, para os botões não mudarem de lugar
   (decidido na conferência visual da Parte 1).
-- **Tela inicial provisória:** "Olá, {nome}", avatar e botão Sair. Será substituída pelo
-  Radar na `004-radar`.
+- **Tela inicial:** o Meu card da spec 002, com o Sair no menu.
 
 ### Botões dos provedores (diretrizes de marca)
 
@@ -150,3 +169,4 @@ Artboard no canvas "Party Radar — Telas do MVP": link a adicionar.
       ficam para a `002`.
 - [x] Termos de uso → **fora do MVP** até existirem os textos.
 - [x] Entrega → **duas partes**: layout (Parte 1) e funcionalidade (Parte 2).
+- [ ] Parte 2 → **duas entregas**: Discord (2a) e depois Google (2b). _Aguardando aprovação._

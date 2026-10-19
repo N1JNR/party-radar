@@ -22,7 +22,8 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 ## Parte 2 — Funcionalidade
 
-Será detalhada no `plan.md` antes de começar, depois do merge da Parte 1.
+Dividida em **2a — Discord** e **2b — Google** (spec, revisão 3). Cada uma será detalhada no
+`plan.md` e aqui antes de começar, depois da aprovação da spec.
 
 Pendências que a Parte 2 precisa resolver (vindas da revisão da Parte 1):
 
