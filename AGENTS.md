@@ -9,7 +9,7 @@ Web app para grupos de amigos gamers verem quem está jogando agora, chamarem pa
 e receberem um retrospecto mensal (Wrapped).
 
 - **Front:** Angular 21 (standalone, signals, SSR nas rotas públicas) + PO UI com tema próprio.
-- **Back:** Supabase (Auth com Discord e Google, Postgres + RLS, Realtime, Edge Functions, pg_cron).
+- **Back:** Supabase (Auth com Discord, Postgres + RLS, Realtime, Edge Functions, pg_cron).
 - **Worker:** bot do Discord em Node (presença e chamados), a criar em `apps/discord-worker`.
 - **Futuro:** empacotamento mobile com Capacitor. Escreva código que não dependa só do navegador.
 
@@ -135,7 +135,7 @@ src/app/
 - Depois de cada migration, rode `npm run db:types` e commite `database.types.ts` junto.
 - A secret key do Supabase (`sb_secret_…`, antiga `service_role`) **nunca** vai para o front. Só Edge Functions e o worker a usam.
 - Segredos só em `.env` (ignorado pelo Git) e nas variáveis do Supabase. Mantenha `.env.example` atualizado.
-- Tokens de terceiros (Discord, Google, Steam) são tratados no servidor; não os grave no `localStorage`.
+- Tokens de terceiros (Discord, Steam) são tratados no servidor; não os grave no `localStorage`.
   Atenção: a sessão do Supabase traz `provider_token` e `provider_refresh_token` após o login
   OAuth, e eles não podem ficar persistidos no navegador.
 
