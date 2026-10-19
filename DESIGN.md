@@ -98,23 +98,21 @@ texto (3,7:1) e `mid-40` como texto (4,1:1).
 - Logo: **provisório** — o nome "Party Radar" em Chakra Petch 700. O logo definitivo é
   pergunta em aberto (seção 8).
 - Ícones: os do próprio PO UI (`p-icon`). Não misture bibliotecas de ícones.
-- Logos de Discord, Google e Steam só nos botões e cards de conexão, seguindo as regras de
-  marca de cada empresa (abaixo). Nunca recolorir, distorcer ou redesenhar esses logos.
+- Logos de Discord e Steam só nos botões e cards de conexão, seguindo as regras de marca de
+  cada empresa (abaixo). Nunca recolorir, distorcer ou redesenhar esses logos.
 
-### Botões de login de terceiros
+### Botão de login do Discord
 
-Seguem as regras de marca dos provedores, **não** o botão primário do PO UI. Ficam com o
-mesmo tamanho e peso visual entre si (exigência do Google), Discord primeiro.
+Segue as regras de marca do Discord, **não** o botão primário do PO UI. É a única forma de
+entrar no app (spec 001, revisão 4).
 
-| Botão                  | Fundo     | Borda                  | Texto                                   | Logo                    | Contraste |
-| ---------------------- | --------- | ---------------------- | --------------------------------------- | ----------------------- | --------- |
-| Continuar com Discord  | `#5865F2` | —                      | `#FFFFFF`, Manrope 600                  | símbolo oficial, branco | 4,6:1     |
-| Continuar com o Google | `#131314` | 1 px interna `#8E918F` | `#E3E3E3`, **Google Sans Medium 14/20** | "G" oficial colorido    | 14,5:1    |
+| Botão                 | Fundo     | Borda | Texto                  | Logo                    | Contraste |
+| --------------------- | --------- | ----- | ---------------------- | ----------------------- | --------- |
+| Continuar com Discord | `#5865F2` | —     | `#FFFFFF`, Manrope 600 | símbolo oficial, branco | 4,6:1     |
 
-- Textos: o Google aceita só "Sign in / Sign up / Continue with Google" e suas traduções.
-- Os logos vêm dos pacotes oficiais (Google: [diretrizes](https://developers.google.com/identity/branding-guidelines);
-  Discord: [marca](https://discord.com/branding)) e ficam em `public/brands/`.
-- Esses hex existem só no componente dos botões de login; é a única exceção à regra de
+- O logo vem do pacote oficial ([marca do Discord](https://discord.com/branding)) e fica em
+  `public/brands/`.
+- Esses hex existem só no componente do botão de login; é a única exceção à regra de
   "sem hex solto" (seção 6), porque as cores pertencem às marcas, não ao tema.
 
 ### Referência visual
@@ -216,7 +214,7 @@ lateral (`po-menu`) fica fixo acima de 1200 px e vira gaveta até 1200 px. Prefi
 
 - **Anel de radar:** anel de 2–3 px em volta do avatar, na cor do estado, sempre com o texto
   do estado ao lado ("Jogando Valorant"). Offline = sem anel.
-- **Botões de login de terceiros:** Discord e Google, conforme a seção 1.
+- **Botão de login do Discord:** conforme a seção 1.
 - **Card do amigo no Radar:** avatar, nome, estado e jogo atual, ação "Chamar".
 - **Card "Chamado ativo":** quem chamou, jogo, horário e respostas.
 - **Card do Wrapped:** precisa renderizar no servidor (SSR) **sem PO UI**, para a prévia do link.

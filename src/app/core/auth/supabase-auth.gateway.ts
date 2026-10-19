@@ -9,10 +9,7 @@ function leavingApp(): Promise<never> {
   return new Promise<never>(() => undefined);
 }
 
-/**
- * Login de verdade pelo Supabase Auth (spec 001, Parte 2a): Discord com PKCE. O Google fica
- * "em breve" até a Parte 2b (CA23).
- */
+/** Login de verdade pelo Supabase Auth (spec 001, Parte 2a): Discord com PKCE. */
 @Injectable()
 export class SupabaseAuthGateway implements AuthGateway {
   private readonly supabase = inject(SUPABASE);
@@ -35,14 +32,11 @@ export class SupabaseAuthGateway implements AuthGateway {
   }
 
   async signIn(provider: AuthProvider, redirectTo?: string): Promise<SignInResult> {
-    if (provider !== 'discord') {
-      return { ok: false, failure: 'unavailable' };
-    }
     if (this.document.defaultView?.navigator.onLine === false) {
       return { ok: false, failure: 'offline' };
     }
     const { error } = await this.supabase.auth.signInWithOAuth({
-      provider: 'discord',
+      provider,
       options: { redirectTo },
     });
     if (error) {

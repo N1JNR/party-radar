@@ -59,14 +59,14 @@ describe('LoginPage', () => {
     fixture.detectChanges();
   }
 
-  it('mostra o nome, a proposta e os dois botões, Discord primeiro (CA1)', async () => {
+  it('mostra o nome, a proposta e o botão do Discord (CA1)', async () => {
     const { element } = await render();
     expect(element.querySelector('h1')?.textContent?.trim()).toBe('Party Radar');
     expect(element.querySelector('.login__tagline')?.textContent).toContain('jogando agora');
-    expect(buttons(element).map((b) => b.textContent?.trim())).toEqual([
-      'Continuar com Discord',
-      'Continuar com o Google',
-    ]);
+    expect(buttons(element).map((b) => b.textContent?.trim())).toEqual(['Continuar com Discord']);
+    expect(element.querySelector('.login__note')?.textContent?.trim()).toBe(
+      'Usamos seu nome e foto do Discord para criar seu perfil.',
+    );
     expect(alertText(element)).toBeUndefined();
   });
 
@@ -87,14 +87,13 @@ describe('LoginPage', () => {
     ).toBeTruthy();
   });
 
-  it('ao tocar, desabilita os dois botões e mostra "Abrindo…" no tocado (CA12)', async () => {
+  it('ao tocar, desabilita o botão e mostra "Abrindo Discord…" (CA12)', async () => {
     const { fixture, element } = await render();
     buttons(element)[0].click();
     fixture.detectChanges();
-    const [discord, google] = buttons(element);
+    const [discord] = buttons(element);
     expect(discord.textContent?.trim()).toBe('Abrindo Discord…');
     expect(discord.disabled).toBe(true);
-    expect(google.disabled).toBe(true);
     expect(gateway.signIn).toHaveBeenCalledWith(
       'discord',
       expect.stringMatching(/\/auth\/retorno\?next=%2Finicio$/),
@@ -103,26 +102,17 @@ describe('LoginPage', () => {
 
   it('ignora um segundo toque antes de a tela atualizar (CA12)', async () => {
     const { element } = await render();
-    const [discord, google] = buttons(element);
-    // Os dois toques acontecem antes da detecção de mudanças: o Discord ainda está habilitado.
-    google.click();
+    const [discord] = buttons(element);
+    // Os dois toques acontecem antes da detecção de mudanças: o botão ainda está habilitado.
     discord.click();
-    expect(gateway.signIn).toHaveBeenCalledTimes(1);
-    expect(gateway.signIn).toHaveBeenCalledWith('google', expect.any(String));
-  });
-
-  it('ignora toques no outro botão enquanto abre (CA12)', async () => {
-    const { fixture, element } = await render();
-    buttons(element)[1].click();
-    fixture.detectChanges();
-    buttons(element)[0].click();
+    discord.click();
     expect(gateway.signIn).toHaveBeenCalledTimes(1);
   });
 
   it('vai para a tela inicial quando o login dá certo', async () => {
     const { fixture, element } = await render();
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    buttons(element)[1].click();
+    buttons(element)[0].click();
     resolveSignIn({ ok: true, user: { name: 'Ana', username: 'ana', avatarUrl: null } });
     await settle(fixture);
     expect(navigate).toHaveBeenCalledWith('/inicio');
@@ -155,15 +145,6 @@ describe('LoginPage', () => {
     expect(buttons(element)[0].textContent?.trim()).toBe('Continuar com Discord');
   });
 
-  it('com o Google ainda "em breve", mostra o aviso e continua na tela (CA23)', async () => {
-    const { fixture, element } = await render();
-    buttons(element)[1].click();
-    resolveSignIn({ ok: false, failure: 'unavailable' });
-    await settle(fixture);
-    expect(element.textContent).toContain('Login com o Google em breve.');
-    expect(buttons(element).every((button) => !button.disabled)).toBe(true);
-  });
-
   it.each([
     ['cancelled', 'Login cancelado. Tente de novo quando quiser.', false],
     ['failed', 'Não foi possível entrar agora. Tente de novo em instantes.', true],
@@ -185,11 +166,11 @@ describe('LoginPage', () => {
   it('devolve o foco ao botão tocado quando o login falha (CA20)', async () => {
     const { fixture, element } = await render();
     document.body.appendChild(element);
-    buttons(element)[1].click();
+    buttons(element)[0].click();
     resolveSignIn({ ok: false, failure: 'failed' });
     await settle(fixture);
     TestBed.tick();
-    expect(document.activeElement).toBe(buttons(element)[1]);
+    expect(document.activeElement).toBe(buttons(element)[0]);
     element.remove();
   });
 

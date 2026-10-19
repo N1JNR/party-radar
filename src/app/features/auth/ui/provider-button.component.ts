@@ -5,11 +5,10 @@ import { providerButtonLabel } from '../domain/login-feedback';
 
 const LOGO: Record<AuthProvider, string> = {
   discord: 'brands/discord-symbol-white.svg',
-  google: 'brands/google-g.svg',
 };
 
 /**
- * Botão de login com a marca do provedor. Segue as diretrizes do Discord e do Google
+ * Botão de login com a marca do provedor. Segue as diretrizes do Discord
  * (DESIGN.md, seção 1), por isso não usa o po-button: as cores pertencem às marcas.
  */
 @Component({

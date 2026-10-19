@@ -2,6 +2,9 @@
 
 ## Parte 1 — Layout
 
+> Revisão 4 (2026-10-19): o botão do Google, o logo e a fonte Google Sans descritos aqui saíram;
+> a tela Entrar tem só o botão do Discord.
+
 **Spec:** `spec.md` (aprovada em 2026-10-16) · **Branch:** `feat/login-layout`
 **Cobre:** CA1 (visual), CA11, CA12, CA13–CA15 (visual), CA19, CA20.
 A Parte 2 (login real) entra neste mesmo arquivo, numa seção própria, antes de começar.
@@ -167,8 +170,8 @@ Entrar ── "Continuar com Discord" ──► Discord (autoriza) ──► Sup
 - **Perfil e @usuário (CA4, CA16, CA18):** criados no banco por um gatilho em `auth.users`, na
   mesma transação do cadastro; o front só lê a linha do perfil. Assim o @usuário único não
   depende do navegador.
-- **Google na 2a (CA23):** o gateway real devolve uma falha nova, `unavailable`, e a tela mostra
-  "Login com o Google em breve.". A 2b troca isso pelo login de verdade.
+- ~~**Google na 2a (CA23):** o gateway devolvia a falha `unavailable` e a tela mostrava "Login com o
+  Google em breve.".~~ Removido na revisão 4: o login é só com o Discord.
 - **Simulado só em desenvolvimento (CA22):** a escolha do gateway sai do `app.config.ts` e vira
   uma fábrica: no build de produção é sempre o Supabase; em desenvolvimento, também, a não ser
   que a URL tenha `?simular-login=`. O parâmetro do login muda de `?simular=` para

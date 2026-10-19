@@ -13,23 +13,22 @@ const FEEDBACK: Record<LoginFailure, LoginFeedback> = {
   failed: { tone: 'error', message: 'Não foi possível entrar agora. Tente de novo em instantes.' },
   offline: { tone: 'error', message: 'Sem conexão. Verifique sua internet.' },
   'session-expired': { tone: 'info', message: 'Sua sessão expirou. Entre de novo.' },
-  unavailable: { tone: 'info', message: 'Login com o Google em breve.' },
 };
 
-/** Aviso mostrado na tela de login para cada falha (spec 001, CA10, CA13–CA15 e CA23). */
+/** Aviso mostrado na tela de login para cada falha (spec 001, CA10 e CA13–CA15). */
 export function feedbackFor(failure: LoginFailure): LoginFeedback {
   return FEEDBACK[failure];
 }
 
-const PROVIDER_NAME: Record<AuthProvider, string> = { discord: 'Discord', google: 'Google' };
+const PROVIDER_NAME: Record<AuthProvider, string> = { discord: 'Discord' };
 
 /**
- * Texto do botão de cada provedor. "Continuar com o Google" segue as diretrizes de marca
- * do Google; durante o redirecionamento, o botão diz para onde está indo (CA12).
+ * Texto do botão de cada provedor; durante o redirecionamento, o botão diz para onde está indo
+ * (CA12).
  */
 export function providerButtonLabel(provider: AuthProvider, opening: boolean): string {
   if (opening) {
     return `Abrindo ${PROVIDER_NAME[provider]}…`;
   }
-  return provider === 'google' ? 'Continuar com o Google' : 'Continuar com Discord';
+  return `Continuar com ${PROVIDER_NAME[provider]}`;
 }

@@ -1,9 +1,8 @@
 # Logos de terceiros
 
-Arquivos oficiais, usados só nos botões de login (`DESIGN.md`, seção 1). **Não edite cores,
+Arquivos oficiais, usados só no botão de login (`DESIGN.md`, seção 1). **Não edite cores,
 proporções ou formas**; as diretrizes das marcas proíbem.
 
-| Arquivo                    | Origem (baixado em 2026-10-16)                                                                                                                                                                                                             | Mudança                                                                                                                                     |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `google-g.svg`             | `signin-assets.zip` de [developers.google.com/identity/branding-guidelines](https://developers.google.com/identity/branding-guidelines), arquivo `Android + Web/SVG/Dark/Theme=Dark, Show text=No, Shape=Square, Platform=Android+Web.svg` | removidos só o fundo `#131314` e a borda `#8E918F` do botão quadrado, que o nosso botão já desenha com as mesmas cores; o "G" ficou intacto |
-| `discord-symbol-white.svg` | pacote "Symbol" (branco) de [discord.com/branding](https://discord.com/branding), arquivo `Discord_Symbol_White/Discord-Symbol-White.svg`                                                                                                  | nenhuma                                                                                                                                     |
+| Arquivo                    | Origem (baixado em 2026-10-16)                                                                                                            | Mudança |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `discord-symbol-white.svg` | pacote "Symbol" (branco) de [discord.com/branding](https://discord.com/branding), arquivo `Discord_Symbol_White/Discord-Symbol-White.svg` | nenhuma |

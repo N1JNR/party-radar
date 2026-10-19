@@ -1,5 +1,4 @@
-// Google Sans 500 só para o botão "Continuar com o Google" (exigência das diretrizes do Google).
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Google+Sans:wght@500&family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 // Fontes, fundo e tokens próprios do Party Radar (DESIGN.md, seção 2).
 // As cores dos componentes vêm do tema do PO UI (src/theme/party-radar.theme.ts).
@@ -7,7 +6,6 @@
   --font-family-theme: 'Manrope', sans-serif;
   --font-family-theme-bold: 'Manrope', sans-serif;
   --font-family-heading: 'Chakra Petch', sans-serif;
-  --pr-font-google: 'Google Sans', 'Manrope', sans-serif;
 
   // Papéis semânticos: apontam para os tokens do PO UI, nunca para hex.
   --pr-surface-page: var(--color-neutral-light-00);

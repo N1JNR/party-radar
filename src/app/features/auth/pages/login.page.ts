@@ -43,7 +43,7 @@ export class LoginPage {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
 
-  protected readonly providers: readonly AuthProvider[] = ['discord', 'google'];
+  protected readonly providers: readonly AuthProvider[] = ['discord'];
   private readonly screen = signal(initialLoginScreen(this.store.consumeFailure()));
 
   protected readonly busy = computed(() => isBusy(this.screen()));

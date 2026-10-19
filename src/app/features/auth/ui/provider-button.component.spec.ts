@@ -28,13 +28,6 @@ describe('ProviderButtonComponent', () => {
     );
   });
 
-  it('Google: texto aprovado pelas diretrizes e logo oficial (CA1)', () => {
-    const { button } = render('google');
-    expect(button.textContent?.trim()).toBe('Continuar com o Google');
-    expect(button.classList).toContain('provider-button--google');
-    expect(button.querySelector('img')?.getAttribute('src')).toBe('brands/google-g.svg');
-  });
-
   it('é um <button> real, com o logo decorativo escondido do leitor de tela (CA20)', () => {
     const { button } = render('discord');
     expect(button.type).toBe('button');
@@ -42,7 +35,7 @@ describe('ProviderButtonComponent', () => {
   });
 
   it('avisa quando é tocado', () => {
-    const { fixture, button } = render('google');
+    const { fixture, button } = render('discord');
     const pressed = vi.fn();
     fixture.componentInstance.pressed.subscribe(pressed);
     button.click();
@@ -57,7 +50,7 @@ describe('ProviderButtonComponent', () => {
   });
 
   it('fica desabilitado enquanto outro login está em andamento (CA12)', () => {
-    const { fixture, button } = render('google', { disabled: true });
+    const { fixture, button } = render('discord', { disabled: true });
     const pressed = vi.fn();
     fixture.componentInstance.pressed.subscribe(pressed);
     button.click();

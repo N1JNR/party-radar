@@ -30,7 +30,7 @@ Pendências vindas da revisão da Parte 1 (onde cada uma é resolvida):
 - Trocar o gateway simulado pelo do Supabase também no build de produção; hoje a `main` "loga" qualquer pessoa. **T21.**
 - Telas protegidas devem reagir ao fim da sessão (ir para `/login`), em vez de depender da navegação do botão Sair. **T20.**
 - Manter a sessão simulada ao recarregar em desenvolvimento (ou levar o `?simular=` pelo login), para os cenários de `?simular=` da home (spec 002) funcionarem pela URL. **T21** (sessão real + `?simular-login=`).
-- Conferir o "G" do Google no Safari (**Parte 2b**) (o SVG oficial usa `foreignObject`); se falhar, usar o PNG do mesmo pacote.
+- ~~Conferir o "G" do Google no Safari~~ — sem efeito: o Google saiu na revisão 4.
 
 ### Parte 2a — Discord (`feat/001-login-discord`)
 
@@ -64,4 +64,11 @@ retorno e chaves no `.env`). As tarefas T13 a T21 não dependem disso.
 
 ### Parte 2b — Google
 
-Será detalhada no `plan.md` e aqui depois do merge da 2a.
+Cancelada na revisão 4 da spec: o login é só com o Discord.
+
+### Revisão 4 — sem Google (`feat/001-sem-google`)
+
+- [x] T24 — Spec 001 revisão 4 e tarefas (CA1, CA3, CA21 e CA23 revistos)
+- [x] T25 — Tirar o Google do app: botão, tipos, aviso "em breve", logo, fonte Google Sans e testes (CA1, CA12, CA17)
+- [x] T26 — Tirar o Google da documentação: `AGENTS.md`, `DESIGN.md`, `README` de `public/brands/`, `.env.example` e `docs/plano.md`
+- [x] T27 — Conferência visual do login em 390 e 1280 px, `/code-review` e `npm run verify`

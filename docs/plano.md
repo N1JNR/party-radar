@@ -5,7 +5,7 @@ documento "Party Radar + Gamer Wrapped — Plano" e as telas no canvas "Party Ra
 
 ## Escopo do MVP
 
-1. **Login** com Google ou Discord. Conectar Discord e Steam depois do login.
+1. **Login** com o Discord. Conectar a Steam depois do login.
 2. **Amigos:** adicionar por link de convite, por @usuário ou por sugestão da Steam;
    aceitar, recusar, remover e bloquear. A amizade é do app (o Discord não libera a lista de amigos).
 3. **Radar:** amigos jogando agora, online e offline, atualizado em tempo real.
@@ -31,7 +31,7 @@ As sessões de jogo são gravadas desde o primeiro dia para o Wrapped nascer com
 
 ## Ordem sugerida das specs
 
-1. `001-login` — login Google/Discord e sessão
+1. `001-login` — login com o Discord e sessão
 2. `002-conectar-contas` — vincular Discord (connections) e Steam
 3. `003-amigos` — pedidos, aceite, remoção e bloqueio
 4. `004-radar` — presença em tempo real
