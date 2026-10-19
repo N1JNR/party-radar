@@ -10,21 +10,34 @@ vi.mock('@supabase/supabase-js', () => ({
 }));
 
 const config = { url: 'https://teste.supabase.co', publishableKey: 'sb_publishable_teste' };
+const storage = { getItem: () => null, setItem: () => undefined, removeItem: () => undefined };
 
 describe('createSupabaseClient', () => {
   beforeEach(() => vi.mocked(createClient).mockClear());
 
-  it('persiste e renova a sessão no navegador', () => {
-    createSupabaseClient(config, true);
+  it('persiste e renova a sessão no navegador, com PKCE e o armazenamento sem tokens', () => {
+    createSupabaseClient(config, true, storage);
     expect(createClient).toHaveBeenCalledWith(config.url, config.publishableKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+      auth: {
+        flowType: 'pkce',
+        storage,
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
     });
   });
 
   it('não persiste sessão no servidor (SSR)', () => {
-    createSupabaseClient(config, false);
+    createSupabaseClient(config, false, storage);
     expect(createClient).toHaveBeenCalledWith(config.url, config.publishableKey, {
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      auth: {
+        flowType: 'pkce',
+        storage,
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
     });
   });
 });
