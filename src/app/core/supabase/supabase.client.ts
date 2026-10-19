@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 
 import { environment } from '../../../environments/environment';
+import type { Database } from './database.types';
 import { AUTH_SESSION_STORAGE, KeyValueStorage } from '../platform/auth-session-storage';
 
 export interface SupabaseConfig {
@@ -28,8 +29,8 @@ export function createSupabaseClient(
   config: SupabaseConfig,
   isBrowser: boolean,
   storage: KeyValueStorage,
-): SupabaseClient {
-  return createClient(config.url, config.publishableKey, {
+): SupabaseClient<Database> {
+  return createClient<Database>(config.url, config.publishableKey, {
     auth: {
       flowType: 'pkce',
       storage,
@@ -40,7 +41,7 @@ export function createSupabaseClient(
   });
 }
 
-export const SUPABASE = new InjectionToken<SupabaseClient>('SUPABASE', {
+export const SUPABASE = new InjectionToken<SupabaseClient<Database>>('SUPABASE', {
   providedIn: 'root',
   factory: () =>
     createSupabaseClient(

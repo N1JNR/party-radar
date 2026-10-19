@@ -28,10 +28,10 @@ export class AuthStore {
     }
   }
 
-  async signIn(provider: AuthProvider): Promise<SignInResult> {
+  async signIn(provider: AuthProvider, redirectTo?: string): Promise<SignInResult> {
     let result: SignInResult;
     try {
-      result = await this.gateway.signIn(provider);
+      result = await this.gateway.signIn(provider, redirectTo);
     } catch {
       result = { ok: false, failure: 'failed' };
     }

@@ -88,4 +88,9 @@ export class FakeAuthGateway implements AuthGateway {
   async signOut(): Promise<void> {
     await wait(0);
   }
+
+  /** A sessão simulada só termina pelo Sair. */
+  onSessionEnded(): () => void {
+    return () => undefined;
+  }
 }

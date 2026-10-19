@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
+import type { AuthGateway } from './auth.gateway';
 import {
   FAKE_AUTH_OPTIONS,
   FAKE_USER,
@@ -115,5 +116,13 @@ describe('FakeAuthGateway', () => {
     const promise = setup('success').signOut();
     await vi.advanceTimersByTimeAsync(0);
     await expect(promise).resolves.toBeUndefined();
+  });
+
+  it('a sessão simulada só termina pelo Sair: o aviso de fim nunca dispara', () => {
+    const listener = vi.fn();
+    const gateway: AuthGateway = setup('success');
+    const stop = gateway.onSessionEnded(listener);
+    expect(() => stop()).not.toThrow();
+    expect(listener).not.toHaveBeenCalled();
   });
 });

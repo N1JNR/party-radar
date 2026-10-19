@@ -28,6 +28,13 @@ describe('feedbackFor', () => {
       message: 'Sua sessão expirou. Entre de novo.',
     });
   });
+
+  it('provedor ainda não ligado avisa que vem em breve (CA23)', () => {
+    expect(feedbackFor('unavailable')).toEqual({
+      tone: 'info',
+      message: 'Login com o Google em breve.',
+    });
+  });
 });
 
 describe('providerButtonLabel', () => {

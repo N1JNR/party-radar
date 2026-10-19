@@ -26,6 +26,7 @@ describe('LoginPage', () => {
         ),
       signIn: vi.fn(() => new Promise<SignInResult>((resolve) => (resolveSignIn = resolve))),
       signOut: () => Promise.resolve(),
+      onSessionEnded: () => () => undefined,
     };
     TestBed.configureTestingModule({
       providers: [provideRouter([]), { provide: AUTH_GATEWAY, useValue: gateway }],
@@ -86,7 +87,7 @@ describe('LoginPage', () => {
     expect(discord.textContent?.trim()).toBe('Abrindo Discord…');
     expect(discord.disabled).toBe(true);
     expect(google.disabled).toBe(true);
-    expect(gateway.signIn).toHaveBeenCalledWith('discord');
+    expect(gateway.signIn).toHaveBeenCalledWith('discord', undefined);
   });
 
   it('ignora um segundo toque antes de a tela atualizar (CA12)', async () => {
@@ -96,7 +97,7 @@ describe('LoginPage', () => {
     google.click();
     discord.click();
     expect(gateway.signIn).toHaveBeenCalledTimes(1);
-    expect(gateway.signIn).toHaveBeenCalledWith('google');
+    expect(gateway.signIn).toHaveBeenCalledWith('google', undefined);
   });
 
   it('ignora toques no outro botão enquanto abre (CA12)', async () => {
