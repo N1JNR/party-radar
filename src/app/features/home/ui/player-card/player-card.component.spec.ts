@@ -101,7 +101,7 @@ describe('PlayerCardComponent', () => {
     expect(element.querySelector('.player-card__title')).toBeNull();
     expect(all('.player-card__phrase')).toEqual([
       'Até a geladeira tem mais tempo de tela que você.',
-      'Jogo do mês: nenhum. Ainda.',
+      'Nenhum. Ainda.',
       'Nem o bot quer duo.',
       'Plataforma: um mistério.',
     ]);

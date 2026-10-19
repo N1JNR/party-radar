@@ -55,7 +55,7 @@ export interface PlayerCard {
 /** Frases do card "pobrinho" no lugar dos dados que faltam (CA7). */
 export const FIRST_ACCESS_PHRASES = {
   hours: 'Até a geladeira tem mais tempo de tela que você.',
-  gameOfMonth: 'Jogo do mês: nenhum. Ainda.',
+  gameOfMonth: 'Nenhum. Ainda.',
   partner: 'Nem o bot quer duo.',
   platform: 'Plataforma: um mistério.',
 } as const;

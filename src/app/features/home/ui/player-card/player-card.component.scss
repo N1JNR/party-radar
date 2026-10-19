@@ -79,9 +79,12 @@ dd {
   font-size: var(--font-size-md);
   font-weight: 700;
 }
-.player-card__title {
-  padding-left: var(--spacing-sm);
-  border-left: var(--border-width-sm) solid var(--color-neutral-light-30);
+// O divisor só aparece quando patente e título ficam lado a lado (a partir do tablet).
+@media (min-width: 768px) {
+  .player-card__title {
+    padding-left: var(--spacing-sm);
+    border-left: var(--border-width-sm) solid var(--color-neutral-light-30);
+  }
 }
 .player-card__title-value {
   font-weight: 600;
@@ -102,10 +105,11 @@ dd {
   margin-top: var(--spacing-xs);
 }
 
-// Jogo do mês, parceiro e plataformas: uma coluna no celular, três a partir do tablet.
+// Jogo do mês e parceiro lado a lado, com as plataformas na linha de baixo, inteira (as barras
+// precisam de largura). Uma coluna só no celular estreito.
 .player-card__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--spacing-sm);
   margin: 0;
 }
@@ -173,6 +177,15 @@ dd {
 .player-card__progress {
   justify-self: stretch;
   height: 8px;
+}
+
+@media (min-width: 480px) {
+  .player-card__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .player-card__stat:last-child {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (min-width: 768px) {

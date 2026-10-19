@@ -16,7 +16,16 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T9 — Componentes laterais: "Deixe seu card mais forte", aviso da Steam e pergunta de parceria (CA7, CA8, CA11)
 - [x] T10 — Componentes de jogando agora e oportunidade de squad, com estados vazios (CA9, CA10, CA12)
 - [x] T11 — Página "Meu card": monta tudo, esqueleto de carregamento, erro e avisos "Em breve" (CA13–CA15)
-- [ ] T12 — Conferência visual em 390, 768, 1280 e 1440 px e só pelo teclado, com prints (CA16, CA17)
+- [x] T12 — Conferência visual em 390, 768, 1280 e 1440 px e só pelo teclado, com prints (CA16, CA17)
+  - Conferido em 2026-10-19: sem rolagem horizontal em 390, 768, 1280 e 1440 px; nenhum alvo
+    clicável com menos de 44 px; ordem de foco lógica e foco visível; gaveta abre com Enter e fecha
+    com Esc devolvendo o foco. Estados conferidos: cheio, primeiro acesso, sem squads, erro e
+    carregando.
+  - Ajustes: "Onde joga" ocupa a linha inteira no card; divisor do título do mês só a partir de
+    768 px; frase do jogo do mês trocada por "Nenhum. Ainda." (repetia o rótulo).
+  - Para decidir: botão próprio da gaveta (o do `po-menu` é uma `div` sem teclado), corte do
+    `po-menu` em 1201 px e não 1200, item atual sem `aria-current`, e os cenários de `?simular=`
+    da home somem no login simulado (a sessão não sobrevive ao recarregar).
 - [ ] T13 — `/code-review`, revisar diff, rodar `npm run verify` e escrever o relatório final
 
 ## Integração
