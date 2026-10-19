@@ -1,6 +1,6 @@
 # 003 — Steam: conectar a conta e dados reais no card
 
-**Status:** aguardando aprovação (rascunho de 2026-10-19)
+**Status:** aprovada em 2026-10-19
 **Relacionada a:** `001-login` (entrar com o Discord; o Google sai na revisão 4, em atividade
 própria) · `002-home` (o card que passa a ter dados reais) · `docs/plano.md` (escopo do MVP).
 
@@ -114,14 +114,11 @@ Feitos pelo dono do projeto, com a conta dele:
 As do Meu card (spec 002). Mudam só os textos e estados acima; o canvas "Party Radar — Telas do
 MVP" não precisa de artboard novo.
 
-## Perguntas em aberto
+## Decisões (aprovadas com a spec)
 
-- [ ] **Horas no primeiro mês.** A Steam não diz quanto se jogou no mês, só o total de sempre e o
-      das últimas 2 semanas. Opções: (a) contar só a partir da conexão (o card nasce com 0h e
-      cresce); (b) no primeiro mês, partir das "últimas 2 semanas" da Steam, marcado como
-      estimativa. _Recomendo (b): o card já nasce com algo para mostrar._
-- [ ] **Base da patente.** (a) horas desde que conectou (a patente evolui junto com o app); (b) o
-      total de sempre da Steam (muita gente já entraria como Veterano). _Recomendo (a)._
-- [ ] **Steam pelas conexões do Discord.** Quem já ligou a Steam no Discord poderia tê-la
-      detectada sem clique, mas isso pede a permissão "conexões" no login do Discord. _Recomendo
-      deixar para depois e começar pelo botão "Conectar Steam"._
+- [x] **Horas no primeiro mês:** no mês da conexão, o card parte das "últimas 2 semanas" da Steam
+      e soma o que for jogado depois; o card avisa que o primeiro mês é uma estimativa.
+- [x] **Base da patente:** horas desde que a Steam foi conectada (incluindo o ponto de partida
+      acima), para a patente evoluir junto com o app.
+- [x] **Steam pelas conexões do Discord:** fica para depois; esta spec usa o botão
+      "Conectar Steam".
