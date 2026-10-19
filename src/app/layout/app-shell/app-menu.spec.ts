@@ -61,6 +61,11 @@ describe('buildAppMenu', () => {
     expect(handlers.soon).toHaveBeenLastCalledWith('Formar squad');
   });
 
+  it('enquanto não sabe os squads, mostra só "Formar squad"', () => {
+    const menu = buildAppMenu(null, actions());
+    expect(menu[3].subItems?.map((item) => item.label)).toEqual(['Formar squad']);
+  });
+
   it('Sair chama a saída (CA3)', () => {
     const handlers = actions();
     buildAppMenu([], handlers)[5].action?.();

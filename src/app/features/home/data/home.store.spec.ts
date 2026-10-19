@@ -14,7 +14,7 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
-      partner: { name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
+      partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
       platforms: [
         { platform: 'pc', hours: 28 },
         { platform: 'ps5', hours: 12 },
@@ -43,6 +43,7 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
     squads: [{ id: 'sexta', name: 'Squad da Sexta', memberIds: ['bia', 'caio'] }],
     question: {
       id: 'q1',
+      friendId: 'rafa',
       friendName: 'Rafa',
       game: 'CS2',
       startedAt: '2026-10-15T22:00:00Z',
@@ -79,7 +80,7 @@ describe('HomeStore', () => {
     expect(store.firstAccess()).toBe(false);
     expect(store.platforms()).toEqual([]);
     expect(store.opportunities()).toEqual([]);
-    expect(store.menuSquads()).toEqual([]);
+    expect(store.menuSquads()).toBeNull();
   });
 
   it('carrega e calcula patente, plataformas, oportunidades e squads do menu', async () => {
@@ -114,10 +115,37 @@ describe('HomeStore', () => {
     const store = setup({ load });
     await store.load();
     expect(store.status()).toBe('error');
+    expect(store.menuSquads()).toBeNull();
     const retry = store.load();
     expect(store.status()).toBe('loading');
     await retry;
     expect(store.status()).toBe('ready');
+  });
+
+  it('menuSquads não muda de referência quando os squads não mudam', async () => {
+    const store = setup({});
+    await store.load();
+    const before = store.menuSquads();
+    store.data.update((data) => (data ? { ...data, steamPublic: true } : data));
+    expect(store.menuSquads()).toBe(before);
+  });
+
+  it('reset esquece os dados de quem saiu e ignora a carga em andamento', async () => {
+    let resolve: (data: HomeData) => void = () => undefined;
+    const load = vi
+      .fn<HomeDataSource['load']>()
+      .mockResolvedValueOnce(homeData())
+      .mockReturnValueOnce(new Promise((r) => (resolve = r)));
+    const store = setup({ load });
+    await store.load();
+    const pending = store.load();
+    store.reset();
+    expect(store.data()).toBeNull();
+    expect(store.status()).toBe('loading');
+    expect(store.menuSquads()).toBeNull();
+    resolve(homeData());
+    await pending;
+    expect(store.data()).toBeNull();
   });
 
   it('só vale a carga mais recente', async () => {
@@ -162,9 +190,9 @@ describe('HomeStore', () => {
       expect(store.card()?.partner?.probable).toBe(true);
     });
 
-    it('Joguei com outro amigo não mexe no parceiro do mês', async () => {
+    it('Joguei com outro amigo, mesmo com o mesmo nome, não mexe no parceiro do mês', async () => {
       const data = homeData();
-      data.question = { ...data.question!, friendName: 'Bia' };
+      data.question = { ...data.question!, friendId: 'outro-rafa' };
       const store = setup({ load: () => Promise.resolve(data) });
       await store.load();
       await store.answerPartnership(true);
@@ -228,6 +256,26 @@ describe('HomeStore', () => {
       expect(await store.markSteamPublic()).toBe(false);
       await first;
       expect(markSteamPublic).toHaveBeenCalledTimes(1);
+    });
+
+    it('uma resposta que chega depois de recarregar não mexe nos dados novos', async () => {
+      let finish: () => void = () => undefined;
+      const fresh = homeData({ question: { ...homeData().question!, id: 'q2' } });
+      const load = vi
+        .fn<HomeDataSource['load']>()
+        .mockResolvedValueOnce(homeData())
+        .mockResolvedValueOnce(fresh);
+      const store = setup({
+        load,
+        answerPartnership: () => new Promise<void>((resolve) => (finish = resolve)),
+      });
+      await store.load();
+      const answer = store.answerPartnership(true);
+      await store.load();
+      finish();
+      expect(await answer).toBe(true);
+      expect(store.data()?.question?.id).toBe('q2');
+      expect(store.card()?.partner?.probable).toBe(true);
     });
 
     it('uma resposta que chega depois de os dados sumirem é ignorada', async () => {

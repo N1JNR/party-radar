@@ -16,7 +16,7 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
-      partner: { name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
+      partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
       platforms: [{ platform: 'pc', hours: 28 }],
     },
     steamPublic: true,
@@ -42,6 +42,7 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
     squads: [{ id: 'sexta', name: 'Squad da Sexta', memberIds: ['bia', 'caio'] }],
     question: {
       id: 'q1',
+      friendId: 'rafa',
       friendName: 'Rafa',
       game: 'CS2',
       startedAt: '2026-10-15T22:00:00Z',

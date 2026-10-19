@@ -34,7 +34,11 @@ import { buildAppMenu } from './app-menu';
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:keydown.escape)': 'closeOnEscape()' },
+  host: {
+    '(document:keydown.escape)': 'closeOnEscape()',
+    // O `po-menu` fecha a gaveta sozinho quando a janela muda de tamanho.
+    '(window:resize)': 'syncAfterMenuInteraction()',
+  },
 })
 export class AppShellComponent {
   private readonly auth = inject(AuthStore);
@@ -97,6 +101,7 @@ export class AppShellComponent {
     } catch {
       // A sessão local já terminou no AuthStore; seguimos para o login mesmo assim.
     }
+    this.home.reset();
     await this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 }

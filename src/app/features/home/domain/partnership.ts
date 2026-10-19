@@ -1,6 +1,8 @@
 /** Partida em que o app não tem certeza se a pessoa jogou junto com o amigo (CA11). */
 export interface PartnershipQuestion {
   id: string;
+  /** Id do amigo, para confirmar a parceria certa (nomes podem se repetir). */
+  friendId: string;
   friendName: string;
   game: string;
   /** Início e fim da partida, em ISO 8601. */

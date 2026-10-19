@@ -11,6 +11,7 @@ describe('PartnershipQuestionComponent', () => {
     const fixture = TestBed.createComponent(PartnershipQuestionComponent);
     fixture.componentRef.setInput('question', {
       id: 'q1',
+      friendId: 'rafa',
       friendName: 'Rafa',
       game: 'CS2',
       startedAt: new Date(2026, 9, 15, 22, 0).toISOString(),

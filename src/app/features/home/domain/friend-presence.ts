@@ -1,4 +1,4 @@
-import { Platform } from './player-card';
+import type { Platform } from './player-card';
 
 /** Um amigo que está jogando agora (seção "Jogando agora"). */
 export interface FriendPresence {

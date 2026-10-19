@@ -13,7 +13,7 @@ const fullCard: PlayerCard = {
   stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
   games: 7,
   gameOfMonth: { name: 'Elden Ring', hours: 18 },
-  partner: { name: 'Rafa', avatarUrl: null, matches: 18, probable: false },
+  partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: false },
   platforms: [
     { platform: 'pc', hours: 28 },
     { platform: 'ps5', hours: 12 },

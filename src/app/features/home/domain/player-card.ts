@@ -1,4 +1,4 @@
-import { PlayStats } from './patentes';
+import type { PlayStats } from './patentes';
 
 export type Platform = 'pc' | 'ps5' | 'xbox' | 'switch' | 'mobile';
 
@@ -29,6 +29,7 @@ export interface GameOfMonth {
 
 /** Com quem a pessoa mais jogou no mês. */
 export interface SquadPartner {
+  id: string;
   name: string;
   avatarUrl: string | null;
   matches: number;

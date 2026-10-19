@@ -145,12 +145,14 @@ describe('AppShellComponent', () => {
   it('Sair encerra a sessão e volta para o login sem deixar a tela no histórico (CA3)', async () => {
     const signOut = vi.fn(() => Promise.resolve());
     await render({ signOut });
+    const reset = vi.spyOn(TestBed.inject(HomeStore), 'reset');
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     menu().menus[5].action?.();
     await vi.waitFor(() => expect(navigate).toHaveBeenCalled());
     expect(signOut).toHaveBeenCalledTimes(1);
     expect(TestBed.inject(AuthStore).isAuthenticated()).toBe(false);
     expect(navigate).toHaveBeenCalledWith('/login', { replaceUrl: true });
+    expect(reset).toHaveBeenCalledTimes(1);
   });
 
   it('volta para o login mesmo se o servidor falhar ao sair (CA3)', async () => {
@@ -191,7 +193,19 @@ describe('AppShellComponent', () => {
       question: null,
       inviteLink: '',
     });
+    TestBed.inject(HomeStore).status.set('ready');
     fixture.detectChanges();
     expect(menu().menus[3].subItems?.[0].label).toBe('Squad da Sexta · 2 jogando');
+  });
+
+  it('se o po-menu fechar a gaveta ao redimensionar a janela, o estado acompanha (CA2)', async () => {
+    await render();
+    menuButton().click();
+    fixture.detectChanges();
+    menu().mobileOpened = false;
+    window.dispatchEvent(new Event('resize'));
+    fixture.detectChanges();
+    expect(menuButton().getAttribute('aria-expanded')).toBe('false');
+    expect(element.querySelector('.shell--menu-open')).toBeNull();
   });
 });

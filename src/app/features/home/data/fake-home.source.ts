@@ -177,7 +177,7 @@ export class FakeHomeSource implements HomeDataSource {
         stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
         games: 7,
         gameOfMonth: { name: 'Elden Ring', hours: 18 },
-        partner: { name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
+        partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
         platforms: [
           { platform: 'pc', hours: 28 },
           { platform: 'ps5', hours: 12 },
@@ -195,6 +195,7 @@ export class FakeHomeSource implements HomeDataSource {
             ],
       question: {
         id: 'cs2-ontem',
+        friendId: 'rafa',
         friendName: 'Rafa',
         game: 'CS2',
         startedAt: yesterdayAt(now, 22, 0),

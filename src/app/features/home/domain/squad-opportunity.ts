@@ -1,4 +1,4 @@
-import { FriendPresence } from './friend-presence';
+import type { FriendPresence } from './friend-presence';
 
 export interface Squad {
   id: string;
