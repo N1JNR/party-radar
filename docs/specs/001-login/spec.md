@@ -1,7 +1,7 @@
 # 001 — Login com Discord e Google
 
-**Status:** revisão 3 aguardando aprovação (2026-10-19): a Parte 2 vira duas entregas, Discord
-primeiro e Google depois. Revisão 2 aprovada em 2026-10-16.
+**Status:** revisão 3 aprovada em 2026-10-19 (a Parte 2 vira duas entregas, Discord primeiro e
+Google depois). Revisão 2 aprovada em 2026-10-16.
 **Relacionada a:** `docs/plano.md` (escopo do MVP, item 1) · `002-home` (para onde o login leva).
 Prepara a spec da Steam (dados reais no card) e a de amigos.
 
@@ -169,4 +169,4 @@ Artboard no canvas "Party Radar — Telas do MVP": link a adicionar.
       ficam para a `002`.
 - [x] Termos de uso → **fora do MVP** até existirem os textos.
 - [x] Entrega → **duas partes**: layout (Parte 1) e funcionalidade (Parte 2).
-- [ ] Parte 2 → **duas entregas**: Discord (2a) e depois Google (2b). _Aguardando aprovação._
+- [x] Parte 2 → **duas entregas**: Discord (2a) e depois Google (2b) (aprovado em 2026-10-19).
