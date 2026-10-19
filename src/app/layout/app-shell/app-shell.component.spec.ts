@@ -212,4 +212,33 @@ describe('AppShellComponent', () => {
     expect(menuButton().getAttribute('aria-expanded')).toBe('false');
     expect(element.querySelector('.shell--menu-open')).toBeNull();
   });
+
+  it('quando a sessão termina sozinha, volta ao login com o aviso de expirada (CA10)', async () => {
+    let endSession: () => void = () => undefined;
+    await render({
+      onSessionEnded: (listener) => {
+        endSession = listener;
+        return () => undefined;
+      },
+    });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    const reset = vi.spyOn(TestBed.inject(HomeStore), 'reset');
+    endSession();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(navigate).toHaveBeenCalledWith('/login', { replaceUrl: true });
+    expect(reset).toHaveBeenCalled();
+    expect(TestBed.inject(AuthStore).consumeFailure()).toBe('session-expired');
+  });
+
+  it('ao tocar em Sair, não mostra o aviso de sessão expirada (CA8)', async () => {
+    await render({ signOut: () => Promise.resolve() });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    menu().menus[5].action?.();
+    await vi.waitFor(() => expect(navigate).toHaveBeenCalled());
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(navigate).toHaveBeenCalledTimes(1);
+    expect(TestBed.inject(AuthStore).consumeFailure()).toBeNull();
+  });
 });
