@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 
 import {
   AUTH_GATEWAY,
@@ -16,6 +16,7 @@ describe('LoginPage', () => {
 
   async function render(
     pendingFailure: LoginFailure | null = null,
+    query: Record<string, string> = {},
   ): Promise<{ fixture: ComponentFixture<LoginPage>; element: HTMLElement }> {
     gateway = {
       restoreSession: () =>
@@ -29,7 +30,14 @@ describe('LoginPage', () => {
       onSessionEnded: () => () => undefined,
     };
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), { provide: AUTH_GATEWAY, useValue: gateway }],
+      providers: [
+        provideRouter([]),
+        { provide: AUTH_GATEWAY, useValue: gateway },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { queryParamMap: convertToParamMap(query) } },
+        },
+      ],
     });
     await TestBed.inject(AuthStore).restore();
     const fixture = TestBed.createComponent(LoginPage);
@@ -87,7 +95,10 @@ describe('LoginPage', () => {
     expect(discord.textContent?.trim()).toBe('Abrindo Discord…');
     expect(discord.disabled).toBe(true);
     expect(google.disabled).toBe(true);
-    expect(gateway.signIn).toHaveBeenCalledWith('discord', undefined);
+    expect(gateway.signIn).toHaveBeenCalledWith(
+      'discord',
+      expect.stringMatching(/\/auth\/retorno\?next=%2Finicio$/),
+    );
   });
 
   it('ignora um segundo toque antes de a tela atualizar (CA12)', async () => {
@@ -97,7 +108,7 @@ describe('LoginPage', () => {
     google.click();
     discord.click();
     expect(gateway.signIn).toHaveBeenCalledTimes(1);
-    expect(gateway.signIn).toHaveBeenCalledWith('google', undefined);
+    expect(gateway.signIn).toHaveBeenCalledWith('google', expect.any(String));
   });
 
   it('ignora toques no outro botão enquanto abre (CA12)', async () => {
@@ -115,6 +126,28 @@ describe('LoginPage', () => {
     resolveSignIn({ ok: true, user: { name: 'Ana', username: 'ana', avatarUrl: null } });
     await settle(fixture);
     expect(navigate).toHaveBeenCalledWith('/inicio');
+  });
+
+  it('leva o destino pedido até a volta do provedor e, sem sair do app, vai a ele (CA5)', async () => {
+    const { fixture, element } = await render(null, { next: '/amigos' });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    buttons(element)[0].click();
+    expect(gateway.signIn).toHaveBeenCalledWith(
+      'discord',
+      expect.stringMatching(/\/auth\/retorno\?next=%2Famigos$/),
+    );
+    resolveSignIn({ ok: true, user: { name: 'Ana', username: 'ana', avatarUrl: null } });
+    await settle(fixture);
+    expect(navigate).toHaveBeenCalledWith('/amigos');
+  });
+
+  it('com o Google ainda "em breve", mostra o aviso e continua na tela (CA23)', async () => {
+    const { fixture, element } = await render();
+    buttons(element)[1].click();
+    resolveSignIn({ ok: false, failure: 'unavailable' });
+    await settle(fixture);
+    expect(element.textContent).toContain('Login com o Google em breve.');
+    expect(buttons(element).every((button) => !button.disabled)).toBe(true);
   });
 
   it.each([

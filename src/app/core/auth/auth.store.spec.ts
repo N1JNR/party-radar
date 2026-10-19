@@ -97,6 +97,13 @@ describe('AuthStore', () => {
     });
   });
 
+  it('guarda um aviso para a tela de login, entregue uma vez', () => {
+    const store = setup({});
+    store.rememberFailure('cancelled');
+    expect(store.consumeFailure()).toBe('cancelled');
+    expect(store.consumeFailure()).toBeNull();
+  });
+
   describe('whenReady', () => {
     it('resolve só depois de verificar a sessão salva (CA7)', async () => {
       let finish: (value: { user: AuthUser | null }) => void = () => undefined;

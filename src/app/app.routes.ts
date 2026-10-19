@@ -11,6 +11,13 @@ export const routes: Routes = [
     canActivate: [anonymousOnly],
     loadComponent: () => import('./features/auth/pages/login.page').then((m) => m.LoginPage),
   },
+  // Volta do Discord: sem guard, espera a sessão e decide o destino (spec 001, Parte 2a).
+  {
+    path: 'auth/retorno',
+    title: 'Entrando | Party Radar',
+    loadComponent: () =>
+      import('./features/auth/pages/auth-return.page').then((m) => m.AuthReturnPage),
+  },
   // Telas autenticadas, dentro do layout com o menu (spec 002).
   {
     path: '',

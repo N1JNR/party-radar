@@ -67,6 +67,11 @@ export class AuthStore {
     }
   }
 
+  /** Guarda um aviso para a tela de login (ex.: login cancelado na volta do provedor). */
+  rememberFailure(failure: LoginFailure): void {
+    this.pendingFailure = failure;
+  }
+
   /** Aviso guardado para a tela de login (ex.: sessão expirada). Só é entregue uma vez. */
   consumeFailure(): LoginFailure | null {
     const failure = this.pendingFailure;
