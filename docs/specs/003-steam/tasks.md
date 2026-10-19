@@ -16,7 +16,7 @@ e a guarda no `.env` (pré-requisito da spec).
 - [x] T6 — Edge Function `steam-sync`: lê uma conta (quem está logado) e guarda visibilidade e ponto de partida (CA6, CA7)
 - [x] T7 — Domain do front: endereço de ida à Steam e mensagens da volta, 100% testado (CA1, CA5)
 - [x] T8 — `SteamSource` (real e simulada) e serviço de navegação externa em `core/platform/` (CA2, CA7)
-- [ ] T9 — Rota `/steam/retorno`: chama `steam-connect` e volta ao Meu card com o aviso certo (CA2, CA4, CA5)
+- [x] T9 — Rota `/steam/retorno`: chama `steam-connect` e volta ao Meu card com o aviso certo (CA2, CA4, CA5)
 - [ ] T10 — Card: passo e botão "Conectar Steam"; "Já deixei público" verifica de verdade (CA1, CA6, CA7, CA18)
 - [ ] T11 — Conferência de ponta a ponta com a conta Steam do Jorge, com prints (CA1–CA7)
 - [ ] T12 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final

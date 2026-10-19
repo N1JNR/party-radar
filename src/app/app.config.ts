@@ -11,6 +11,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAuthGateway } from './core/auth/auth-gateway.provider';
+import { provideSteamSource } from './features/steam/data/steam-source.provider';
 import { initTheme } from './core/theme/theme.initializer';
 import { FakeHomeSource } from './features/home/data/fake-home.source';
 import { HOME_DATA_SOURCE } from './features/home/data/home.source';
@@ -27,6 +28,8 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(initTheme),
     // Login com o Discord pelo Supabase; o simulado só em desenvolvimento, com ?simular-login=.
     ...provideAuthGateway(),
+    // Steam real pelas Edge Functions; a simulada só em desenvolvimento, com ?simular=.
+    ...provideSteamSource(),
     // Home simulada (spec 002, layout). A integração troca pela fonte do Supabase.
     { provide: HOME_DATA_SOURCE, useClass: FakeHomeSource },
   ],

@@ -18,6 +18,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/auth-return.page').then((m) => m.AuthReturnPage),
   },
+  // Volta da Steam: exige login para ligar a conta ao perfil (spec 003).
+  {
+    path: 'steam/retorno',
+    title: 'Conectando a Steam | Party Radar',
+    canActivate: [authenticatedOnly],
+    loadComponent: () =>
+      import('./features/steam/pages/steam-return.page').then((m) => m.SteamReturnPage),
+  },
   // Telas autenticadas, dentro do layout com o menu (spec 002).
   {
     path: '',
