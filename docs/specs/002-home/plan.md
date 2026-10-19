@@ -32,6 +32,18 @@ versão para tela estreita com botão de menu.
 abaixo disso; a spec (CA2) e o `DESIGN.md` foram atualizados. Se o `po-menu` não atender ao
 comportamento de teclado do CA2 (Esc, devolver o foco), isso aparece na T5 e volta para decisão.
 
+**Decisões da conferência visual (2026-10-19, T12):**
+
+- O corte real do `po-menu` é **1201 px** (a gaveta vai até 1200 px). A spec (CA2), o `DESIGN.md`
+  e o `AGENTS.md` passam a dizer "acima de 1200 px".
+- A gaveta do `po-menu` abre por uma `div` sem teclado e não fecha com Esc. **Exceção aceita** à
+  regra de não sobrescrever o PO UI: o layout usa um botão próprio, esconde a `div` com CSS, fecha
+  com Esc e devolve o foco (`app-shell.component`).
+- O `po-menu` não marca o item atual com `aria-current`; o destaque é só visual. Limitação do PO UI,
+  registrada aqui.
+- Os cenários de `?simular=` da home se perdem no login simulado (a sessão não sobrevive ao
+  recarregar). Fica para a Parte 2 do login (`001-login/tasks.md`).
+
 ## Arquivos afetados
 
 | Arquivo                                                       | Mudança                                                                                                    |
