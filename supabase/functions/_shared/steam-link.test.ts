@@ -46,7 +46,8 @@ function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
     allowedOrigins: ['http://localhost:4200'],
     confirmWithSteam: () => Promise.resolve(true),
     useNonce: () => Promise.resolve(true),
-    linkAccount: (_userId, steamId) => {
+    findOwner: () => Promise.resolve(null),
+    saveLink: (_userId, steamId) => {
       linked.push(steamId);
       return Promise.resolve('linked');
     },
@@ -141,9 +142,32 @@ Deno.test('só marca a volta como usada depois de a Steam confirmar (CA3)', asyn
 });
 
 Deno.test('conta Steam já ligada a outro perfil (CA4)', async () => {
-  const d = deps({ linkAccount: () => Promise.resolve('taken') });
+  const d = deps({
+    findOwner: () => Promise.resolve({ userId: 'outra-pessoa', baselineMinutes: 50 }),
+  });
+  assertEquals(await connectSteam(d, USER, openId()), { status: 'taken' });
+  assertEquals(d.linked, []);
+  assertEquals(d.saved, []);
+});
+
+Deno.test('outro perfil ligou a mesma conta ao mesmo tempo (CA4)', async () => {
+  const d = deps({ saveLink: () => Promise.resolve('taken') });
   assertEquals(await connectSteam(d, USER, openId()), { status: 'taken' });
   assertEquals(d.saved, []);
+});
+
+Deno.test('reconectar a mesma conta mantém o ponto de partida (CA19)', async () => {
+  const d = deps({ findOwner: () => Promise.resolve({ userId: USER, baselineMinutes: 120 }) });
+  assertEquals((await connectSteam(d, USER, openId())).status, 'connected');
+  assertEquals(d.linked, []);
+  assertEquals('baselineMinutes' in d.saved[0], false);
+});
+
+Deno.test('trocar de conta liga a nova do zero e lê o ponto de partida dela (CA19)', async () => {
+  const d = deps();
+  assertEquals((await connectSteam(d, USER, openId())).status, 'connected');
+  assertEquals(d.linked, [STEAM_ID]);
+  assertEquals(d.saved[0].baselineMinutes, 330);
 });
 
 Deno.test(

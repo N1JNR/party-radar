@@ -66,8 +66,13 @@ export interface ConnectDeps extends SyncDeps {
   confirmWithSteam(params: OpenIdParams): Promise<boolean>;
   /** Marca a volta (`response_nonce`) como usada; `false` se ela já tinha sido usada (CA3). */
   useNonce(nonce: string): Promise<boolean>;
-  /** Liga a conta Steam ao usuário; `taken` quando ela já é de outro perfil (CA4). */
-  linkAccount(userId: string, steamId: string): Promise<'linked' | 'taken'>;
+  /** Quem já tem esta conta Steam ligada, com o ponto de partida dela; `null` se ninguém. */
+  findOwner(steamId: string): Promise<{ userId: string; baselineMinutes: number | null } | null>;
+  /**
+   * Liga a conta Steam ao usuário como nova, sem nada da conta que ele tinha antes (CA19);
+   * `taken` quando outro perfil ligou a mesma conta ao mesmo tempo (CA4).
+   */
+  saveLink(userId: string, steamId: string): Promise<'linked' | 'taken'>;
 }
 
 export type ConnectResult =
@@ -109,9 +114,15 @@ export async function connectSteam(
   if (!(await deps.useNonce(params['response_nonce'] ?? ''))) {
     return { status: 'invalid' };
   }
-  if ((await deps.linkAccount(userId, check.steamId)) === 'taken') {
+  const owner = await deps.findOwner(check.steamId);
+  if (owner && owner.userId !== userId) {
     return { status: 'taken' };
   }
-  const sync = await syncAccount(deps, { userId, steamId: check.steamId, baselineMinutes: null });
+  // Reconectar a mesma conta mantém o ponto de partida das horas (CA19).
+  const baselineMinutes = owner ? owner.baselineMinutes : null;
+  if (!owner && (await deps.saveLink(userId, check.steamId)) === 'taken') {
+    return { status: 'taken' };
+  }
+  const sync = await syncAccount(deps, { userId, steamId: check.steamId, baselineMinutes });
   return { status: 'connected', sync };
 }

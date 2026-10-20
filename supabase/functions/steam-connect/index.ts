@@ -47,24 +47,32 @@ Deno.serve(async (request) => {
           return response.ok && isValidCheckResponse(await response.text());
         },
         useNonce: (nonce) => useNonce(admin, nonce),
-        linkAccount: async (id, steamId) => {
-          const { data: owner, error: findError } = await admin
+        findOwner: async (steamId) => {
+          const { data, error } = await admin
             .from('steam_accounts')
-            .select('user_id')
+            .select('user_id, baseline_minutes')
             .eq('steam_id', steamId)
             .maybeSingle();
-          if (findError) {
-            throw findError;
+          if (error) {
+            throw error;
           }
-          if (owner && owner.user_id !== id) {
-            return 'taken';
-          }
-          const { error } = await admin
-            .from('steam_accounts')
-            .upsert(
-              { user_id: id, steam_id: steamId, baseline_minutes: null, last_synced_at: null },
-              { onConflict: 'user_id' },
-            );
+          return data ? { userId: data.user_id, baselineMinutes: data.baseline_minutes } : null;
+        },
+        saveLink: async (id, steamId) => {
+          // Conta nova: nada da conta anterior (nome, visibilidade, jogo, horas) fica (CA19).
+          const { error } = await admin.from('steam_accounts').upsert(
+            {
+              user_id: id,
+              steam_id: steamId,
+              persona_name: null,
+              visibility: null,
+              current_game: null,
+              baseline_minutes: null,
+              connected_at: new Date().toISOString(),
+              last_synced_at: null,
+            },
+            { onConflict: 'user_id' },
+          );
           // Dois perfis ligando a mesma conta ao mesmo tempo: o segundo cai no SteamID único.
           if (error?.code === '23505') {
             return 'taken';
