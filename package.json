@@ -11,13 +11,14 @@
     "lint": "ng lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run lint && npm run format:check && npm run test:ci && npm run build",
+    "verify": "npm run lint && npm run format:check && npm run test:ci && npm run build && npm run fn:test",
     "verify:all": "npm run verify && npm run db:test",
     "db:start": "supabase start",
     "db:test": "supabase test db",
     "db:types": "supabase gen types typescript --local > src/app/core/supabase/database.types.ts && prettier --write src/app/core/supabase/database.types.ts",
     "serve:ssr:party-radar": "node dist/party-radar/server/server.mjs",
-    "prepare": "husky"
+    "prepare": "husky",
+    "fn:test": "deno check supabase/functions/steam-connect/index.ts supabase/functions/steam-sync/index.ts && deno test --no-prompt supabase/functions"
   },
   "private": true,
   "packageManager": "npm@11.17.0",
@@ -52,6 +53,7 @@
     "@types/node": "^24.19.2",
     "@vitest/coverage-v8": "^4.1.12",
     "angular-eslint": "^21.4.0",
+    "deno": "2.9.6",
     "eslint": "^10.12.0",
     "husky": "^9.1.7",
     "jsdom": "^30.1.2",
@@ -69,7 +71,8 @@
     "esbuild@0.28.1": true,
     "@parcel/watcher": false,
     "lmdb": false,
-    "msgpackr-extract": false
+    "msgpackr-extract": false,
+    "deno@2.9.6": true
   },
   "lint-staged": {
     "*.{ts,html}": [

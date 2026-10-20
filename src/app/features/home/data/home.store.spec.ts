@@ -1,5 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
+import {
+  NOT_CONNECTED,
+  STEAM_SOURCE,
+  SteamAccountState,
+  SteamSource,
+} from '../../steam/data/steam.source';
 import { HOME_DATA_SOURCE, HomeData, HomeDataSource } from './home.source';
 import { HomeStore } from './home.store';
 
@@ -54,7 +60,15 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
   };
 }
 
-function setup(source: Partial<HomeDataSource>): HomeStore {
+const steamAccount = (fields: Partial<SteamAccountState> = {}): SteamAccountState => ({
+  connected: true,
+  visibility: 'private',
+  personaName: 'ana_steam',
+  lastSyncedAt: '2026-10-19T18:00:00Z',
+  ...fields,
+});
+
+function setup(source: Partial<HomeDataSource>, steam: Partial<SteamSource> = {}): HomeStore {
   TestBed.configureTestingModule({
     providers: [
       {
@@ -62,8 +76,15 @@ function setup(source: Partial<HomeDataSource>): HomeStore {
         useValue: {
           load: () => Promise.resolve(homeData()),
           answerPartnership: () => Promise.resolve(),
-          markSteamPublic: () => Promise.resolve(),
           ...source,
+        },
+      },
+      {
+        provide: STEAM_SOURCE,
+        useValue: {
+          account: () => Promise.resolve(steamAccount()),
+          recheck: () => Promise.resolve('public'),
+          ...steam,
         },
       },
     ],
@@ -229,33 +250,106 @@ describe('HomeStore', () => {
     });
   });
 
-  describe('Steam pública (CA8)', () => {
-    it('"Já deixei público" esconde o aviso', async () => {
+  describe('Steam (spec 003)', () => {
+    it('sem Steam conectada, mostra o checklist com "Conectar Steam" (CA1)', async () => {
+      const store = setup({}, { account: () => Promise.resolve(NOT_CONNECTED) });
+      await store.load();
+      expect(store.steamStep()).toBe('not-connected');
+      expect(store.showStrengthen()).toBe(true);
+      expect(store.showSteamNotice()).toBe(false);
+    });
+
+    it('conectada sem a primeira leitura: lendo os dados, com o checklist (CA2, CA19)', async () => {
+      const store = setup(
+        {},
+        { account: () => Promise.resolve(steamAccount({ visibility: null })) },
+      );
+      await store.load();
+      expect(store.steamStep()).toBe('reading');
+      expect(store.firstAccess()).toBe(false);
+      expect(store.showStrengthen()).toBe(true);
+      expect(store.showSteamNotice()).toBe(false);
+    });
+
+    it('conectada e privada: mostra o aviso (CA6)', async () => {
       const store = setup({});
       await store.load();
-      const marking = store.markSteamPublic();
+      expect(store.steamStep()).toBe('private');
+      expect(store.showSteamNotice()).toBe(true);
+      expect(store.showStrengthen()).toBe(false);
+    });
+
+    it('se a conta Steam não puder ser lida, a home abre e segue o que ela diz', async () => {
+      const store = setup({}, { account: () => Promise.reject(new Error('rede')) });
+      await store.load();
+      expect(store.status()).toBe('ready');
+      expect(store.steam()).toBeNull();
+      expect(store.steamStep()).toBe('private');
+      store.data.update((data) => (data ? { ...data, steamPublic: true } : data));
+      expect(store.steamStep()).toBe('public');
+    });
+
+    it('"Já deixei público" com a Steam pública: o aviso some (CA7)', async () => {
+      const store = setup({});
+      await store.load();
+      const checking = store.recheckSteam();
       expect(store.markingSteam()).toBe(true);
-      expect(await marking).toBe(true);
+      expect(await checking).toBe('public');
+      expect(store.steamStep()).toBe('public');
+      expect(store.showSteamNotice()).toBe(false);
       expect(store.data()?.steamPublic).toBe(true);
       expect(store.markingSteam()).toBe(false);
     });
 
-    it('se não salvar, o aviso continua', async () => {
-      const store = setup({ markSteamPublic: () => Promise.reject(new Error('rede')) });
+    it('"Já deixei público" com a Steam ainda privada: o aviso continua (CA7)', async () => {
+      const store = setup({}, { recheck: () => Promise.resolve('private') });
       await store.load();
-      expect(await store.markSteamPublic()).toBe(false);
-      expect(store.data()?.steamPublic).toBe(false);
+      expect(await store.recheckSteam()).toBe('private');
+      expect(store.showSteamNotice()).toBe(true);
     });
 
-    it('sem dados, ou já salvando, não faz nada', async () => {
-      const markSteamPublic = vi.fn(() => Promise.resolve());
-      const store = setup({ markSteamPublic });
-      expect(await store.markSteamPublic()).toBe(false);
+    it('Steam fora do ar ou erro: nada muda (CA15)', async () => {
+      const store = setup({}, { recheck: () => Promise.resolve('unavailable') });
       await store.load();
-      const first = store.markSteamPublic();
-      expect(await store.markSteamPublic()).toBe(false);
+      expect(await store.recheckSteam()).toBe('unavailable');
+      expect(store.showSteamNotice()).toBe(true);
+    });
+
+    it('erro inesperado ao verificar vira indisponível', async () => {
+      const store = setup({}, { recheck: () => Promise.reject(new Error('rede')) });
+      await store.load();
+      expect(await store.recheckSteam()).toBe('unavailable');
+      expect(store.showSteamNotice()).toBe(true);
+    });
+
+    it('sem dados, ou já verificando, não faz nada', async () => {
+      const recheck = vi.fn<SteamSource['recheck']>(() => Promise.resolve('public'));
+      const store = setup({}, { recheck });
+      expect(await store.recheckSteam()).toBeNull();
+      await store.load();
+      const first = store.recheckSteam();
+      expect(await store.recheckSteam()).toBeNull();
       await first;
-      expect(markSteamPublic).toHaveBeenCalledTimes(1);
+      expect(recheck).toHaveBeenCalledTimes(1);
+    });
+
+    it('a resposta que chega depois de sair não mexe em nada', async () => {
+      let finish: (value: 'public') => void = () => undefined;
+      const store = setup({}, { recheck: () => new Promise((resolve) => (finish = resolve)) });
+      await store.load();
+      const checking = store.recheckSteam();
+      store.reset();
+      finish('public');
+      expect(await checking).toBe('public');
+      expect(store.steam()).toBeNull();
+      expect(store.data()).toBeNull();
+    });
+
+    it('sair esquece a conta Steam', async () => {
+      const store = setup({});
+      await store.load();
+      store.reset();
+      expect(store.steam()).toBeNull();
     });
 
     it('uma resposta que chega depois de recarregar não mexe nos dados novos', async () => {
@@ -276,19 +370,6 @@ describe('HomeStore', () => {
       expect(await answer).toBe(true);
       expect(store.data()?.question?.id).toBe('q2');
       expect(store.card()?.partner?.probable).toBe(true);
-    });
-
-    it('uma resposta que chega depois de os dados sumirem é ignorada', async () => {
-      let finish: () => void = () => undefined;
-      const store = setup({
-        markSteamPublic: () => new Promise<void>((resolve) => (finish = resolve)),
-      });
-      await store.load();
-      const marking = store.markSteamPublic();
-      store.data.set(null);
-      finish();
-      expect(await marking).toBe(true);
-      expect(store.data()).toBeNull();
     });
   });
 });

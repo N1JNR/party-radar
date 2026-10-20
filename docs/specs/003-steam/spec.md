@@ -1,6 +1,8 @@
 # 003 — Steam: conectar a conta e dados reais no card
 
-**Status:** aprovada em 2026-10-19
+**Status:** revisão 2 aprovada em 2026-10-20: correções da revisão de código da Parte 3a (volta da
+Steam usada uma vez só, leitura com intervalo mínimo e limite de tempo, "Lendo…" com "Tentar de
+novo"). Revisão anterior: 1, aprovada em 2026-10-19.
 **Relacionada a:** `001-login` (entrar com o Discord; o Google sai na revisão 4, em atividade
 própria) · `002-home` (o card que passa a ter dados reais) · `docs/plano.md` (escopo do MVP).
 
@@ -56,13 +58,20 @@ Feitos pelo dono do projeto, com a conta dele:
   "Conectar Steam" como pendente e o botão "Conectar Steam".
 - **CA2** — Dado que toquei em "Conectar Steam", quando confirmo na página da Steam, então volto
   ao Meu card com a Steam marcada como feita e vejo "Lendo seus dados da Steam…" até a primeira
-  leitura terminar.
-- **CA3 (segurança)** — Dado uma volta da Steam alterada ou forjada, quando o app recebe, então
-  nenhuma conta é conectada: só vale a conta que a própria Steam confirmar ao servidor.
+  leitura terminar. O quadro "Deixe seu card mais forte" fica visível enquanto a leitura não
+  terminar, mesmo fora do primeiro acesso.
+- **CA3 (segurança)** — Dado uma volta da Steam alterada, forjada ou já usada antes, quando o app
+  recebe, então nenhuma conta é conectada: só vale a conta que a própria Steam confirmar ao
+  servidor, e cada volta vale uma vez só.
 - **CA4** — Dado que uma conta Steam já está ligada a outra pessoa no Party Radar, quando tento
   conectá-la, então vejo "Essa conta Steam já está ligada a outro perfil." e nada muda.
 - **CA5 (erro)** — Dado que cancelei na Steam ou a confirmação falhou, quando volto ao app, então
   vejo "Não foi possível conectar a Steam. Tente de novo." e o passo continua pendente.
+- **CA19 (erro)** — Dado que a Steam foi conectada, mas a primeira leitura não terminou (Steam
+  fora do ar ou lenta), quando abro o Meu card, então vejo "Lendo seus dados da Steam…" e o botão
+  "Tentar de novo", que lê a Steam outra vez. Se a Steam continuar fora, vejo "Não foi possível
+  verificar a Steam agora. Tente de novo.". Trocar a conta Steam não mostra dados da conta
+  anterior, e reconectar a mesma conta não muda o ponto de partida das horas.
 
 **Perfil da Steam**
 
@@ -103,6 +112,10 @@ Feitos pelo dono do projeto, com a conta dele:
   não vê nada (até a spec de amigos definir o que amigos veem); quem não está logado não lê nada.
 - **CA17** — Dado o app no navegador, então a chave da Steam Web API nunca aparece no front: as
   leituras da Steam acontecem só no servidor.
+- **CA20 (segurança)** — Dado alguém pedindo a leitura da Steam sem parar, então o servidor lê a
+  Steam no máximo uma vez a cada 30 segundos por pessoa (dentro do intervalo, devolve a última
+  leitura), e cada chamada à Steam desiste em 10 segundos, para a cota da chave e as funções não
+  ficarem presas.
 
 **Acessibilidade**
 
@@ -122,3 +135,6 @@ MVP" não precisa de artboard novo.
       acima), para a patente evoluir junto com o app.
 - [x] **Steam pelas conexões do Discord:** fica para depois; esta spec usa o botão
       "Conectar Steam".
+- [x] **Revisão 2:** a revisão de código da Parte 3a vira critérios (CA2, CA3, CA19, CA20),
+      corrigidos ainda na 3a; o campo `steamPublic` duplicado da home sai na 3b (aprovado em
+      2026-10-20).

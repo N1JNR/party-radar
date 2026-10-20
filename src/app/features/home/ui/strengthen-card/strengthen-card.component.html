@@ -3,18 +3,36 @@
   <p class="panel__text">Quanto mais dados, mais o seu card tem para mostrar.</p>
   <ul class="steps">
     @for (step of steps(); track step.id) {
-      <li class="steps__item" [class.steps__item--done]="step.done">
+      <li class="steps__item" [class.steps__item--done]="step.status === 'done'">
         <po-icon
           class="steps__icon"
-          [p-icon]="step.done ? 'an an-check-circle' : 'an an-circle'"
+          [p-icon]="step.status === 'done' ? 'an an-check-circle' : 'an an-circle'"
           aria-hidden="true"
         />
         <span class="steps__label">{{ step.label }}</span>
-        <span class="steps__state">{{ step.done ? 'Feito' : 'Falta' }}</span>
+        <span class="steps__state">{{ statusLabel(step.status) }}</span>
       </li>
     }
   </ul>
-  @if (needsFriends()) {
-    <po-button p-kind="secondary" p-label="Copiar convite" (p-click)="invite.emit()" />
-  }
+  <div class="panel__actions">
+    @if (reading()) {
+      <po-button
+        p-kind="secondary"
+        p-label="Tentar de novo"
+        [p-loading]="checking()"
+        (p-click)="retrySteam.emit()"
+      />
+    }
+    @if (needsSteam()) {
+      <po-button
+        p-kind="secondary"
+        p-icon="an an-steam-logo"
+        p-label="Conectar Steam"
+        (p-click)="connectSteam.emit()"
+      />
+    }
+    @if (needsFriends()) {
+      <po-button p-kind="secondary" p-label="Copiar convite" (p-click)="invite.emit()" />
+    }
+  </div>
 </section>

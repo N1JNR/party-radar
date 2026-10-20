@@ -48,6 +48,59 @@ export type Database = {
         };
         Relationships: [];
       };
+      steam_accounts: {
+        Row: {
+          baseline_minutes: number | null;
+          connected_at: string;
+          current_game: string | null;
+          last_synced_at: string | null;
+          persona_name: string | null;
+          steam_id: string;
+          sync_attempted_at: string | null;
+          user_id: string;
+          visibility: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          baseline_minutes?: number | null;
+          connected_at?: string;
+          current_game?: string | null;
+          last_synced_at?: string | null;
+          persona_name?: string | null;
+          steam_id: string;
+          sync_attempted_at?: string | null;
+          user_id: string;
+          visibility?: string | null;
+        };
+        Update: {
+          baseline_minutes?: number | null;
+          connected_at?: string;
+          current_game?: string | null;
+          last_synced_at?: string | null;
+          persona_name?: string | null;
+          steam_id?: string;
+          sync_attempted_at?: string | null;
+          user_id?: string;
+          visibility?: string | null;
+        };
+        Relationships: [];
+      };
+      steam_openid_nonces: {
+        Row: {
+          nonce: string;
+          used_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          nonce: string;
+          used_at?: string;
+        };
+        Update: {
+          nonce?: string;
+          used_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

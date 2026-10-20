@@ -33,6 +33,7 @@ npm start            # http://localhost:4200
 | `npm run db:start`                | Supabase local (precisa de Docker)                           |
 | `npm run db:test`                 | testes do banco (RLS)                                        |
 | `npm run db:types`                | gera os tipos TypeScript do banco local                      |
+| `npm run fn:test`                 | testes das Edge Functions (Deno)                             |
 
 ## Hooks do Git
 

@@ -26,8 +26,6 @@ export interface HomeDataSource {
   load(): Promise<HomeData>;
   /** Resposta da pergunta de parceria: jogou ou não jogou junto. */
   answerPartnership(questionId: string, played: boolean): Promise<void>;
-  /** A pessoa avisou que deixou o perfil da Steam público. */
-  markSteamPublic(): Promise<void>;
 }
 
 export const HOME_DATA_SOURCE = new InjectionToken<HomeDataSource>('HOME_DATA_SOURCE');

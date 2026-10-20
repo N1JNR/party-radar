@@ -7,6 +7,7 @@ import { AUTH_GATEWAY, AuthGateway, AuthUser } from '../../core/auth/auth.gatewa
 import { AuthStore } from '../../core/auth/auth.store';
 import { HOME_DATA_SOURCE } from '../../features/home/data/home.source';
 import { HomeStore } from '../../features/home/data/home.store';
+import { STEAM_SOURCE } from '../../features/steam/data/steam.source';
 import { AppShellComponent } from './app-shell.component';
 
 const user: AuthUser = { name: 'Ana Souza', username: 'ana', avatarUrl: null };
@@ -23,6 +24,7 @@ describe('AppShellComponent', () => {
         provideRouter([]),
         { provide: PoNotificationService, useValue: { information } },
         { provide: HOME_DATA_SOURCE, useValue: {} },
+        { provide: STEAM_SOURCE, useValue: {} },
         {
           provide: AUTH_GATEWAY,
           useValue: {
