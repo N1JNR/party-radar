@@ -2,8 +2,23 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PoNotificationService } from '@po-ui/ng-components';
 
 import { ClipboardService } from '../../../core/platform/clipboard.service';
+import { ExternalNavigation } from '../../../core/platform/external-navigation';
+import {
+  NOT_CONNECTED,
+  STEAM_SOURCE,
+  SteamAccountState,
+  SteamSource,
+  SteamVisibility,
+} from '../../steam/data/steam.source';
 import { HOME_DATA_SOURCE, HomeData, HomeDataSource } from '../data/home.source';
 import { HomePage } from './home.page';
+
+const steamAccount = (visibility: SteamVisibility | null): SteamAccountState => ({
+  connected: true,
+  visibility,
+  personaName: 'palmajnr',
+  lastSyncedAt: '2026-10-19T12:00:00Z',
+});
 
 function homeData(overrides: Partial<HomeData> = {}): HomeData {
   return {
@@ -80,22 +95,40 @@ describe('HomePage', () => {
   let error: ReturnType<typeof vi.fn>;
   let copy: ReturnType<typeof vi.fn>;
 
-  async function render(source: Partial<HomeDataSource> = {}, copied = true): Promise<void> {
+  let go: ReturnType<typeof vi.fn>;
+
+  async function render(
+    source: Partial<HomeDataSource> = {},
+    copied = true,
+    steam: Partial<SteamSource> = {},
+  ): Promise<void> {
     information = vi.fn();
     success = vi.fn();
     error = vi.fn();
+    go = vi.fn();
     copy = vi.fn(() => Promise.resolve(copied));
     TestBed.configureTestingModule({
       providers: [
         { provide: PoNotificationService, useValue: { information, success, error } },
         { provide: ClipboardService, useValue: { copy } },
         {
+          provide: ExternalNavigation,
+          useValue: { origin: () => 'http://localhost:4200', go },
+        },
+        {
           provide: HOME_DATA_SOURCE,
           useValue: {
             load: () => Promise.resolve(homeData()),
             answerPartnership: () => Promise.resolve(),
-            markSteamPublic: () => Promise.resolve(),
             ...source,
+          },
+        },
+        {
+          provide: STEAM_SOURCE,
+          useValue: {
+            account: () => Promise.resolve(steamAccount('public')),
+            recheck: () => Promise.resolve('public'),
+            ...steam,
           },
         },
       ],
@@ -153,7 +186,9 @@ describe('HomePage', () => {
   });
 
   it('primeiro acesso: checklist, aviso da Steam e "Nenhum squad ainda" (CA7, CA8, CA10)', async () => {
-    await render({ load: () => Promise.resolve(firstAccess()) });
+    await render({ load: () => Promise.resolve(firstAccess()) }, true, {
+      account: () => Promise.resolve(steamAccount('private')),
+    });
     expect(element.querySelector('app-strengthen-card')).not.toBeNull();
     expect(element.querySelector('app-steam-notice')).not.toBeNull();
     expect(element.querySelector('app-partnership-question')).toBeNull();
@@ -162,21 +197,47 @@ describe('HomePage', () => {
     );
   });
 
-  it('"Já deixei público" esconde o aviso da Steam (CA8)', async () => {
-    await render({ load: () => Promise.resolve(homeData({ steamPublic: false })) });
+  it('sem Steam: "Conectar Steam" leva ao login da própria Steam (spec 003, CA1, CA2)', async () => {
+    await render({}, true, { account: () => Promise.resolve(NOT_CONNECTED) });
+    expect(element.querySelector('app-strengthen-card')).not.toBeNull();
+    button('Conectar Steam')?.click();
+    expect(go).toHaveBeenCalledWith(
+      expect.stringContaining('https://steamcommunity.com/openid/login?'),
+    );
+    expect(go.mock.calls[0][0]).toContain(
+      encodeURIComponent('http://localhost:4200/steam/retorno'),
+    );
+  });
+
+  it('"Já deixei público" com a Steam pública: o aviso some (spec 003, CA7)', async () => {
+    await render({}, true, { account: () => Promise.resolve(steamAccount('private')) });
     button('Já deixei público')?.click();
     await settle();
+    expect(success).toHaveBeenCalledWith('Steam pública. Seus dados vão aparecer no card.');
     expect(element.querySelector('app-steam-notice')).toBeNull();
   });
 
-  it('se não salvar a Steam, avisa o erro e mantém o aviso', async () => {
-    await render({
-      load: () => Promise.resolve(homeData({ steamPublic: false })),
-      markSteamPublic: () => Promise.reject(new Error('rede')),
+  it('"Já deixei público" com a Steam ainda privada: avisa e mantém (spec 003, CA7)', async () => {
+    await render({}, true, {
+      account: () => Promise.resolve(steamAccount('private')),
+      recheck: () => Promise.resolve('private'),
     });
     button('Já deixei público')?.click();
     await settle();
-    expect(error).toHaveBeenCalledWith('Não foi possível salvar. Tente de novo.');
+    expect(information).toHaveBeenCalledWith(
+      'Ainda está privado. Confira os dois itens na Steam e tente de novo.',
+    );
+    expect(element.querySelector('app-steam-notice')).not.toBeNull();
+  });
+
+  it('se a Steam estiver fora do ar, avisa o erro e mantém o aviso (spec 003, CA15)', async () => {
+    await render({}, true, {
+      account: () => Promise.resolve(steamAccount('private')),
+      recheck: () => Promise.resolve('unavailable'),
+    });
+    button('Já deixei público')?.click();
+    await settle();
+    expect(error).toHaveBeenCalledWith('Não foi possível verificar a Steam agora. Tente de novo.');
     expect(element.querySelector('app-steam-notice')).not.toBeNull();
   });
 

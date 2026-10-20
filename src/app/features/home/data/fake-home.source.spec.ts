@@ -157,9 +157,8 @@ describe('FakeHomeSource', () => {
     expect(data.card).toMatchObject({ name: 'Jogador', username: 'jogador', avatarUrl: null });
   });
 
-  it('as ações respondem sem erro', async () => {
+  it('responder a parceria responde sem erro', async () => {
     const source = await setup('full');
     await expect(source.answerPartnership()).resolves.toBeUndefined();
-    await expect(source.markSteamPublic()).resolves.toBeUndefined();
   });
 });

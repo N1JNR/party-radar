@@ -94,10 +94,6 @@ export class FakeHomeSource implements HomeDataSource {
     await wait(this.options.actionDelayMs);
   }
 
-  async markSteamPublic(): Promise<void> {
-    await wait(this.options.actionDelayMs);
-  }
-
   private identity(): Pick<PlayerCard, 'name' | 'username' | 'avatarUrl'> {
     const user = this.auth.user();
     return {

@@ -49,4 +49,13 @@
 .steps__state {
   color: var(--pr-text-muted);
   font-size: var(--font-size-xs);
+  text-align: right;
+}
+.panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+.panel__actions:empty {
+  display: none;
 }

@@ -1,8 +1,10 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
+import { STEAM_SOURCE, SteamAccountState, SteamRecheck } from '../../steam/data/steam.source';
 import { progressFor } from '../domain/patentes';
 import { isFirstAccess, platformShares } from '../domain/player-card';
 import { playingCount, squadOpportunities } from '../domain/squad-opportunity';
+import { SteamStepState } from '../domain/strengthen';
 import { HOME_DATA_SOURCE, HomeData } from './home.source';
 
 /** Um squad no menu do app, com quantos estão jogando agora. */
@@ -21,12 +23,33 @@ export type HomeStatus = 'loading' | 'error' | 'ready';
 @Injectable({ providedIn: 'root' })
 export class HomeStore {
   private readonly source = inject(HOME_DATA_SOURCE);
+  private readonly steamSource = inject(STEAM_SOURCE);
   private loadId = 0;
 
   readonly status = signal<HomeStatus>('loading');
   readonly data = signal<HomeData | null>(null);
+  /** Conta Steam de quem está logado; `null` se não deu para ler (aí vale o que a home diz). */
+  readonly steam = signal<SteamAccountState | null>(null);
   readonly answering = signal(false);
   readonly markingSteam = signal(false);
+
+  /** Onde a Steam está, para o "Deixe seu card mais forte" e o aviso de perfil privado. */
+  readonly steamStep = computed<SteamStepState>(() => {
+    const steam = this.steam();
+    if (!steam) {
+      return this.data()?.steamPublic === false ? 'private' : 'public';
+    }
+    if (!steam.connected) {
+      return 'not-connected';
+    }
+    return steam.visibility ?? 'reading';
+  });
+  /** O checklist aparece no primeiro acesso e enquanto a Steam não foi conectada (CA1). */
+  readonly showStrengthen = computed(
+    () => this.firstAccess() || this.steamStep() === 'not-connected',
+  );
+  /** Aviso da Steam privada (spec 003, CA6). */
+  readonly showSteamNotice = computed(() => this.steamStep() === 'private');
 
   readonly card = computed(() => this.data()?.card ?? null);
   readonly firstAccess = computed(() => {
@@ -65,6 +88,7 @@ export class HomeStore {
   reset(): void {
     this.loadId++;
     this.data.set(null);
+    this.steam.set(null);
     this.status.set('loading');
     this.answering.set(false);
     this.markingSteam.set(false);
@@ -75,9 +99,14 @@ export class HomeStore {
     const id = ++this.loadId;
     this.status.set('loading');
     try {
-      const data = await this.source.load();
+      // A conta Steam vem junto; se ela falhar, a home abre do mesmo jeito.
+      const [data, steam] = await Promise.all([
+        this.source.load(),
+        this.steamSource.account().catch(() => null),
+      ]);
       if (id === this.loadId) {
         this.data.set(data);
+        this.steam.set(steam);
         this.status.set('ready');
       }
     } catch {
@@ -114,19 +143,27 @@ export class HomeStore {
     }
   }
 
-  /** "Já deixei público" (CA8): o aviso some. Devolve `false` se não foi salvo. */
-  async markSteamPublic(): Promise<boolean> {
+  /**
+   * "Já deixei público" (spec 003, CA7): lê a Steam de novo. Se ficou pública, o aviso some;
+   * devolve o resultado para a tela avisar. `null` quando não há o que verificar.
+   */
+  async recheckSteam(): Promise<SteamRecheck | null> {
     if (!this.data() || this.markingSteam()) {
-      return false;
+      return null;
     }
     this.markingSteam.set(true);
     const loadId = this.loadId;
     try {
-      await this.source.markSteamPublic();
-      this.update(loadId, (data) => ({ ...data, steamPublic: true }));
-      return true;
+      const result = await this.steamSource.recheck();
+      if (result !== 'unavailable' && loadId === this.loadId) {
+        this.steam.update((steam) =>
+          steam ? { ...steam, visibility: result, lastSyncedAt: new Date().toISOString() } : steam,
+        );
+        this.update(loadId, (data) => ({ ...data, steamPublic: result === 'public' }));
+      }
+      return result;
     } catch {
-      return false;
+      return 'unavailable';
     } finally {
       this.markingSteam.set(false);
     }
