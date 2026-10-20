@@ -1,6 +1,6 @@
 # 003 — Steam: conectar a conta e dados reais no card
 
-**Status:** revisão 3 em aprovação (2026-10-20): o card mostra também o nome da Steam
+**Status:** revisão 3 aprovada em 2026-10-20: o card mostra também o nome da Steam
 ("N1JNR na Steam"), sem trocar o nome e a foto do Discord (CA21, Parte 3b). Revisões anteriores:
 2 (correções da revisão de código da Parte 3a, aprovada em 2026-10-20) e 1 (aprovada em
 2026-10-19).
@@ -146,6 +146,6 @@ MVP" não precisa de artboard novo.
 - [x] **Revisão 2:** a revisão de código da Parte 3a vira critérios (CA2, CA3, CA19, CA20),
       corrigidos ainda na 3a; o campo `steamPublic` duplicado da home sai na 3b (aprovado em
       2026-10-20).
-- [ ] **Revisão 3:** nome e foto do card ficam os do Discord; com a Steam conectada, o card mostra
+- [x] **Revisão 3:** nome e foto do card ficam os do Discord; com a Steam conectada, o card mostra
       também "<nome na Steam> na Steam" (CA21, na Parte 3b). Pedido do dono do projeto em
-      2026-10-20, a aprovar.
+      2026-10-20 (aprovado em 2026-10-20).
