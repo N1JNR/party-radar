@@ -18,7 +18,23 @@ e a guarda no `.env` (pré-requisito da spec).
 - [x] T8 — `SteamSource` (real e simulada) e serviço de navegação externa em `core/platform/` (CA2, CA7)
 - [x] T9 — Rota `/steam/retorno`: chama `steam-connect` e volta ao Meu card com o aviso certo (CA2, CA4, CA5)
 - [x] T10 — Card: passo e botão "Conectar Steam"; "Já deixei público" verifica de verdade (CA1, CA6, CA7, CA18)
-- [ ] T11 — Conferência de ponta a ponta com a conta Steam do Jorge, com prints (CA1–CA7)
+- [x] T11 — Conferência de ponta a ponta com a conta Steam do Jorge, com prints (CA1–CA7)
+  - Conferido em 2026-10-20 com a conta do Jorge no Supabase local e a chave real da Steam Web API.
+    CA1: sem Steam, o card mostra o passo pendente e o botão. CA2: a ida abre o login da própria
+    Steam, a volta é confirmada com a Steam e grava a conta lida (nome, visibilidade e ponto de
+    partida). CA3: uma volta forjada é recusada pelo servidor (400) e nada é gravado. CA5: cancelar
+    na Steam mostra "Não foi possível conectar a Steam. Tente de novo.". CA6: com a conta marcada
+    como privada, o card mostra o aviso com o caminho. CA7: "Já deixei público" lê a Steam de novo,
+    o aviso some e aparece "Steam pública. Seus dados vão aparecer no card.". Prints 01 a 07 em
+    `prints/`.
+  - Limites da conferência: a Steam entrega os jogos à dona da chave mesmo com o perfil privado,
+    então a conta do Jorge sempre é lida como pública pela chave dele. Para o CA6 e o CA7, a conta
+    foi marcada como privada só no banco local; o caso "continua privado" e o CA4 (conta de outro
+    perfil) ficam cobertos pelos testes das funções e do banco.
+  - Achados: os avisos (toasts) de erro e de sucesso têm texto claro sobre fundo claro (contraste
+    perto de 1,1:1, ilegível), um ajuste de tema a corrigir à parte. Depois de conectar, o quadro
+    "Deixe seu card mais forte" some (só aparece enquanto falta a Steam ou no primeiro acesso), a
+    decidir se deve continuar com tudo marcado como feito.
 - [ ] T12 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
 
 ## Parte 3b — Dados reais no card (`feat/003-dados-steam-card`)
