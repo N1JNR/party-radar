@@ -1,8 +1,9 @@
 # 003 — Steam: conectar a conta e dados reais no card
 
-**Status:** revisão 2 aprovada em 2026-10-20: correções da revisão de código da Parte 3a (volta da
-Steam usada uma vez só, leitura com intervalo mínimo e limite de tempo, "Lendo…" com "Tentar de
-novo"). Revisão anterior: 1, aprovada em 2026-10-19.
+**Status:** revisão 3 em aprovação (2026-10-20): o card mostra também o nome da Steam
+("N1JNR na Steam"), sem trocar o nome e a foto do Discord (CA21, Parte 3b). Revisões anteriores:
+2 (correções da revisão de código da Parte 3a, aprovada em 2026-10-20) e 1 (aprovada em
+2026-10-19).
 **Relacionada a:** `001-login` (entrar com o Discord; o Google sai na revisão 4, em atividade
 própria) · `002-home` (o card que passa a ter dados reais) · `docs/plano.md` (escopo do MVP).
 
@@ -27,6 +28,9 @@ Discord; a Steam entra como uma **conta conectada**, depois do login.
   o jogo aberto agora a cada poucos minutos, para quem conectou.
 - O card passa a mostrar dados reais do mês: **horas**, **número de jogos**, **jogo do mês**,
   **patente**, **"Jogando <jogo> agora"** e **onde joga**.
+- O nome, o @usuário e a foto do card continuam os do Discord (spec 001). Com a Steam conectada,
+  o card mostra também o nome público da Steam, como **"N1JNR na Steam"**. O nome de login da
+  conta Steam (o usado para entrar na Steam) nunca é lido nem mostrado: a Steam não o informa.
 - O que depende de amigos (parceiro de squad, pergunta de parceria, amigos jogando agora,
   squads) mostra os estados vazios da home, e não mais os dados de exemplo, até a spec de amigos.
 - O título do mês fica escondido até existir uma regra para ele.
@@ -97,6 +101,10 @@ Feitos pelo dono do projeto, com a conta dele:
 - **CA13 (vazio)** — Dado que ainda não existe a spec de amigos, então parceiro de squad, pergunta
   de parceria, amigos jogando agora e squads mostram os estados vazios da home, sem dados de
   exemplo.
+- **CA21** — Dado que conectei a Steam e ela já foi lida, quando abro o Meu card, então vejo, logo
+  abaixo do @usuário do Discord, "<nome na Steam> na Steam" (ex.: "N1JNR na Steam"), com o nome
+  público atual da Steam (muda na leitura seguinte, se eu trocar lá). Nome e foto do card continuam
+  os do Discord. Sem Steam conectada, ou antes da primeira leitura, a linha não aparece.
 
 **Leitura automática e falhas**
 
@@ -138,3 +146,6 @@ MVP" não precisa de artboard novo.
 - [x] **Revisão 2:** a revisão de código da Parte 3a vira critérios (CA2, CA3, CA19, CA20),
       corrigidos ainda na 3a; o campo `steamPublic` duplicado da home sai na 3b (aprovado em
       2026-10-20).
+- [ ] **Revisão 3:** nome e foto do card ficam os do Discord; com a Steam conectada, o card mostra
+      também "<nome na Steam> na Steam" (CA21, na Parte 3b). Pedido do dono do projeto em
+      2026-10-20, a aprovar.
