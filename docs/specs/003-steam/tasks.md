@@ -36,6 +36,18 @@ e a guarda no `.env` (pré-requisito da spec).
     "Deixe seu card mais forte" some (só aparece enquanto falta a Steam ou no primeiro acesso), a
     decidir se deve continuar com tudo marcado como feito.
 - [ ] T12 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
+  - `/code-review` (high) em 2026-10-20: 9 achados. 7 viram as tarefas T12a–T12e (revisão 2 da
+    spec); o `steamPublic` duplicado da home sai na 3b.
+- [ ] T12a — Volta da Steam usada uma vez só: tabela `steam_openid_nonces` (RLS, só o servidor
+      grava, limpeza das antigas) com pgTAP; `steam-connect` recusa a volta repetida (CA3)
+- [ ] T12b — Ligar a conta: trocar de conta zera nome, visibilidade e jogo da anterior; reconectar a
+      mesma conta mantém o ponto de partida (CA19)
+- [ ] T12c — Erro de banco na primeira leitura não desfaz "conectada" (leitura fica pendente) e
+      cada chamada à Steam desiste em 10 s (CA19, CA20)
+- [ ] T12d — `steam-sync` lê a Steam no máximo a cada 30 s por pessoa; dentro do intervalo devolve
+      a última leitura (CA20)
+- [ ] T12e — Card: quadro visível enquanto lê, com "Tentar de novo"; a volta da Steam usa
+      `openIdFromSearch` (CA2, CA19)
 
 ## Parte 3b — Dados reais no card (`feat/003-dados-steam-card`)
 

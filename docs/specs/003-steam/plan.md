@@ -105,6 +105,21 @@ cresceu nas fotos. As contas são feitas por uma função SQL (`security invoker
 **RLS:** `select` só da própria linha (`user_id = auth.uid()`), CA16. Sem `insert`, `update` ou
 `delete` pela API: só as Edge Functions gravam, com a secret key.
 
+Revisão 2 (CA20): coluna `sync_attempted_at` (`timestamptz`), a última vez que o `steam-sync`
+tentou ler a Steam, com sucesso ou não. O `steam-sync` só lê se ela for nula ou tiver mais de 30 s,
+reservando o horário num `update ... where` só (duas chamadas juntas não leem as duas).
+
+### `steam_openid_nonces` (3a, revisão 2)
+
+| Coluna    | Tipo          | Regra                                            |
+| --------- | ------------- | ------------------------------------------------ |
+| `nonce`   | `text`        | PK: o `response_nonce` assinado pela Steam (CA3) |
+| `used_at` | `timestamptz` | `default now()`                                  |
+
+O `steam-connect` grava o nonce depois de a Steam confirmar a volta; se ele já existe, a volta é
+recusada. Nonces com mais de 10 minutos são apagados a cada conexão (a volta vale só 5 minutos).
+**RLS** ligado e sem policies: só a secret key lê e grava.
+
 ### `steam_playtime_snapshots` (3b)
 
 | Coluna          | Tipo      | Regra                                         |
