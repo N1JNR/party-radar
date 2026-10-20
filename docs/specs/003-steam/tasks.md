@@ -44,7 +44,7 @@ e a guarda no `.env` (pré-requisito da spec).
       mesma conta mantém o ponto de partida (CA19)
 - [x] T12c — Erro de banco na primeira leitura não desfaz "conectada" (leitura fica pendente) e
       cada chamada à Steam desiste em 10 s (CA19, CA20)
-- [ ] T12d — `steam-sync` lê a Steam no máximo a cada 30 s por pessoa; dentro do intervalo devolve
+- [x] T12d — `steam-sync` lê a Steam no máximo a cada 30 s por pessoa; dentro do intervalo devolve
       a última leitura (CA20)
 - [ ] T12e — Card: quadro visível enquanto lê, com "Tentar de novo"; a volta da Steam usa
       `openIdFromSearch` (CA2, CA19)

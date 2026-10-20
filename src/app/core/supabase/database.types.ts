@@ -56,6 +56,7 @@ export type Database = {
           last_synced_at: string | null;
           persona_name: string | null;
           steam_id: string;
+          sync_attempted_at: string | null;
           user_id: string;
           visibility: string | null;
         };
@@ -67,6 +68,7 @@ export type Database = {
           last_synced_at?: string | null;
           persona_name?: string | null;
           steam_id: string;
+          sync_attempted_at?: string | null;
           user_id: string;
           visibility?: string | null;
         };
@@ -77,6 +79,7 @@ export type Database = {
           last_synced_at?: string | null;
           persona_name?: string | null;
           steam_id?: string;
+          sync_attempted_at?: string | null;
           user_id?: string;
           visibility?: string | null;
         };

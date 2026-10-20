@@ -3,7 +3,7 @@
 
 import { SupabaseClient, createClient } from 'npm:@supabase/supabase-js@2.118.0';
 
-import { Fetch, readSteam, withTimeout } from './steam-api.ts';
+import { Fetch, Visibility, readSteam, withTimeout } from './steam-api.ts';
 import { ReadingPatch, SteamAccount, SyncDeps } from './steam-link.ts';
 
 function env(name: string): string {
@@ -65,20 +65,46 @@ export async function useNonce(admin: SupabaseClient, nonce: string): Promise<bo
   return true;
 }
 
-/** Conta Steam do usuário, ou `null` se ele ainda não conectou. */
+/** Conta Steam do usuário, com a última visibilidade lida, ou `null` se ele ainda não conectou. */
 export async function accountOf(
   admin: SupabaseClient,
   userId: string,
-): Promise<SteamAccount | null> {
+): Promise<(SteamAccount & { visibility: Visibility | null }) | null> {
   const { data, error } = await admin
     .from('steam_accounts')
-    .select('steam_id, baseline_minutes')
+    .select('steam_id, baseline_minutes, visibility')
     .eq('user_id', userId)
     .maybeSingle();
   if (error) {
     throw error;
   }
-  return data ? { userId, steamId: data.steam_id, baselineMinutes: data.baseline_minutes } : null;
+  if (!data) {
+    return null;
+  }
+  const visibility =
+    data.visibility === 'public' || data.visibility === 'private' ? data.visibility : null;
+  return { userId, steamId: data.steam_id, baselineMinutes: data.baseline_minutes, visibility };
+}
+
+/**
+ * Reserva a leitura da Steam (CA20) num `update` só: grava o horário da tentativa se a última
+ * foi antes de `before`. Duas chamadas juntas não leem as duas.
+ */
+export async function claimSync(
+  admin: SupabaseClient,
+  userId: string,
+  before: Date,
+): Promise<boolean> {
+  const { data, error } = await admin
+    .from('steam_accounts')
+    .update({ sync_attempted_at: new Date().toISOString() })
+    .eq('user_id', userId)
+    .or(`sync_attempted_at.is.null,sync_attempted_at.lt.${before.toISOString()}`)
+    .select('user_id');
+  if (error) {
+    throw error;
+  }
+  return data.length > 0;
 }
 
 /** Leitura da Steam (com a chave do servidor) e gravação no banco, para `syncAccount`. */

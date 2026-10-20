@@ -32,6 +32,34 @@ export interface SyncDeps {
 
 export type SyncResult = { status: 'synced'; visibility: Visibility } | { status: 'unavailable' };
 
+/** Intervalo mínimo entre leituras pedidas pelo app (CA20). */
+export const MIN_SYNC_INTERVAL_MS = 30_000;
+
+export interface RecheckDeps extends SyncDeps {
+  /**
+   * Reserva a leitura se a última tentativa for anterior a `before` (ou se nunca houve).
+   * `false` quando outra leitura aconteceu há pouco.
+   */
+  claimSync(userId: string, before: Date): Promise<boolean>;
+}
+
+/**
+ * "Já deixei público" e "Tentar de novo" (CA7, CA19): lê a Steam no máximo a cada 30 segundos
+ * por pessoa (CA20). Dentro do intervalo, devolve a última leitura guardada, sem chamar a Steam.
+ */
+export async function recheckAccount(
+  deps: RecheckDeps,
+  account: SteamAccount & { visibility: Visibility | null },
+): Promise<SyncResult> {
+  const before = new Date(deps.now().getTime() - MIN_SYNC_INTERVAL_MS);
+  if (!(await deps.claimSync(account.userId, before))) {
+    return account.visibility
+      ? { status: 'synced', visibility: account.visibility }
+      : { status: 'unavailable' };
+  }
+  return syncAccount(deps, account);
+}
+
 /**
  * Lê a Steam de uma conta e guarda o resultado. Se a Steam falhar, nada é sobrescrito: o card
  * continua com a última leitura (CA15).

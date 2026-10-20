@@ -3,7 +3,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(12);
+select plan(13);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-0000000000a1', 'ana.steam@exemplo.test', '{"full_name": "Ana"}'),
@@ -45,6 +45,14 @@ select is(
    where user_id = '00000000-0000-0000-0000-0000000000a1'),
   true,
   'guarda quando a conta foi conectada'
+);
+
+-- CA20: a última tentativa de leitura começa vazia.
+select is(
+  (select sync_attempted_at from public.steam_accounts
+   where user_id = '00000000-0000-0000-0000-0000000000a1'),
+  null,
+  'conta nova ainda não tentou ler a Steam'
 );
 
 -- CA16: Ana logada.

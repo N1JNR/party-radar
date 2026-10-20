@@ -1,7 +1,14 @@
 import { assertEquals, assertRejects } from 'jsr:@std/assert@1';
 
 import { SteamReading, SteamUnavailableError } from './steam-api.ts';
-import { ConnectDeps, ReadingPatch, connectSteam, syncAccount } from './steam-link.ts';
+import {
+  ConnectDeps,
+  MIN_SYNC_INTERVAL_MS,
+  ReadingPatch,
+  connectSteam,
+  recheckAccount,
+  syncAccount,
+} from './steam-link.ts';
 import { OpenIdParams, STEAM_OPENID_ENDPOINT } from './steam-openid.ts';
 
 const NOW = new Date('2026-10-19T18:02:00Z');
@@ -226,4 +233,42 @@ Deno.test('erro que não é da Steam sobe, para a função responder erro', asyn
     Error,
     'bug',
   );
+});
+
+Deno.test(
+  '"Já deixei público": lê a Steam se a última tentativa passou do intervalo (CA20)',
+  async () => {
+    const befores: Date[] = [];
+    const d = {
+      ...deps(),
+      claimSync: (_userId: string, before: Date) => (befores.push(before), Promise.resolve(true)),
+    };
+    const account = {
+      userId: USER,
+      steamId: STEAM_ID,
+      baselineMinutes: 120,
+      visibility: 'private' as const,
+    };
+    assertEquals(await recheckAccount(d, account), { status: 'synced', visibility: 'public' });
+    assertEquals(befores, [new Date(NOW.getTime() - MIN_SYNC_INTERVAL_MS)]);
+    assertEquals(d.saved.length, 1);
+  },
+);
+
+Deno.test('dentro do intervalo, devolve a última leitura sem chamar a Steam (CA20)', async () => {
+  let read = false;
+  const d = {
+    ...deps({ readSteam: () => ((read = true), Promise.resolve(publicReading)) }),
+    claimSync: () => Promise.resolve(false),
+  };
+  const account = { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 };
+  assertEquals(await recheckAccount(d, { ...account, visibility: 'private' }), {
+    status: 'synced',
+    visibility: 'private',
+  });
+  assertEquals(await recheckAccount(d, { ...account, visibility: null }), {
+    status: 'unavailable',
+  });
+  assertEquals(read, false);
+  assertEquals(d.saved, []);
 });
