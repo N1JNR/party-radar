@@ -4,10 +4,10 @@
 
 ## Entrega em duas partes
 
-| Parte                        | Branch                      | O que entrega                                                                                          | Critérios          |
-| ---------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------ |
-| **3a — Conectar a Steam**    | `feat/003-conectar-steam`   | conta Steam ligada ao perfil, confirmação no servidor, primeira leitura, aviso de perfil privado real  | CA1–CA7, CA16–CA18 |
-| **3b — Dados reais no card** | `feat/003-dados-steam-card` | leitura diária e do "jogando agora", horas do mês, patente e card com dados reais; vazios sem exemplos | CA8–CA15           |
+| Parte                        | Branch                      | O que entrega                                                                                                             | Critérios          |
+| ---------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| **3a — Conectar a Steam**    | `feat/003-conectar-steam`   | conta Steam ligada ao perfil, confirmação no servidor, primeira leitura, aviso de perfil privado real                     | CA1–CA7, CA16–CA18 |
+| **3b — Dados reais no card** | `feat/003-dados-steam-card` | leitura diária e do "jogando agora", horas do mês, patente e card com dados reais; vazios sem exemplos; "<nome> na Steam" | CA8–CA15, CA21     |
 
 A 3a já deixa o card com o passo "Conectar Steam" funcionando; a 3b troca os dados de exemplo pelos
 reais. Cada parte tem PR próprio.
@@ -84,7 +84,7 @@ cresceu nas fotos. As contas são feitas por uma função SQL (`security invoker
 | `src/app/features/home/domain/player-card.ts`        | alterado: horas do mês separadas das horas da patente; "estimativa"; "Atualizado há"             |
 | `src/app/features/home/data/supabase-home.source.ts` | novo: fonte real da home (perfil, Steam, `my_card_stats`); amigos e squads vazios                |
 | `src/app/features/home/data/home-source.provider.ts` | novo: fonte real por padrão; a simulada só com `?simular=` em desenvolvimento                    |
-| `src/app/features/home/ui/player-card/*`             | alterado: horas do mês, "estimativa", "Atualizado há <tempo>"                                    |
+| `src/app/features/home/ui/player-card/*`             | alterado: horas do mês, "estimativa", "Atualizado há <tempo>" e "<nome> na Steam" (CA21)         |
 | `src/app/features/home/pages/home.page.*`            | alterado: "Lendo seus dados da Steam…" e atualização do "jogando agora" a cada minuto            |
 
 ## Dados
