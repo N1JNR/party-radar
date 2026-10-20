@@ -43,6 +43,28 @@ export function allowedOrigins(): string[] {
     .filter(Boolean);
 }
 
+/** A volta vale 5 minutos; os nonces ficam 10 e depois são apagados. */
+const NONCE_KEEP_MS = 10 * 60_000;
+
+/**
+ * Marca a volta da Steam como usada (CA3). Devolve `false` se ela já tinha sido usada. Aproveita
+ * para apagar as antigas; se a limpeza falhar, a conexão segue.
+ */
+export async function useNonce(admin: SupabaseClient, nonce: string): Promise<boolean> {
+  const { error } = await admin.from('steam_openid_nonces').insert({ nonce });
+  if (error?.code === '23505') {
+    return false;
+  }
+  if (error) {
+    throw error;
+  }
+  await admin
+    .from('steam_openid_nonces')
+    .delete()
+    .lt('used_at', new Date(Date.now() - NONCE_KEEP_MS).toISOString());
+  return true;
+}
+
 /** Conta Steam do usuário, ou `null` se ele ainda não conectou. */
 export async function accountOf(
   admin: SupabaseClient,

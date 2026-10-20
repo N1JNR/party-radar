@@ -38,7 +38,7 @@ e a guarda no `.env` (pré-requisito da spec).
 - [ ] T12 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
   - `/code-review` (high) em 2026-10-20: 9 achados. 7 viram as tarefas T12a–T12e (revisão 2 da
     spec); o `steamPublic` duplicado da home sai na 3b.
-- [ ] T12a — Volta da Steam usada uma vez só: tabela `steam_openid_nonces` (RLS, só o servidor
+- [x] T12a — Volta da Steam usada uma vez só: tabela `steam_openid_nonces` (RLS, só o servidor
       grava, limpeza das antigas) com pgTAP; `steam-connect` recusa a volta repetida (CA3)
 - [ ] T12b — Ligar a conta: trocar de conta zera nome, visibilidade e jogo da anterior; reconectar a
       mesma conta mantém o ponto de partida (CA19)

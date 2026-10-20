@@ -8,7 +8,7 @@ import {
   checkAuthenticationBody,
   isValidCheckResponse,
 } from '../_shared/steam-openid.ts';
-import { adminClient, allowedOrigins, callerId, syncDeps } from '../_shared/supabase.ts';
+import { adminClient, allowedOrigins, callerId, syncDeps, useNonce } from '../_shared/supabase.ts';
 
 Deno.serve(async (request) => {
   const early = preflight(request);
@@ -46,6 +46,7 @@ Deno.serve(async (request) => {
           });
           return response.ok && isValidCheckResponse(await response.text());
         },
+        useNonce: (nonce) => useNonce(admin, nonce),
         linkAccount: async (id, steamId) => {
           const { data: owner, error: findError } = await admin
             .from('steam_accounts')

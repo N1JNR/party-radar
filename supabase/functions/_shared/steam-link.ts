@@ -64,6 +64,8 @@ export interface ConnectDeps extends SyncDeps {
   allowedOrigins: readonly string[];
   /** Pergunta à Steam se a resposta é dela (`check_authentication`). */
   confirmWithSteam(params: OpenIdParams): Promise<boolean>;
+  /** Marca a volta (`response_nonce`) como usada; `false` se ela já tinha sido usada (CA3). */
+  useNonce(nonce: string): Promise<boolean>;
   /** Liga a conta Steam ao usuário; `taken` quando ela já é de outro perfil (CA4). */
   linkAccount(userId: string, steamId: string): Promise<'linked' | 'taken'>;
 }
@@ -82,8 +84,8 @@ function expectedReturnTo(params: OpenIdParams, allowed: readonly string[]): str
 
 /**
  * Conecta a conta Steam que a própria Steam confirmar (CA3): regras locais, depois a conferência
- * com a Steam, depois a ligação ao perfil (uma conta Steam por perfil, CA4) e a primeira
- * leitura (CA2).
+ * com a Steam, a volta usada uma vez só, a ligação ao perfil (uma conta Steam por perfil, CA4) e
+ * a primeira leitura (CA2).
  */
 export async function connectSteam(
   deps: ConnectDeps,
@@ -100,6 +102,11 @@ export async function connectSteam(
     maxAgeMs: MAX_ASSERTION_AGE_MS,
   });
   if (!check.ok || !(await deps.confirmWithSteam(params))) {
+    return { status: 'invalid' };
+  }
+  // Depois da Steam confirmar, para guardar só voltas de verdade. Duas voltas iguais ao mesmo
+  // tempo: só uma passa pela chave primária.
+  if (!(await deps.useNonce(params['response_nonce'] ?? ''))) {
     return { status: 'invalid' };
   }
   if ((await deps.linkAccount(userId, check.steamId)) === 'taken') {

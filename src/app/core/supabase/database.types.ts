@@ -82,6 +82,22 @@ export type Database = {
         };
         Relationships: [];
       };
+      steam_openid_nonces: {
+        Row: {
+          nonce: string;
+          used_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          nonce: string;
+          used_at?: string;
+        };
+        Update: {
+          nonce?: string;
+          used_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

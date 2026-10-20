@@ -45,6 +45,7 @@ function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
     linked,
     allowedOrigins: ['http://localhost:4200'],
     confirmWithSteam: () => Promise.resolve(true),
+    useNonce: () => Promise.resolve(true),
     linkAccount: (_userId, steamId) => {
       linked.push(steamId);
       return Promise.resolve('linked');
@@ -107,6 +108,36 @@ Deno.test('resposta que a Steam não confirma não conecta (CA3)', async () => {
   const d = deps({ confirmWithSteam: () => Promise.resolve(false) });
   assertEquals(await connectSteam(d, USER, openId()), { status: 'invalid' });
   assertEquals(d.linked, []);
+});
+
+Deno.test('volta já usada não conecta de novo (CA3, revisão 2)', async () => {
+  const used = new Set<string>();
+  const d = deps({
+    useNonce: (nonce) => {
+      if (used.has(nonce)) {
+        return Promise.resolve(false);
+      }
+      used.add(nonce);
+      return Promise.resolve(true);
+    },
+  });
+  assertEquals((await connectSteam(d, USER, openId())).status, 'connected');
+  assertEquals(await connectSteam(d, 'outra-pessoa', openId()), { status: 'invalid' });
+  assertEquals(d.linked, [STEAM_ID]);
+  assertEquals([...used], ['2026-10-19T18:00:00Zabc']);
+});
+
+Deno.test('só marca a volta como usada depois de a Steam confirmar (CA3)', async () => {
+  const nonces: string[] = [];
+  const d = deps({
+    confirmWithSteam: () => Promise.resolve(false),
+    useNonce: (nonce) => {
+      nonces.push(nonce);
+      return Promise.resolve(true);
+    },
+  });
+  assertEquals(await connectSteam(d, USER, openId()), { status: 'invalid' });
+  assertEquals(nonces, []);
 });
 
 Deno.test('conta Steam já ligada a outro perfil (CA4)', async () => {
