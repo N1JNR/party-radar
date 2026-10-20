@@ -3,7 +3,7 @@
 
 import { SupabaseClient, createClient } from 'npm:@supabase/supabase-js@2.118.0';
 
-import { Fetch, readSteam } from './steam-api.ts';
+import { Fetch, readSteam, withTimeout } from './steam-api.ts';
 import { ReadingPatch, SteamAccount, SyncDeps } from './steam-link.ts';
 
 function env(name: string): string {
@@ -82,7 +82,10 @@ export async function accountOf(
 }
 
 /** Leitura da Steam (com a chave do servidor) e gravação no banco, para `syncAccount`. */
-export function syncDeps(admin: SupabaseClient, fetch: Fetch = globalThis.fetch): SyncDeps {
+export function syncDeps(
+  admin: SupabaseClient,
+  fetch: Fetch = withTimeout(globalThis.fetch),
+): SyncDeps {
   const key = env('STEAM_WEB_API_KEY');
   return {
     readSteam: (steamId) => readSteam(fetch, key, steamId),

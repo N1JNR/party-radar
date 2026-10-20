@@ -5,6 +5,17 @@ const API = 'https://api.steampowered.com';
 
 export type Fetch = (url: string) => Promise<Response>;
 
+/** Quanto esperar a Steam antes de desistir (CA20). */
+export const STEAM_TIMEOUT_MS = 10_000;
+
+/** `fetch` que desiste depois de `ms`: a Steam lenta não prende a função (CA20). */
+export function withTimeout(
+  fetch: (url: string, init?: RequestInit) => Promise<Response>,
+  ms = STEAM_TIMEOUT_MS,
+): (url: string, init?: RequestInit) => Promise<Response> {
+  return (url, init = {}) => fetch(url, { ...init, signal: AbortSignal.timeout(ms) });
+}
+
 export type Visibility = 'public' | 'private';
 
 export interface SteamGame {

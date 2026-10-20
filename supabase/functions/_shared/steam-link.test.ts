@@ -47,6 +47,7 @@ function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
     confirmWithSteam: () => Promise.resolve(true),
     useNonce: () => Promise.resolve(true),
     findOwner: () => Promise.resolve(null),
+    onSyncError: () => undefined,
     saveLink: (_userId, steamId) => {
       linked.push(steamId);
       return Promise.resolve('linked');
@@ -179,6 +180,23 @@ Deno.test(
       sync: { status: 'unavailable' },
     });
     assertEquals(d.saved, []);
+  },
+);
+
+Deno.test(
+  'erro inesperado na primeira leitura: continua conectada e registra o erro (CA19)',
+  async () => {
+    const errors: unknown[] = [];
+    const d = deps({
+      saveReading: () => Promise.reject(new Error('banco fora')),
+      onSyncError: (error) => errors.push(error),
+    });
+    assertEquals(await connectSteam(d, USER, openId()), {
+      status: 'connected',
+      sync: { status: 'unavailable' },
+    });
+    assertEquals(d.linked, [STEAM_ID]);
+    assertEquals((errors[0] as Error).message, 'banco fora');
   },
 );
 

@@ -2,6 +2,7 @@
 // app pegou na URL, confere com a Steam e liga a conta ao perfil de quem chamou.
 
 import { json, preflight } from '../_shared/http.ts';
+import { withTimeout } from '../_shared/steam-api.ts';
 import { connectSteam } from '../_shared/steam-link.ts';
 import {
   STEAM_OPENID_ENDPOINT,
@@ -40,13 +41,19 @@ Deno.serve(async (request) => {
         ...syncDeps(admin),
         allowedOrigins: allowedOrigins(),
         confirmWithSteam: async (openid) => {
-          const response = await fetch(STEAM_OPENID_ENDPOINT, {
-            method: 'POST',
-            body: checkAuthenticationBody(openid),
-          });
-          return response.ok && isValidCheckResponse(await response.text());
+          try {
+            const response = await withTimeout(fetch)(STEAM_OPENID_ENDPOINT, {
+              method: 'POST',
+              body: checkAuthenticationBody(openid),
+            });
+            return response.ok && isValidCheckResponse(await response.text());
+          } catch {
+            // Steam fora do ar ou lenta (CA20): não dá para confirmar, então não conecta (CA5).
+            return false;
+          }
         },
         useNonce: (nonce) => useNonce(admin, nonce),
+        onSyncError: (error) => console.error('steam-connect: primeira leitura falhou', error),
         findOwner: async (steamId) => {
           const { data, error } = await admin
             .from('steam_accounts')

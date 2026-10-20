@@ -73,6 +73,8 @@ export interface ConnectDeps extends SyncDeps {
    * `taken` quando outro perfil ligou a mesma conta ao mesmo tempo (CA4).
    */
   saveLink(userId: string, steamId: string): Promise<'linked' | 'taken'>;
+  /** Registra uma falha inesperada na primeira leitura (a conta continua conectada). */
+  onSyncError(error: unknown): void;
 }
 
 export type ConnectResult =
@@ -123,6 +125,14 @@ export async function connectSteam(
   if (!owner && (await deps.saveLink(userId, check.steamId)) === 'taken') {
     return { status: 'taken' };
   }
-  const sync = await syncAccount(deps, { userId, steamId: check.steamId, baselineMinutes });
+  // A conta já está ligada: se a primeira leitura falhar, ela fica pendente, e o app mostra
+  // "Lendo seus dados da Steam…" com "Tentar de novo" (CA19), em vez de dizer que não conectou.
+  let sync: SyncResult;
+  try {
+    sync = await syncAccount(deps, { userId, steamId: check.steamId, baselineMinutes });
+  } catch (error) {
+    deps.onSyncError(error);
+    sync = { status: 'unavailable' };
+  }
   return { status: 'connected', sync };
 }

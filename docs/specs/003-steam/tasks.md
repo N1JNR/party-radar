@@ -42,7 +42,7 @@ e a guarda no `.env` (pré-requisito da spec).
       grava, limpeza das antigas) com pgTAP; `steam-connect` recusa a volta repetida (CA3)
 - [x] T12b — Ligar a conta: trocar de conta zera nome, visibilidade e jogo da anterior; reconectar a
       mesma conta mantém o ponto de partida (CA19)
-- [ ] T12c — Erro de banco na primeira leitura não desfaz "conectada" (leitura fica pendente) e
+- [x] T12c — Erro de banco na primeira leitura não desfaz "conectada" (leitura fica pendente) e
       cada chamada à Steam desiste em 10 s (CA19, CA20)
 - [ ] T12d — `steam-sync` lê a Steam no máximo a cada 30 s por pessoa; dentro do intervalo devolve
       a última leitura (CA20)

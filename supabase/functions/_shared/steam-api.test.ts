@@ -7,7 +7,15 @@ import {
   parsePlayerSummary,
   readSteam,
   recentMinutes,
+  withTimeout,
 } from './steam-api.ts';
+
+/** `fetch` que nunca responde: só termina quando o pedido é cancelado. */
+function hangingFetch(_url: string, init?: RequestInit): Promise<Response> {
+  return new Promise((_resolve, reject) => {
+    init?.signal?.addEventListener('abort', () => reject(init.signal?.reason));
+  });
+}
 
 const STEAM_ID = '76561198000000001';
 
@@ -166,3 +174,22 @@ Deno.test(
     }
   },
 );
+
+Deno.test('withTimeout: Steam que não responde vira Steam indisponível (CA20)', async () => {
+  await assertRejects(
+    () => readSteam(withTimeout(hangingFetch, 10), 'k', STEAM_ID),
+    SteamUnavailableError,
+  );
+});
+
+Deno.test('withTimeout: repassa o pedido e devolve a resposta a tempo', async () => {
+  const seen: RequestInit[] = [];
+  const fetch = withTimeout((_url, init) => {
+    seen.push(init ?? {});
+    return Promise.resolve(new Response('ok'));
+  }, 1_000);
+  const response = await fetch('https://steam.test', { method: 'POST' });
+  assertEquals(await response.text(), 'ok');
+  assertEquals(seen[0].method, 'POST');
+  assertEquals(seen[0].signal instanceof AbortSignal, true);
+});
