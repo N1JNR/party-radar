@@ -35,9 +35,17 @@ e a guarda no `.env` (pré-requisito da spec).
     perto de 1,1:1, ilegível), um ajuste de tema a corrigir à parte. Depois de conectar, o quadro
     "Deixe seu card mais forte" some (só aparece enquanto falta a Steam ou no primeiro acesso), a
     decidir se deve continuar com tudo marcado como feito.
-- [ ] T12 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
-  - `/code-review` (high) em 2026-10-20: 9 achados. 7 viram as tarefas T12a–T12e (revisão 2 da
-    spec); o `steamPublic` duplicado da home sai na 3b.
+- [x] T12 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
+  - `/code-review` (high) em 2026-10-20: 9 achados. 8 corrigidos nas tarefas T12a–T12e (revisão 2
+    da spec), conferidos no navegador com a conta do Jorge (print 08 e o intervalo de 30 s); o
+    `steamPublic` duplicado da home sai na 3b.
+  - `/security-review`: nenhuma vulnerabilidade de confiança alta. Abaixo do limite, para depois:
+    a volta da Steam não traz um `state` da sessão, então alguém poderia fazer uma pessoa logada
+    abrir a volta da conta Steam dele em até 5 minutos e ligar a Steam errada ao perfil dela (sem
+    ler nada da vítima; ela reconecta a dela).
+  - `npm run verify:all` passou: lint, formatação, 391 testes do front, 47 das funções e 39 do
+    banco. Fica o aviso de tamanho do pacote inicial (1,27 MB, limite de aviso 1,2 MB), já anotado
+    na spec 001.
 - [x] T12a — Volta da Steam usada uma vez só: tabela `steam_openid_nonces` (RLS, só o servidor
       grava, limpeza das antigas) com pgTAP; `steam-connect` recusa a volta repetida (CA3)
 - [x] T12b — Ligar a conta: trocar de conta zera nome, visibilidade e jogo da anterior; reconectar a
