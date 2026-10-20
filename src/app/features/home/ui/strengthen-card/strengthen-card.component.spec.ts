@@ -40,15 +40,26 @@ describe('StrengthenCardComponent', () => {
     expect(connect).toHaveBeenCalledTimes(1);
   });
 
-  it('Steam conectada, lendo os dados (spec 003, CA2)', () => {
-    const { element } = render('reading', 2);
+  it('Steam conectada, lendo os dados, com "Tentar de novo" (spec 003, CA2, CA19)', () => {
+    const { fixture, element } = render('reading', 2);
+    const retry = vi.fn();
+    fixture.componentInstance.retrySteam.subscribe(retry);
     expect(texts(element, '.steps__state')).toEqual([
       'Feito',
       'Feito',
       'Lendo seus dados da Steam…',
       'Feito',
     ]);
-    expect(buttons(element)).toHaveLength(0);
+    expect(buttons(element).map((b) => b.textContent?.trim())).toEqual(['Tentar de novo']);
+    buttons(element)[0].click();
+    expect(retry).toHaveBeenCalledTimes(1);
+  });
+
+  it('"Tentar de novo" mostra que está lendo (CA19)', () => {
+    const { fixture, element } = render('reading', 2);
+    fixture.componentRef.setInput('checking', true);
+    fixture.detectChanges();
+    expect(buttons(element)[0].disabled).toBe(true);
   });
 
   it('sem amigos, "Copiar convite" avisa a página', () => {

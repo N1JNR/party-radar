@@ -56,8 +56,10 @@
               <app-strengthen-card
                 [steam]="store.steamStep()"
                 [friendsCount]="data.friendsCount"
+                [checking]="store.markingSteam()"
                 (invite)="copyInvite(data.inviteLink)"
                 (connectSteam)="connectSteam()"
+                (retrySteam)="retrySteam()"
               />
             }
             @if (store.showSteamNotice()) {

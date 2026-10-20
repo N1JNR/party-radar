@@ -3,7 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PoNotificationService } from '@po-ui/ng-components';
 
 import { STEAM_SOURCE } from '../data/steam.source';
-import { SteamConnectOutcome, connectMessage, isPositiveReturn } from '../domain/steam-connect';
+import {
+  SteamConnectOutcome,
+  connectMessage,
+  isPositiveReturn,
+  openIdFrom,
+} from '../domain/steam-connect';
 
 /**
  * Volta do "Entrar pela Steam" (spec 003, CA2–CA5). Manda a resposta para o servidor conferir
@@ -27,10 +32,7 @@ export class SteamReturnPage {
 
   private async finish(): Promise<void> {
     const query = this.route.snapshot.queryParamMap;
-    const openid: Record<string, string> = {};
-    for (const key of query.keys.filter((name) => name.startsWith('openid.'))) {
-      openid[key.slice('openid.'.length)] = query.get(key) ?? '';
-    }
+    const openid = openIdFrom(query.keys.map((key) => [key, query.get(key) ?? ''] as const));
     let outcome: SteamConnectOutcome = 'failed';
     if (isPositiveReturn(openid)) {
       try {

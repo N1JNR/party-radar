@@ -15,6 +15,14 @@
     }
   </ul>
   <div class="panel__actions">
+    @if (reading()) {
+      <po-button
+        p-kind="secondary"
+        p-label="Tentar de novo"
+        [p-loading]="checking()"
+        (p-click)="retrySteam.emit()"
+      />
+    }
     @if (needsSteam()) {
       <po-button
         p-kind="secondary"

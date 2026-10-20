@@ -197,6 +197,29 @@ describe('HomePage', () => {
     );
   });
 
+  it('primeira leitura pendente: "Tentar de novo" com a Steam fora avisa o erro (CA19)', async () => {
+    await render({}, true, {
+      account: () => Promise.resolve(steamAccount(null)),
+      recheck: () => Promise.resolve('unavailable'),
+    });
+    expect(element.querySelector('app-strengthen-card')?.textContent).toContain(
+      'Lendo seus dados da Steam…',
+    );
+    button('Tentar de novo')?.click();
+    await settle();
+    expect(error).toHaveBeenCalledWith('Não foi possível verificar a Steam agora. Tente de novo.');
+    expect(element.querySelector('app-strengthen-card')).not.toBeNull();
+  });
+
+  it('primeira leitura pendente: "Tentar de novo" com a Steam pública fecha o quadro (CA19)', async () => {
+    await render({}, true, { account: () => Promise.resolve(steamAccount(null)) });
+    button('Tentar de novo')?.click();
+    await settle();
+    expect(error).not.toHaveBeenCalled();
+    expect(element.querySelector('app-strengthen-card')).toBeNull();
+    expect(element.querySelector('app-steam-notice')).toBeNull();
+  });
+
   it('sem Steam: "Conectar Steam" leva ao login da própria Steam (spec 003, CA1, CA2)', async () => {
     await render({}, true, { account: () => Promise.resolve(NOT_CONNECTED) });
     expect(element.querySelector('app-strengthen-card')).not.toBeNull();

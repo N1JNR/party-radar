@@ -68,6 +68,16 @@ export class HomePage {
     this.navigation.go(steamLoginUrl(this.navigation.origin()));
   }
 
+  /**
+   * "Tentar de novo" enquanto a primeira leitura não terminou (spec 003, CA19). Se a Steam
+   * responder, o card mostra o resultado sozinho (o quadro some ou aparece o aviso de privada).
+   */
+  protected async retrySteam(): Promise<void> {
+    if ((await this.store.recheckSteam()) === 'unavailable') {
+      this.notification.error('Não foi possível verificar a Steam agora. Tente de novo.');
+    }
+  }
+
   /** "Já deixei público": lê a Steam de novo e avisa o resultado (spec 003, CA7). */
   protected async recheckSteam(): Promise<void> {
     const result = await this.store.recheckSteam();

@@ -259,13 +259,15 @@ describe('HomeStore', () => {
       expect(store.showSteamNotice()).toBe(false);
     });
 
-    it('conectada sem a primeira leitura: lendo os dados (CA2)', async () => {
+    it('conectada sem a primeira leitura: lendo os dados, com o checklist (CA2, CA19)', async () => {
       const store = setup(
         {},
         { account: () => Promise.resolve(steamAccount({ visibility: null })) },
       );
       await store.load();
       expect(store.steamStep()).toBe('reading');
+      expect(store.firstAccess()).toBe(false);
+      expect(store.showStrengthen()).toBe(true);
       expect(store.showSteamNotice()).toBe(false);
     });
 

@@ -21,9 +21,9 @@ export function steamLoginUrl(origin: string): string {
 }
 
 /** Os campos `openid.*` da volta, sem o prefixo, para o servidor conferir com a Steam. */
-export function openIdFromSearch(search: string): Record<string, string> {
+export function openIdFrom(entries: Iterable<readonly [string, string]>): Record<string, string> {
   const params: Record<string, string> = {};
-  for (const [key, value] of new URLSearchParams(search)) {
+  for (const [key, value] of entries) {
     if (key.startsWith('openid.')) {
       params[key.slice('openid.'.length)] = value;
     }

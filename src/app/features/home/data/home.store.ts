@@ -44,10 +44,14 @@ export class HomeStore {
     }
     return steam.visibility ?? 'reading';
   });
-  /** O checklist aparece no primeiro acesso e enquanto a Steam não foi conectada (CA1). */
-  readonly showStrengthen = computed(
-    () => this.firstAccess() || this.steamStep() === 'not-connected',
-  );
+  /**
+   * O checklist aparece no primeiro acesso, enquanto a Steam não foi conectada (CA1) e enquanto a
+   * primeira leitura dela não terminou (CA2, CA19).
+   */
+  readonly showStrengthen = computed(() => {
+    const step = this.steamStep();
+    return this.firstAccess() || step === 'not-connected' || step === 'reading';
+  });
   /** Aviso da Steam privada (spec 003, CA6). */
   readonly showSteamNotice = computed(() => this.steamStep() === 'private');
 

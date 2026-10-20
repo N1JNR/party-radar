@@ -3,7 +3,7 @@ import {
   STILL_PRIVATE_MESSAGE,
   connectMessage,
   isPositiveReturn,
-  openIdFromSearch,
+  openIdFrom,
   steamLoginUrl,
 } from './steam-connect';
 
@@ -22,16 +22,18 @@ describe('steamLoginUrl', () => {
   });
 });
 
-describe('openIdFromSearch', () => {
+describe('openIdFrom', () => {
   it('pega só os campos openid.*, sem o prefixo', () => {
-    expect(openIdFromSearch('?openid.mode=id_res&openid.sig=abc%3D&next=%2Finicio')).toEqual({
+    expect(
+      openIdFrom(new URLSearchParams('?openid.mode=id_res&openid.sig=abc%3D&next=%2Finicio')),
+    ).toEqual({
       mode: 'id_res',
       sig: 'abc=',
     });
   });
 
   it('sem campos, devolve vazio', () => {
-    expect(openIdFromSearch('')).toEqual({});
+    expect(openIdFrom([])).toEqual({});
   });
 });
 

@@ -46,7 +46,7 @@ e a guarda no `.env` (pré-requisito da spec).
       cada chamada à Steam desiste em 10 s (CA19, CA20)
 - [x] T12d — `steam-sync` lê a Steam no máximo a cada 30 s por pessoa; dentro do intervalo devolve
       a última leitura (CA20)
-- [ ] T12e — Card: quadro visível enquanto lê, com "Tentar de novo"; a volta da Steam usa
+- [x] T12e — Card: quadro visível enquanto lê, com "Tentar de novo"; a volta da Steam usa
       `openIdFromSearch` (CA2, CA19)
 
 ## Parte 3b — Dados reais no card (`feat/003-dados-steam-card`)
