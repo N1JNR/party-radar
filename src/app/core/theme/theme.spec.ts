@@ -60,6 +60,32 @@ describe('partyRadarTheme', () => {
     },
   );
 
+  // Regressão da 000-contraste-toasts: só o `base` dos avisos estava no tema, então o fundo do
+  // toast (`lightest`) ficava no rosa-claro padrão do PO UI, sob o texto claro do tema (1,02:1).
+  describe.each(['negative', 'positive', 'warning', 'info'] as const)('aviso %s', (kind) => {
+    const tone = dark?.color?.feedback?.[kind];
+    const text = dark?.color?.neutral?.dark?.['90'] ?? '';
+    const icon = dark?.color?.neutral?.light?.['00'] ?? '';
+
+    it('tem a escala inteira no tema, sem depender do padrão claro do PO UI', () => {
+      for (const step of ['lightest', 'lighter', 'light', 'base', 'dark', 'darker', 'darkest']) {
+        expect(tone?.[step as keyof typeof tone]).toMatch(/^#[0-9A-F]{6}$/);
+      }
+    });
+
+    it('texto do toast sobre o fundo dele: mínimo de 4,5:1', () => {
+      expect(contrast(text, tone?.lightest ?? '')).toBeGreaterThanOrEqual(4.5);
+    });
+
+    it('texto de tag (darker) sobre o fundo dela: mínimo de 4,5:1', () => {
+      expect(contrast(tone?.darker ?? '', tone?.lightest ?? '')).toBeGreaterThanOrEqual(4.5);
+    });
+
+    it('ícone do toast sobre a cor do aviso: mínimo de 4,5:1', () => {
+      expect(contrast(icon, tone?.base ?? '')).toBeGreaterThanOrEqual(4.5);
+    });
+  });
+
   it('o cálculo de contraste confere com valores conhecidos', () => {
     expect(contrast('#FFFFFF', '#000000')).toBeCloseTo(21, 1);
     expect(contrast('#6E4BFF', '#0E1117')).toBeCloseTo(3.7, 1);
