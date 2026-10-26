@@ -89,6 +89,17 @@ db:agendamentos` grava esses dois valores no Vault local; pgTAP dos agendamentos
       fim do `steamPublic` duplicado: o aviso de privada vem só da conta Steam (CA6, CA13)
 - [x] T22 — Card e página: horas do mês, "estimativa", "<nome> na Steam", "Atualizado há"; o
       "jogando agora" é relido a cada minuto (CA8, CA10, CA12, CA15, CA21)
-- [ ] T23 — Conferência de ponta a ponta com a conta Steam do Jorge (horas, jogo do mês, patente,
+- [x] T23 — Conferência de ponta a ponta com a conta Steam do Jorge (horas, jogo do mês, patente,
       jogando agora, nome na Steam, leitura agendada), com prints (CA8–CA15, CA21)
+  - Conferido em 2026-10-26 no Supabase local, com o Jorge logado pelo Discord e a chave real da
+    Steam. O card trouxe "N1JNR na Steam", 45h no mês em 2 jogos com o aviso de estimativa (mês da
+    conexão), ARC Raiders com 43h como jogo do mês, Veterano de lobby (46h desde a conexão), PC
+    100% e os vazios de amigos e squads, iguais ao `my_card_stats()` no banco (CA8, CA9, CA11,
+    CA13, CA21). Com o ARC Raiders aberto, o agendamento das 13h55 gravou o jogo e, sem recarregar,
+    o card mostrou o anel e "Jogando ARC Raiders agora" (CA10). A leitura agendada (`steam-sync` com
+    a secret key) gravou a foto do dia com 14 jogos (CA14); o horário das 23h55 fica para conferir
+    no dia seguinte. A sessão no navegador segue sem os tokens do Discord. Prints 09 a 11 em
+    `prints/`.
+  - Limites: o "Atualizado há" (CA15) e a virada do mês (CA12) não acontecem num dia só; ficam
+    cobertos pelos testes do domínio e do pgTAP (fuso de São Paulo, fotos antes e depois do mês).
 - [ ] T24 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
