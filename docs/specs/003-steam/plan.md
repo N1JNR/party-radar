@@ -136,6 +136,27 @@ PK `(user_id, app_id, taken_on)`. **RLS:** `select` só das próprias fotos.
 logado: horas do mês, jogos com tempo no mês, jogo do mês, horas desde a conexão, se o mês é
 estimativa, jogo aberto, visibilidade e `last_synced_at`.
 
+### Ajustes da Parte 3b (detalhados com as tarefas, em 2026-10-26)
+
+- **Foto com as "últimas 2 semanas" por jogo:** `steam_playtime_snapshots` ganha
+  `minutes_2weeks` (`integer`). No mês da conexão, cada jogo soma as "últimas 2 semanas" da
+  primeira foto ao que cresceu depois; assim o jogo do mês e o número de jogos também saem no
+  primeiro mês (o `baseline_minutes` da conta continua sendo o total, para a patente).
+- **Mês e dia no fuso de São Paulo** (`America/Sao_Paulo`): a foto do dia (`taken_on`) e o "mês"
+  do card seguem o horário do Brasil, não o UTC.
+- **Base do mês:** para cada jogo, a última foto antes do mês começar; sem ela (conta conectada no
+  mês), a primeira foto do mês, mais as "últimas 2 semanas" (estimativa).
+- **Horas desde a conexão (patente):** `baseline_minutes` + o que cada jogo cresceu desde a
+  primeira foto dele.
+- **"Atualizado há <tempo>" (CA15):** aparece quando a última leitura tem mais de 26 horas (a
+  leitura diária falhou). "Nunca houve leitura" é o estado "Lendo seus dados da Steam…" com
+  "Tentar de novo" (CA19), que já existe.
+- **Agendamentos sem segredo em migration:** o endereço das funções e a secret key ficam no Vault
+  (`project_url` e `service_role_key`). No local, `npm run db:agendamentos` lê os dois do
+  `supabase status` e grava no Vault; na nuvem, eles entram uma vez pelo painel ou pela CLI.
+- **`steam-sync` agendado:** quando quem chama é a secret key (não um usuário), lê todas as contas
+  em lotes de 50, uma conta por vez dentro do lote; o erro de uma conta não para as outras.
+
 ## Integrações externas
 
 - **Steam OpenID** (`https://steamcommunity.com/openid/login`): ida pelo navegador; conferência
