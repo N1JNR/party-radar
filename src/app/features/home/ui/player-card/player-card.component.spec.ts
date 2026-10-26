@@ -11,6 +11,10 @@ const fullCard: PlayerCard = {
   playingNow: 'Elden Ring',
   title: 'Sofredor de Souls',
   stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
+  monthHours: 42,
+  estimate: false,
+  steamName: null,
+  updatedAt: null,
   games: 7,
   gameOfMonth: { name: 'Elden Ring', hours: 18 },
   partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: false },
@@ -25,6 +29,10 @@ const emptyCard: PlayerCard = {
   playingNow: null,
   title: null,
   stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
+  monthHours: 0,
+  estimate: false,
+  steamName: null,
+  updatedAt: null,
   games: 0,
   gameOfMonth: null,
   partner: null,
@@ -120,5 +128,39 @@ describe('PlayerCardComponent', () => {
     fixture.componentInstance.seePatentes.subscribe(seePatentes);
     element.querySelector<HTMLButtonElement>('po-button button')!.click();
     expect(seePatentes).toHaveBeenCalledTimes(1);
+  });
+
+  it('horas do mês, separadas das horas da patente (spec 003, CA8, CA9)', () => {
+    render({ ...fullCard, monthHours: 9, stats: { ...fullCard.stats, hours: 120 } });
+    expect(text('.player-card__hours-value')).toBe('9h');
+    expect(text('.player-card__patente')).toBe('Veterano de lobby');
+  });
+
+  it('"<nome> na Steam" logo abaixo do @usuário (spec 003, CA21)', () => {
+    render({ ...fullCard, steamName: 'N1JNR' });
+    expect(text('.player-card__steam')).toBe('N1JNR na Steam');
+    render(fullCard);
+    expect(element.querySelector('.player-card__steam')).toBeNull();
+  });
+
+  it('mês da conexão: avisa que é estimativa, menos no card vazio', () => {
+    render({ ...fullCard, estimate: true });
+    expect(all('.player-card__note')).toEqual([
+      'Primeiro mês: estimativa a partir das últimas 2 semanas da Steam.',
+    ]);
+    render({ ...emptyCard, estimate: true }, true);
+    expect(element.querySelector('.player-card__note')).toBeNull();
+  });
+
+  it('leitura velha: "Atualizado há <tempo>" (spec 003, CA15)', () => {
+    fixture = TestBed.createComponent(PlayerCardComponent);
+    const card = { ...fullCard, updatedAt: '2026-10-24T15:00:00Z' };
+    fixture.componentRef.setInput('card', card);
+    fixture.componentRef.setInput('progress', progressFor(card.stats));
+    fixture.componentRef.setInput('platforms', platformShares(card.platforms));
+    fixture.componentRef.setInput('now', new Date('2026-10-26T15:00:00Z'));
+    fixture.detectChanges();
+    element = fixture.nativeElement as HTMLElement;
+    expect(all('.player-card__note')).toEqual(['Atualizado há 2 dias']);
   });
 });

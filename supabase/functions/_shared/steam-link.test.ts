@@ -1,12 +1,15 @@
 import { assertEquals, assertRejects } from 'jsr:@std/assert@1';
 
-import { SteamReading, SteamUnavailableError } from './steam-api.ts';
+import { SteamGame, SteamReading, SteamUnavailableError } from './steam-api.ts';
 import {
   ConnectDeps,
   MIN_SYNC_INTERVAL_MS,
   ReadingPatch,
+  cardDay,
+  changedGames,
   connectSteam,
   recheckAccount,
+  syncAllAccounts,
   syncAccount,
 } from './steam-link.ts';
 import { OpenIdParams, STEAM_OPENID_ENDPOINT } from './steam-openid.ts';
@@ -41,20 +44,41 @@ function openId(overrides: Record<string, string> = {}): OpenIdParams {
   };
 }
 
+interface SavedSnapshots {
+  userId: string;
+  day: string;
+  games: readonly SteamGame[];
+}
+
 function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
   saved: ReadingPatch[];
   linked: string[];
+  snapshots: SavedSnapshots[];
+  cleared: string[];
 } {
   const saved: ReadingPatch[] = [];
   const linked: string[] = [];
+  const snapshots: SavedSnapshots[] = [];
+  const cleared: string[] = [];
   return {
     saved,
     linked,
+    cleared,
+    snapshots,
+    latestTotals: () => Promise.resolve(new Map()),
+    saveSnapshots: (userId, day, games) => {
+      snapshots.push({ userId, day, games });
+      return Promise.resolve();
+    },
     allowedOrigins: ['http://localhost:4200'],
     confirmWithSteam: () => Promise.resolve(true),
     useNonce: () => Promise.resolve(true),
     findOwner: () => Promise.resolve(null),
     onSyncError: () => undefined,
+    clearSnapshots: (userId) => {
+      cleared.push(userId);
+      return Promise.resolve();
+    },
     saveLink: (_userId, steamId) => {
       linked.push(steamId);
       return Promise.resolve('linked');
@@ -169,12 +193,15 @@ Deno.test('reconectar a mesma conta mantém o ponto de partida (CA19)', async ()
   assertEquals((await connectSteam(d, USER, openId())).status, 'connected');
   assertEquals(d.linked, []);
   assertEquals('baselineMinutes' in d.saved[0], false);
+  assertEquals(d.cleared, []);
 });
 
 Deno.test('trocar de conta liga a nova do zero e lê o ponto de partida dela (CA19)', async () => {
   const d = deps();
   assertEquals((await connectSteam(d, USER, openId())).status, 'connected');
   assertEquals(d.linked, [STEAM_ID]);
+  assertEquals(d.cleared, [USER]);
+  assertEquals(d.snapshots.length, 1);
   assertEquals(d.saved[0].baselineMinutes, 330);
 });
 
@@ -271,4 +298,197 @@ Deno.test('dentro do intervalo, devolve a última leitura sem chamar a Steam (CA
   });
   assertEquals(read, false);
   assertEquals(d.saved, []);
+});
+
+Deno.test('leitura pública grava a foto do dia com o tempo de cada jogo (CA14)', async () => {
+  const d = deps();
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 });
+  assertEquals(d.snapshots, [{ userId: USER, day: '2026-10-19', games: publicReading.games }]);
+});
+
+Deno.test(
+  'detalhes de jogos privados ou Steam fora do ar: sem foto do dia (CA6, CA15)',
+  async () => {
+    const privada = deps({
+      readSteam: () =>
+        Promise.resolve({ personaName: 'x', visibility: 'private', currentGame: null, games: [] }),
+    });
+    await syncAccount(privada, { userId: USER, steamId: STEAM_ID, baselineMinutes: null });
+    assertEquals(privada.snapshots, []);
+
+    const fora = deps({ readSteam: () => Promise.reject(new SteamUnavailableError('fora')) });
+    await syncAccount(fora, { userId: USER, steamId: STEAM_ID, baselineMinutes: null });
+    assertEquals(fora.snapshots, []);
+  },
+);
+
+Deno.test('conta pública sem jogos: guarda a leitura, sem foto', async () => {
+  const d = deps({
+    readSteam: () =>
+      Promise.resolve({ personaName: 'x', visibility: 'public', currentGame: null, games: [] }),
+  });
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: null });
+  assertEquals(d.snapshots, []);
+  assertEquals(d.saved.length, 1);
+});
+
+Deno.test('se a foto falhar, a última leitura não avança (CA15)', async () => {
+  const d = deps({ saveSnapshots: () => Promise.reject(new Error('banco fora')) });
+  await assertRejects(
+    () => syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 }),
+    Error,
+    'banco fora',
+  );
+  assertEquals(d.saved, []);
+});
+
+Deno.test('o dia do card segue o fuso de São Paulo', () => {
+  assertEquals(cardDay(new Date('2026-10-19T18:02:00Z')), '2026-10-19');
+  // 01h30 UTC ainda é 22h30 do dia anterior em São Paulo.
+  assertEquals(cardDay(new Date('2026-10-20T01:30:00Z')), '2026-10-19');
+  assertEquals(cardDay(new Date('2026-10-20T03:00:00Z')), '2026-10-20');
+  assertEquals(cardDay(new Date('2026-11-01T02:59:00Z')), '2026-10-31');
+});
+
+function contas(total: number) {
+  return Array.from({ length: total }, (_, i) => ({
+    userId: `u${String(i).padStart(3, '0')}`,
+    steamId: `7656119800000${String(i).padStart(4, '0')}`,
+    baselineMinutes: 10,
+  }));
+}
+
+Deno.test('leitura agendada: lê todas as contas, em lotes (CA14)', async () => {
+  const todas = contas(5);
+  const pedidos: (string | null)[] = [];
+  const d = {
+    ...deps(),
+    listAccounts: (after: string | null, limit: number) => {
+      pedidos.push(after);
+      const start = after === null ? 0 : todas.findIndex((c) => c.userId === after) + 1;
+      return Promise.resolve(todas.slice(start, start + limit));
+    },
+    onAccountError: () => undefined,
+  };
+  assertEquals(await syncAllAccounts(d, 2), { synced: 5, unavailable: 0, failed: 0 });
+  assertEquals(pedidos, [null, 'u001', 'u003']);
+  assertEquals(
+    d.snapshots.map((s) => s.userId),
+    ['u000', 'u001', 'u002', 'u003', 'u004'],
+  );
+});
+
+Deno.test('lote cheio no fim: pede mais uma vez e para no vazio', async () => {
+  const todas = contas(4);
+  const pedidos: (string | null)[] = [];
+  const d = {
+    ...deps(),
+    listAccounts: (after: string | null, limit: number) => {
+      pedidos.push(after);
+      const start = after === null ? 0 : todas.findIndex((c) => c.userId === after) + 1;
+      return Promise.resolve(todas.slice(start, start + limit));
+    },
+    onAccountError: () => undefined,
+  };
+  assertEquals(await syncAllAccounts(d, 2), { synced: 4, unavailable: 0, failed: 0 });
+  assertEquals(pedidos, [null, 'u001', 'u003']);
+});
+
+Deno.test('Steam fora do ar ou erro de uma conta não param as outras (CA15)', async () => {
+  const erros: string[] = [];
+  const d = {
+    ...deps({
+      readSteam: (steamId) => {
+        if (steamId.endsWith('0001')) {
+          return Promise.reject(new SteamUnavailableError('fora'));
+        }
+        if (steamId.endsWith('0002')) {
+          return Promise.reject(new Error('bug'));
+        }
+        return Promise.resolve(publicReading);
+      },
+    }),
+    listAccounts: (after: string | null) => Promise.resolve(after === null ? contas(4) : []),
+    onAccountError: (userId: string) => erros.push(userId),
+  };
+  assertEquals(await syncAllAccounts(d, 50), { synced: 2, unavailable: 1, failed: 1 });
+  assertEquals(erros, ['u002']);
+});
+
+Deno.test('sem contas: não lê nada', async () => {
+  const d = {
+    ...deps(),
+    listAccounts: () => Promise.resolve([]),
+    onAccountError: () => undefined,
+  };
+  assertEquals(await syncAllAccounts(d), { synced: 0, unavailable: 0, failed: 0 });
+});
+
+Deno.test('leitura agendada: as contas de um lote são lidas ao mesmo tempo', async () => {
+  let abertas = 0;
+  let maximo = 0;
+  const d = {
+    ...deps({
+      readSteam: async () => {
+        abertas++;
+        maximo = Math.max(maximo, abertas);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        abertas--;
+        return publicReading;
+      },
+    }),
+    listAccounts: (after: string | null) => Promise.resolve(after === null ? contas(3) : []),
+    onAccountError: () => undefined,
+  };
+  assertEquals(await syncAllAccounts(d, 50), { synced: 3, unavailable: 0, failed: 0 });
+  assertEquals(maximo, 3);
+});
+
+Deno.test('a foto do dia leva só os jogos jogados cujo tempo mudou', async () => {
+  const d = deps({
+    readSteam: () =>
+      Promise.resolve({
+        ...publicReading,
+        games: [
+          { appId: 1, name: 'ELDEN RING', minutesTotal: 1260, minutes2Weeks: 330 }, // jogou mais
+          { appId: 2, name: 'CS2', minutesTotal: 90, minutes2Weeks: 0 }, // parado
+          { appId: 3, name: 'Hades', minutesTotal: 15, minutes2Weeks: 15 }, // jogo novo
+          { appId: 4, name: 'Nunca abri', minutesTotal: 0, minutes2Weeks: 0 }, // nunca jogado
+        ],
+      }),
+    latestTotals: () =>
+      Promise.resolve(
+        new Map([
+          [1, 1200],
+          [2, 90],
+        ]),
+      ),
+  });
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 });
+  assertEquals(
+    d.snapshots[0].games.map((game) => game.appId),
+    [1, 3],
+  );
+});
+
+Deno.test('nada mudou: não grava foto, mas a leitura avança', async () => {
+  const d = deps({
+    latestTotals: () =>
+      Promise.resolve(
+        new Map([
+          [1, 1200],
+          [2, 90],
+        ]),
+      ),
+  });
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 });
+  assertEquals(d.snapshots, []);
+  assertEquals(d.saved.length, 1);
+});
+
+Deno.test('changedGames: sem foto anterior, entram todos os jogados', () => {
+  assertEquals(
+    changedGames(publicReading.games, new Map()).map((game) => game.appId),
+    [1, 2],
+  );
 });

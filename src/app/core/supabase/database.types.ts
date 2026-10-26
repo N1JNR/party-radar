@@ -101,11 +101,61 @@ export type Database = {
         };
         Relationships: [];
       };
+      steam_playtime_snapshots: {
+        Row: {
+          app_id: number;
+          game_name: string;
+          minutes_2weeks: number;
+          minutes_total: number;
+          taken_on: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          app_id: number;
+          game_name: string;
+          minutes_2weeks?: number;
+          minutes_total: number;
+          taken_on: string;
+          user_id: string;
+        };
+        Update: {
+          app_id?: number;
+          game_name?: string;
+          minutes_2weeks?: number;
+          minutes_total?: number;
+          taken_on?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      latest_playtime: {
+        Args: { p_user_id: string };
+        Returns: {
+          app_id: number;
+          minutes_total: number;
+        }[];
+      };
+      my_card_stats: {
+        Args: { p_now?: string };
+        Returns: {
+          current_game: string;
+          estimate: boolean;
+          game_of_month: string;
+          game_of_month_minutes: number;
+          last_synced_at: string;
+          month_games: number;
+          month_minutes: number;
+          steam_name: string;
+          total_minutes: number;
+          visibility: string;
+        }[];
+      };
       username_base: { Args: { source: string }; Returns: string };
     };
     Enums: {

@@ -15,6 +15,23 @@ export function json(body: unknown, status = 200): Response {
   });
 }
 
+/**
+ * O pedido traz `Authorization: Bearer <secret>`? Compara em tempo constante, para o tempo de
+ * resposta não revelar quantos caracteres batem. Sem segredo configurado, nunca bate.
+ */
+export function hasBearer(request: Request, secret: string | undefined): boolean {
+  if (!secret) {
+    return false;
+  }
+  const given = request.headers.get('Authorization') ?? '';
+  const expected = `Bearer ${secret}`;
+  let diff = given.length ^ expected.length;
+  for (let i = 0; i < expected.length; i++) {
+    diff |= (given.charCodeAt(i) || 0) ^ expected.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
 /** Responde o pedido de pré-voo (OPTIONS) do navegador; para os outros, devolve `null`. */
 export function preflight(request: Request): Response | null {
   return request.method === 'OPTIONS'

@@ -18,6 +18,10 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       playingNow: null,
       title: 'Sofredor de Souls',
       stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
+      monthHours: 42,
+      estimate: false,
+      steamName: null,
+      updatedAt: null,
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
       partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
@@ -26,7 +30,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
         { platform: 'ps5', hours: 12 },
       ],
     },
-    steamPublic: false,
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -121,6 +124,10 @@ describe('HomeStore', () => {
     empty.card = {
       ...empty.card,
       stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
+      monthHours: 0,
+      estimate: false,
+      steamName: null,
+      updatedAt: null,
       games: 0,
     };
     const store = setup({ load: () => Promise.resolve(empty) });
@@ -147,7 +154,7 @@ describe('HomeStore', () => {
     const store = setup({});
     await store.load();
     const before = store.menuSquads();
-    store.data.update((data) => (data ? { ...data, steamPublic: true } : data));
+    store.data.update((data) => (data ? { ...data, friendsCount: data.friendsCount + 1 } : data));
     expect(store.menuSquads()).toBe(before);
   });
 
@@ -279,14 +286,13 @@ describe('HomeStore', () => {
       expect(store.showStrengthen()).toBe(false);
     });
 
-    it('se a conta Steam não puder ser lida, a home abre e segue o que ela diz', async () => {
+    it('se a conta Steam não puder ser lida, a home abre sem passo nem aviso da Steam', async () => {
       const store = setup({}, { account: () => Promise.reject(new Error('rede')) });
       await store.load();
       expect(store.status()).toBe('ready');
       expect(store.steam()).toBeNull();
-      expect(store.steamStep()).toBe('private');
-      store.data.update((data) => (data ? { ...data, steamPublic: true } : data));
       expect(store.steamStep()).toBe('public');
+      expect(store.showSteamNotice()).toBe(false);
     });
 
     it('"Já deixei público" com a Steam pública: o aviso some (CA7)', async () => {
@@ -297,7 +303,7 @@ describe('HomeStore', () => {
       expect(await checking).toBe('public');
       expect(store.steamStep()).toBe('public');
       expect(store.showSteamNotice()).toBe(false);
-      expect(store.data()?.steamPublic).toBe(true);
+      expect(store.steam()?.visibility).toBe('public');
       expect(store.markingSteam()).toBe(false);
     });
 
@@ -370,6 +376,83 @@ describe('HomeStore', () => {
       expect(await answer).toBe(true);
       expect(store.data()?.question?.id).toBe('q2');
       expect(store.card()?.partner?.probable).toBe(true);
+    });
+  });
+
+  describe('refreshCard (spec 003, CA7, CA10, CA19)', () => {
+    it('relê só o card, sem o esqueleto de carregando', async () => {
+      const load = vi
+        .fn<HomeDataSource['load']>()
+        .mockResolvedValueOnce(homeData())
+        .mockResolvedValueOnce(
+          homeData({ card: { ...homeData().card, playingNow: 'Hades' }, friendsCount: 99 }),
+        );
+      const store = setup({ load });
+      await store.load();
+      const refreshing = store.refreshCard();
+      expect(store.status()).toBe('ready');
+      await refreshing;
+      expect(store.card()?.playingNow).toBe('Hades');
+      expect(store.data()?.friendsCount).toBe(homeData().friendsCount);
+    });
+
+    it('antes de a home carregar, não faz nada', async () => {
+      const load = vi.fn<HomeDataSource['load']>(() => Promise.resolve(homeData()));
+      const store = setup({ load });
+      await store.refreshCard();
+      expect(load).not.toHaveBeenCalled();
+    });
+
+    it('se falhar, o card continua como estava', async () => {
+      const load = vi
+        .fn<HomeDataSource['load']>()
+        .mockResolvedValueOnce(homeData())
+        .mockRejectedValueOnce(new Error('rede'));
+      const store = setup({ load });
+      await store.load();
+      const before = store.card();
+      await store.refreshCard();
+      expect(store.card()).toBe(before);
+      expect(store.status()).toBe('ready');
+    });
+
+    it('relê também a conta Steam: "Lendo…" some quando o servidor termina a leitura (CA19)', async () => {
+      const account = vi
+        .fn<SteamSource['account']>()
+        .mockResolvedValueOnce(steamAccount({ visibility: null }))
+        .mockResolvedValueOnce(steamAccount({ visibility: 'public' }));
+      const store = setup({}, { account });
+      await store.load();
+      expect(store.steamStep()).toBe('reading');
+      await store.refreshCard();
+      expect(store.steamStep()).toBe('public');
+      expect(store.showStrengthen()).toBe(false);
+    });
+
+    it('se a conta Steam falhar na releitura, fica o estado anterior', async () => {
+      const account = vi
+        .fn<SteamSource['account']>()
+        .mockResolvedValueOnce(steamAccount({ visibility: 'private' }))
+        .mockRejectedValueOnce(new Error('rede'));
+      const store = setup({}, { account });
+      await store.load();
+      await store.refreshCard();
+      expect(store.steamStep()).toBe('private');
+    });
+
+    it('se a pessoa saiu no meio, a resposta é ignorada', async () => {
+      let resolve: (data: HomeData) => void = () => undefined;
+      const load = vi
+        .fn<HomeDataSource['load']>()
+        .mockResolvedValueOnce(homeData())
+        .mockImplementationOnce(() => new Promise((r) => (resolve = r)));
+      const store = setup({ load });
+      await store.load();
+      const refreshing = store.refreshCard();
+      store.reset();
+      resolve(homeData());
+      await refreshing;
+      expect(store.data()).toBeNull();
     });
   });
 });

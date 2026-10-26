@@ -5,6 +5,7 @@ import {
   SteamUnavailableError,
   parseOwnedGames,
   parsePlayerSummary,
+  readPresence,
   readSteam,
   recentMinutes,
   withTimeout,
@@ -192,4 +193,43 @@ Deno.test('withTimeout: repassa o pedido e devolve a resposta a tempo', async ()
   assertEquals(await response.text(), 'ok');
   assertEquals(seen[0].method, 'POST');
   assertEquals(seen[0].signal instanceof AbortSignal, true);
+});
+
+Deno.test('readPresence: jogo aberto de várias contas numa chamada (CA10)', async () => {
+  const fetch = fakeFetch({
+    GetPlayerSummaries: () =>
+      jsonResponse({
+        response: {
+          players: [
+            { steamid: 'a', communityvisibilitystate: 3, gameextrainfo: 'ELDEN RING' },
+            { steamid: 'b', communityvisibilitystate: 3 },
+            { steamid: 'c', communityvisibilitystate: 1, gameextrainfo: 'escondido' },
+          ],
+        },
+      }),
+  });
+  const presence = await readPresence(fetch, 'k', ['a', 'b', 'c', 'sumiu']);
+  assertEquals(
+    [...presence],
+    [
+      ['a', 'ELDEN RING'],
+      ['b', null],
+      ['c', null],
+    ],
+  );
+  assertEquals(fetch.urls.length, 1);
+  assertStringIncludes(fetch.urls[0], `steamids=${encodeURIComponent('a,b,c,sumiu')}`);
+});
+
+Deno.test('readPresence: sem contas não chama a Steam; mais de 100 é erro', async () => {
+  const fetch = fakeFetch({});
+  assertEquals((await readPresence(fetch, 'k', [])).size, 0);
+  assertEquals(fetch.urls, []);
+  const muitas = Array.from({ length: 101 }, (_, i) => String(i));
+  await assertRejects(() => readPresence(fetch, 'k', muitas), Error, 'No máximo 100');
+});
+
+Deno.test('readPresence: Steam instável vira Steam indisponível (CA15)', async () => {
+  const fetch = fakeFetch({ GetPlayerSummaries: () => jsonResponse({}, 503) });
+  await assertRejects(() => readPresence(fetch, 'k', ['a']), SteamUnavailableError);
 });

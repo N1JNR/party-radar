@@ -6,6 +6,9 @@
     <div class="player-card__who">
       <h2 id="player-card-name" class="player-card__name">{{ card().name }}</h2>
       <p class="player-card__username">&#64;{{ card().username }}</p>
+      @if (steamName(); as steam) {
+        <p class="player-card__steam">{{ steam }}</p>
+      }
       @if (playing(); as status) {
         <p class="player-card__status">{{ status }}</p>
       }
@@ -31,6 +34,12 @@
     <p class="player-card__hours-caption">jogadas este mês, em {{ games() }}</p>
     @if (firstAccess()) {
       <p class="player-card__phrase">{{ phrases().hours }}</p>
+    }
+    @if (card().estimate && !firstAccess()) {
+      <p class="player-card__note">{{ estimateNote() }}</p>
+    }
+    @if (updatedAgo(); as ago) {
+      <p class="player-card__note">{{ ago }}</p>
     }
   </div>
 

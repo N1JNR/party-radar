@@ -1,7 +1,13 @@
 // Conectar a Steam e ler a conta (spec 003, CA2–CA7). A lógica recebe as dependências de fora
 // (Steam, banco), para ser testada sem rede; as Edge Functions só ligam as peças.
 
-import { SteamReading, SteamUnavailableError, Visibility, recentMinutes } from './steam-api.ts';
+import {
+  SteamGame,
+  SteamReading,
+  SteamUnavailableError,
+  Visibility,
+  recentMinutes,
+} from './steam-api.ts';
 import { OpenIdParams, checkAssertion } from './steam-openid.ts';
 
 /** Caminho da volta da Steam no app. */
@@ -27,7 +33,39 @@ export interface ReadingPatch {
 export interface SyncDeps {
   readSteam(steamId: string): Promise<SteamReading>;
   saveReading(userId: string, patch: ReadingPatch): Promise<void>;
+  /** Último tempo total gravado de cada jogo (`appId` → minutos). */
+  latestTotals(userId: string): Promise<Map<number, number>>;
+  /** Grava a foto do dia (`AAAA-MM-DD`) do tempo de cada jogo; a do mesmo dia é atualizada. */
+  saveSnapshots(userId: string, day: string, games: readonly SteamGame[]): Promise<void>;
   now(): Date;
+}
+
+/**
+ * Jogos que entram na foto do dia: os jogados (tempo maior que zero) cujo tempo mudou desde a
+ * última foto, ou que ainda não têm foto. As contas do card usam a última foto de cada jogo, então
+ * repetir o mesmo tempo todo dia só encheria a tabela.
+ */
+export function changedGames(
+  games: readonly SteamGame[],
+  latest: ReadonlyMap<number, number>,
+): SteamGame[] {
+  return games.filter(
+    (game) => game.minutesTotal > 0 && latest.get(game.appId) !== game.minutesTotal,
+  );
+}
+
+/** Fuso do "dia" e do "mês" do card (ajustes da Parte 3b). */
+export const CARD_TIME_ZONE = 'America/Sao_Paulo';
+
+/** O dia de `date` no fuso de São Paulo, como `AAAA-MM-DD`. */
+export function cardDay(date: Date): string {
+  // `en-CA` formata a data como AAAA-MM-DD.
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: CARD_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
 }
 
 export type SyncResult = { status: 'synced'; visibility: Visibility } | { status: 'unavailable' };
@@ -74,17 +112,71 @@ export async function syncAccount(deps: SyncDeps, account: SteamAccount): Promis
     }
     throw error;
   }
+  const now = deps.now();
   const patch: ReadingPatch = {
     personaName: reading.personaName,
     visibility: reading.visibility,
     currentGame: reading.currentGame,
-    lastSyncedAt: deps.now().toISOString(),
+    lastSyncedAt: now.toISOString(),
   };
   if (account.baselineMinutes === null && reading.visibility === 'public') {
     patch.baselineMinutes = recentMinutes(reading.games);
   }
+  // A foto vem antes: a "última leitura" só avança quando o tempo de jogo também foi guardado.
+  // Com os detalhes de jogos privados não há jogos, e a foto do dia fica de fora (CA14).
+  if (reading.visibility === 'public' && reading.games.length > 0) {
+    const changed = changedGames(reading.games, await deps.latestTotals(account.userId));
+    if (changed.length > 0) {
+      await deps.saveSnapshots(account.userId, cardDay(now), changed);
+    }
+  }
   await deps.saveReading(account.userId, patch);
   return { status: 'synced', visibility: reading.visibility };
+}
+
+/** Contas lidas por vez na leitura agendada (ajustes da Parte 3b). */
+export const SYNC_BATCH_SIZE = 50;
+
+export interface SyncAllDeps extends SyncDeps {
+  /** Próximas contas, em ordem de `userId`, depois de `after` (`null` = do começo). */
+  listAccounts(after: string | null, limit: number): Promise<SteamAccount[]>;
+  /** Registra o erro inesperado de uma conta; a leitura segue para as outras. */
+  onAccountError(userId: string, error: unknown): void;
+}
+
+export interface SyncAllResult {
+  synced: number;
+  unavailable: number;
+  failed: number;
+}
+
+/**
+ * Leitura diária de todas as contas (CA14), agendada no banco. Lê em lotes, com as contas de
+ * cada lote em paralelo: uma por vez, a função passaria do tempo limite com poucas centenas de
+ * contas. Steam fora do ar ou erro de uma conta não param as outras (CA15).
+ */
+export async function syncAllAccounts(
+  deps: SyncAllDeps,
+  batchSize = SYNC_BATCH_SIZE,
+): Promise<SyncAllResult> {
+  const result: SyncAllResult = { synced: 0, unavailable: 0, failed: 0 };
+  let after: string | null = null;
+  for (;;) {
+    const accounts = await deps.listAccounts(after, batchSize);
+    const syncs = await Promise.allSettled(accounts.map((account) => syncAccount(deps, account)));
+    syncs.forEach((sync, i) => {
+      if (sync.status === 'fulfilled') {
+        result[sync.value.status === 'synced' ? 'synced' : 'unavailable']++;
+      } else {
+        result.failed++;
+        deps.onAccountError(accounts[i].userId, sync.reason);
+      }
+    });
+    if (accounts.length < batchSize) {
+      return result;
+    }
+    after = accounts[accounts.length - 1].userId;
+  }
 }
 
 export interface ConnectDeps extends SyncDeps {
@@ -101,6 +193,8 @@ export interface ConnectDeps extends SyncDeps {
    * `taken` quando outro perfil ligou a mesma conta ao mesmo tempo (CA4).
    */
   saveLink(userId: string, steamId: string): Promise<'linked' | 'taken'>;
+  /** Apaga as fotos de tempo de jogo do usuário: são da conta Steam anterior (CA19). */
+  clearSnapshots(userId: string): Promise<void>;
   /** Registra uma falha inesperada na primeira leitura (a conta continua conectada). */
   onSyncError(error: unknown): void;
 }
@@ -157,6 +251,10 @@ export async function connectSteam(
   // "Lendo seus dados da Steam…" com "Tentar de novo" (CA19), em vez de dizer que não conectou.
   let sync: SyncResult;
   try {
+    // Conta nova para este perfil: as fotos da conta anterior não podem somar no card (CA19).
+    if (!owner) {
+      await deps.clearSnapshots(userId);
+    }
     sync = await syncAccount(deps, { userId, steamId: check.steamId, baselineMinutes });
   } catch (error) {
     deps.onSyncError(error);

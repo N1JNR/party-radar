@@ -1,12 +1,16 @@
 import {
+  ESTIMATE_NOTE,
   FIRST_ACCESS_PHRASES,
   PlayerCard,
+  STALE_AFTER_MS,
   formatHours,
   gamesLabel,
   isFirstAccess,
   matchesLabel,
   platformShares,
   playingLabel,
+  steamNameLabel,
+  updatedAgoLabel,
 } from './player-card';
 
 const card = (hours: number, games: number): PlayerCard => ({
@@ -16,6 +20,10 @@ const card = (hours: number, games: number): PlayerCard => ({
   playingNow: null,
   title: null,
   stats: { hours, hoursWithFriends: 0, distinctFriends: 0 },
+  monthHours: hours,
+  estimate: false,
+  steamName: null,
+  updatedAt: null,
   games,
   gameOfMonth: null,
   partner: null,
@@ -34,6 +42,50 @@ describe('isFirstAccess', () => {
 
   it('trata valores inválidos como zero', () => {
     expect(isFirstAccess(card(Number.NaN, -1))).toBe(true);
+  });
+
+  it('olha o mês: horas antigas da patente não tiram o primeiro acesso (spec 003, CA12)', () => {
+    expect(isFirstAccess({ ...card(0, 0), stats: { ...card(0, 0).stats, hours: 120 } })).toBe(true);
+  });
+});
+
+describe('steamNameLabel (spec 003, CA21)', () => {
+  it('mostra o nome público da Steam', () => {
+    expect(steamNameLabel('N1JNR')).toBe('N1JNR na Steam');
+    expect(steamNameLabel('  N1JNR ')).toBe('N1JNR na Steam');
+  });
+
+  it('sem nome lido, a linha não aparece', () => {
+    expect(steamNameLabel(null)).toBeNull();
+    expect(steamNameLabel('   ')).toBeNull();
+  });
+});
+
+describe('updatedAgoLabel (spec 003, CA15)', () => {
+  const now = new Date('2026-10-26T15:00:00Z');
+  const hoursAgo = (hours: number) => new Date(now.getTime() - hours * 3_600_000).toISOString();
+
+  it('leitura recente (até 26h): não mostra nada', () => {
+    expect(updatedAgoLabel(hoursAgo(1), now)).toBeNull();
+    expect(updatedAgoLabel(new Date(now.getTime() - STALE_AFTER_MS).toISOString(), now)).toBeNull();
+  });
+
+  it('leitura velha: em horas até 2 dias, depois em dias', () => {
+    expect(updatedAgoLabel(hoursAgo(27), now)).toBe('Atualizado há 27h');
+    expect(updatedAgoLabel(hoursAgo(47.9), now)).toBe('Atualizado há 47h');
+    expect(updatedAgoLabel(hoursAgo(48), now)).toBe('Atualizado há 2 dias');
+    expect(updatedAgoLabel(hoursAgo(24 * 5 + 3), now)).toBe('Atualizado há 5 dias');
+  });
+
+  it('sem data ou com data inválida: não mostra nada', () => {
+    expect(updatedAgoLabel(null, now)).toBeNull();
+    expect(updatedAgoLabel('ontem', now)).toBeNull();
+  });
+});
+
+describe('ESTIMATE_NOTE', () => {
+  it('explica que o primeiro mês é estimativa (decisão da spec 003)', () => {
+    expect(ESTIMATE_NOTE).toBe('Primeiro mês: estimativa a partir das últimas 2 semanas da Steam.');
   });
 });
 

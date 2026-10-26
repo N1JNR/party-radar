@@ -3,8 +3,10 @@
 
 import { SupabaseClient, createClient } from 'npm:@supabase/supabase-js@2.118.0';
 
-import { Fetch, Visibility, readSteam, withTimeout } from './steam-api.ts';
+import { hasBearer } from './http.ts';
+import { Fetch, Visibility, readPresence, readSteam, withTimeout } from './steam-api.ts';
 import { ReadingPatch, SteamAccount, SyncDeps } from './steam-link.ts';
+import { PresenceDeps } from './steam-presence.ts';
 
 function env(name: string): string {
   const value = Deno.env.get(name);
@@ -86,6 +88,75 @@ export async function accountOf(
   return { userId, steamId: data.steam_id, baselineMinutes: data.baseline_minutes, visibility };
 }
 
+/** Chamada do agendamento do banco: traz a secret key (service role), não a sessão de alguém. */
+export function isScheduledCall(request: Request): boolean {
+  return hasBearer(request, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
+}
+
+/** Próximas contas Steam, em ordem de `user_id`, para a leitura agendada (CA14). */
+export async function listAccounts(
+  admin: SupabaseClient,
+  after: string | null,
+  limit: number,
+): Promise<SteamAccount[]> {
+  let query = admin
+    .from('steam_accounts')
+    .select('user_id, steam_id, baseline_minutes')
+    .order('user_id')
+    .limit(limit);
+  if (after) {
+    query = query.gt('user_id', after);
+  }
+  const { data, error } = await query;
+  if (error) {
+    throw error;
+  }
+  return data.map((row) => ({
+    userId: row.user_id,
+    steamId: row.steam_id,
+    baselineMinutes: row.baseline_minutes,
+  }));
+}
+
+/** Dependências do "jogando agora" de todas as contas (CA10), para `refreshPresence`. */
+export function presenceDeps(
+  admin: SupabaseClient,
+  fetch: Fetch = withTimeout(globalThis.fetch),
+): PresenceDeps {
+  const key = env('STEAM_WEB_API_KEY');
+  return {
+    listAccounts: async (after, limit) => {
+      let query = admin
+        .from('steam_accounts')
+        .select('user_id, steam_id, current_game')
+        .order('user_id')
+        .limit(limit);
+      if (after) {
+        query = query.gt('user_id', after);
+      }
+      const { data, error } = await query;
+      if (error) {
+        throw error;
+      }
+      return data.map((row) => ({
+        userId: row.user_id,
+        steamId: row.steam_id,
+        currentGame: row.current_game,
+      }));
+    },
+    readPresence: (steamIds) => readPresence(fetch, key, steamIds),
+    savePresence: async (userId, currentGame) => {
+      const { error } = await admin
+        .from('steam_accounts')
+        .update({ current_game: currentGame })
+        .eq('user_id', userId);
+      if (error) {
+        throw error;
+      }
+    },
+  };
+}
+
 /**
  * Reserva a leitura da Steam (CA20) num `update` só: grava o horário da tentativa se a última
  * foi antes de `before`. Duas chamadas juntas não leem as duas.
@@ -115,6 +186,30 @@ export function syncDeps(
   const key = env('STEAM_WEB_API_KEY');
   return {
     readSteam: (steamId) => readSteam(fetch, key, steamId),
+    latestTotals: async (userId) => {
+      const { data, error } = await admin.rpc('latest_playtime', { p_user_id: userId });
+      if (error) {
+        throw error;
+      }
+      const rows = (data ?? []) as { app_id: number; minutes_total: number }[];
+      return new Map(rows.map((row) => [row.app_id, row.minutes_total]));
+    },
+    saveSnapshots: async (userId, day, games) => {
+      const { error } = await admin.from('steam_playtime_snapshots').upsert(
+        games.map((game) => ({
+          user_id: userId,
+          app_id: game.appId,
+          game_name: game.name,
+          taken_on: day,
+          minutes_total: game.minutesTotal,
+          minutes_2weeks: game.minutes2Weeks,
+        })),
+        { onConflict: 'user_id,app_id,taken_on' },
+      );
+      if (error) {
+        throw error;
+      }
+    },
     saveReading: async (userId: string, patch: ReadingPatch) => {
       const { error } = await admin
         .from('steam_accounts')

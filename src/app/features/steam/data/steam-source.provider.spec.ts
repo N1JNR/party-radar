@@ -1,6 +1,8 @@
 import { DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { AUTH_GATEWAY } from '../../../core/auth/auth.gateway';
+import { FakeAuthGateway } from '../../../core/auth/fake-auth.gateway';
 import { SUPABASE } from '../../../core/supabase/supabase.client';
 import { FakeSteamSource } from './fake-steam.source';
 import { STEAM_SOURCE } from './steam.source';
@@ -20,16 +22,27 @@ describe('useFakeSteam', () => {
 });
 
 describe('provideSteamSource', () => {
-  function sourceFor(production: boolean | undefined, defaultView: unknown): unknown {
+  function sourceFor(
+    production: boolean | undefined,
+    defaultView: unknown,
+    fakeLogin = false,
+  ): unknown {
     TestBed.configureTestingModule({
       providers: [
         production === undefined ? provideSteamSource() : provideSteamSource(production),
         { provide: DOCUMENT, useValue: { defaultView } },
         { provide: SUPABASE, useValue: {} },
+        ...(fakeLogin
+          ? [FakeAuthGateway, { provide: AUTH_GATEWAY, useExisting: FakeAuthGateway }]
+          : []),
       ],
     });
     return TestBed.inject(STEAM_SOURCE);
   }
+
+  it('com o login simulado (sem sessão de verdade), a Steam também é a simulada', () => {
+    expect(sourceFor(false, { location: { search: '' } }, true)).toBeInstanceOf(FakeSteamSource);
+  });
 
   it('fornece a Steam real por padrão', () => {
     expect(sourceFor(false, { location: { search: '' } })).toBeInstanceOf(SupabaseSteamSource);

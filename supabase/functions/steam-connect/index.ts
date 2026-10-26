@@ -65,6 +65,12 @@ Deno.serve(async (request) => {
           }
           return data ? { userId: data.user_id, baselineMinutes: data.baseline_minutes } : null;
         },
+        clearSnapshots: async (id) => {
+          const { error } = await admin.from('steam_playtime_snapshots').delete().eq('user_id', id);
+          if (error) {
+            throw error;
+          }
+        },
         saveLink: async (id, steamId) => {
           // Conta nova: nada da conta anterior (nome, visibilidade, jogo, horas) fica (CA19).
           const { error } = await admin.from('steam_accounts').upsert(

@@ -15,10 +15,11 @@
     "verify:all": "npm run verify && npm run db:test",
     "db:start": "supabase start",
     "db:test": "supabase test db",
+    "db:agendamentos": "node supabase/scripts/agendamentos-local.mjs",
     "db:types": "supabase gen types typescript --local > src/app/core/supabase/database.types.ts && prettier --write src/app/core/supabase/database.types.ts",
     "serve:ssr:party-radar": "node dist/party-radar/server/server.mjs",
     "prepare": "husky",
-    "fn:test": "deno check supabase/functions/steam-connect/index.ts supabase/functions/steam-sync/index.ts && deno test --no-prompt supabase/functions"
+    "fn:test": "deno check supabase/functions/steam-connect/index.ts supabase/functions/steam-sync/index.ts supabase/functions/steam-presence/index.ts && deno test --no-prompt supabase/functions"
   },
   "private": true,
   "packageManager": "npm@11.17.0",

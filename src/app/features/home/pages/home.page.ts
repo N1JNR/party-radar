@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  afterNextRender,
+  inject,
+  signal,
+} from '@angular/core';
 import { PoButtonModule, PoNotificationService } from '@po-ui/ng-components';
 
 import { ClipboardService } from '../../../core/platform/clipboard.service';
@@ -11,6 +18,9 @@ import { PlayingNowComponent } from '../ui/playing-now/playing-now.component';
 import { SquadOpportunityComponent } from '../ui/squad-opportunity/squad-opportunity.component';
 import { SteamNoticeComponent } from '../ui/steam-notice/steam-notice.component';
 import { StrengthenCardComponent } from '../ui/strengthen-card/strengthen-card.component';
+
+/** De quanto em quanto tempo a página relê o card (spec 003, CA10). */
+export const REFRESH_EVERY_MS = 60_000;
 
 /** "Meu card": a home do app (spec 002). Orquestra o estado da home e os componentes. */
 @Component({
@@ -37,6 +47,18 @@ export class HomePage {
 
   constructor() {
     void this.store.load();
+    // Só no navegador: relê o card a cada minuto, para o "jogando agora" acompanhar a Steam
+    // (spec 003, CA10; o servidor lê a Steam a cada 5 minutos).
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const timer = setInterval(() => this.tick(), REFRESH_EVERY_MS);
+      destroyRef.onDestroy(() => clearInterval(timer));
+    });
+  }
+
+  private tick(): void {
+    this.now.set(new Date());
+    void this.store.refreshCard();
   }
 
   protected reload(): void {
@@ -73,8 +95,11 @@ export class HomePage {
    * responder, o card mostra o resultado sozinho (o quadro some ou aparece o aviso de privada).
    */
   protected async retrySteam(): Promise<void> {
-    if ((await this.store.recheckSteam()) === 'unavailable') {
+    const result = await this.store.recheckSteam();
+    if (result === 'unavailable') {
       this.notification.error('Não foi possível verificar a Steam agora. Tente de novo.');
+    } else if (result === 'public') {
+      void this.store.refreshCard();
     }
   }
 
@@ -83,6 +108,7 @@ export class HomePage {
     const result = await this.store.recheckSteam();
     if (result === 'public') {
       this.notification.success('Steam pública. Seus dados vão aparecer no card.');
+      void this.store.refreshCard();
     } else if (result === 'private') {
       this.notification.information(STILL_PRIVATE_MESSAGE);
     } else if (result === 'unavailable') {

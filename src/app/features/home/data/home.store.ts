@@ -28,7 +28,7 @@ export class HomeStore {
 
   readonly status = signal<HomeStatus>('loading');
   readonly data = signal<HomeData | null>(null);
-  /** Conta Steam de quem está logado; `null` se não deu para ler (aí vale o que a home diz). */
+  /** Conta Steam de quem está logado; `null` se não deu para ler (sem passo nem aviso da Steam). */
   readonly steam = signal<SteamAccountState | null>(null);
   readonly answering = signal(false);
   readonly markingSteam = signal(false);
@@ -36,8 +36,9 @@ export class HomeStore {
   /** Onde a Steam está, para o "Deixe seu card mais forte" e o aviso de perfil privado. */
   readonly steamStep = computed<SteamStepState>(() => {
     const steam = this.steam();
+    // Sem saber da conta, não afirma nada: nem passo "Conectar Steam" nem aviso de privada.
     if (!steam) {
-      return this.data()?.steamPublic === false ? 'private' : 'public';
+      return 'public';
     }
     if (!steam.connected) {
       return 'not-connected';
@@ -163,7 +164,6 @@ export class HomeStore {
         this.steam.update((steam) =>
           steam ? { ...steam, visibility: result, lastSyncedAt: new Date().toISOString() } : steam,
         );
-        this.update(loadId, (data) => ({ ...data, steamPublic: result === 'public' }));
       }
       return result;
     } catch {
@@ -174,6 +174,31 @@ export class HomeStore {
   }
 
   /** Aplica a resposta só se os dados ainda são os da carga em que a ação começou. */
+  /**
+   * Relê o card e a conta Steam sem o esqueleto de carregando (spec 003, CA10: "jogando agora" a
+   * cada minuto; CA7 e CA19: dados e estado da Steam depois de uma leitura no servidor). Só troca
+   * o card e a conta; se falhar, fica o que estava.
+   */
+  async refreshCard(): Promise<void> {
+    if (this.status() !== 'ready') {
+      return;
+    }
+    const loadId = this.loadId;
+    const [home, steam] = await Promise.all([
+      this.source.load().catch(() => null),
+      this.steamSource.account().catch(() => null),
+    ]);
+    if (loadId !== this.loadId) {
+      return;
+    }
+    if (home) {
+      this.update(loadId, (data) => ({ ...data, card: home.card }));
+    }
+    if (steam) {
+      this.steam.set(steam);
+    }
+  }
+
   private update(loadId: number, change: (data: HomeData) => HomeData): void {
     if (loadId !== this.loadId) {
       return;

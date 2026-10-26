@@ -46,7 +46,17 @@ export interface PlayerCard {
   playingNow: string | null;
   /** Título do mês, ex.: "Sofredor de Souls". `null` quando ainda não há dados. */
   title: string | null;
+  /** Horas desde a conexão da Steam: a base da patente (spec 003, CA9). */
   stats: PlayStats;
+  /** Horas jogadas no mês (spec 003, CA8). */
+  monthHours: number;
+  /** Mês da conexão: as horas partem das "últimas 2 semanas" da Steam (decisão da spec 003). */
+  estimate: boolean;
+  /** Nome público na Steam, para "<nome> na Steam" (spec 003, CA21); `null` sem Steam lida. */
+  steamName: string | null;
+  /** Última leitura da Steam (ISO), para o "Atualizado há <tempo>" (spec 003, CA15). */
+  updatedAt: string | null;
+  /** Jogos com tempo no mês. */
   games: number;
   gameOfMonth: GameOfMonth | null;
   partner: SquadPartner | null;
@@ -61,9 +71,41 @@ export const FIRST_ACCESS_PHRASES = {
   platform: 'Plataforma: um mistério.',
 } as const;
 
-/** Sem horas e sem jogos: o card mostra a versão de primeiro acesso. */
+/**
+ * Sem horas e sem jogos no mês: o card mostra a versão de primeiro acesso (spec 002, CA7; spec
+ * 003, CA12 — vale também para quem conectou a Steam e não jogou no mês).
+ */
 export function isFirstAccess(card: PlayerCard): boolean {
-  return !(card.stats.hours > 0) && !(card.games > 0);
+  return !(card.monthHours > 0) && !(card.games > 0);
+}
+
+/** Aviso do mês da conexão (decisão da spec 003). */
+export const ESTIMATE_NOTE = 'Primeiro mês: estimativa a partir das últimas 2 semanas da Steam.';
+
+/** "N1JNR na Steam" (spec 003, CA21); `null` sem nome lido da Steam. */
+export function steamNameLabel(steamName: string | null): string | null {
+  const name = steamName?.trim();
+  return name ? `${name} na Steam` : null;
+}
+
+/** A leitura diária falhou quando a última leitura passa disso (ajustes da Parte 3b). */
+export const STALE_AFTER_MS = 26 * 60 * 60_000;
+
+/**
+ * "Atualizado há 27h", "Atualizado há 3 dias" (spec 003, CA15): só quando a última leitura está
+ * velha (a leitura diária falhou). Leitura recente, sem data ou data inválida: `null`.
+ */
+export function updatedAgoLabel(updatedAt: string | null, now: Date): string | null {
+  const time = updatedAt ? Date.parse(updatedAt) : Number.NaN;
+  const age = now.getTime() - time;
+  if (!Number.isFinite(age) || age <= STALE_AFTER_MS) {
+    return null;
+  }
+  const hours = Math.floor(age / 3_600_000);
+  if (hours < 48) {
+    return `Atualizado há ${hours}h`;
+  }
+  return `Atualizado há ${Math.floor(hours / 24)} dias`;
 }
 
 /**

@@ -11,7 +11,7 @@ import {
   SteamVisibility,
 } from '../../steam/data/steam.source';
 import { HOME_DATA_SOURCE, HomeData, HomeDataSource } from '../data/home.source';
-import { HomePage } from './home.page';
+import { HomePage, REFRESH_EVERY_MS } from './home.page';
 
 const steamAccount = (visibility: SteamVisibility | null): SteamAccountState => ({
   connected: true,
@@ -29,12 +29,15 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       playingNow: 'Elden Ring',
       title: 'Sofredor de Souls',
       stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
+      monthHours: 42,
+      estimate: false,
+      steamName: null,
+      updatedAt: null,
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
       partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
       platforms: [{ platform: 'pc', hours: 28 }],
     },
-    steamPublic: true,
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -75,12 +78,15 @@ const firstAccess = (): HomeData =>
       playingNow: null,
       title: null,
       stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
+      monthHours: 0,
+      estimate: false,
+      steamName: null,
+      updatedAt: null,
       games: 0,
       gameOfMonth: null,
       partner: null,
       platforms: [],
     },
-    steamPublic: false,
     friendsCount: 0,
     friendsPlaying: [],
     squads: [],
@@ -212,7 +218,12 @@ describe('HomePage', () => {
   });
 
   it('primeira leitura pendente: "Tentar de novo" com a Steam pública fecha o quadro (CA19)', async () => {
-    await render({}, true, { account: () => Promise.resolve(steamAccount(null)) });
+    // Depois da leitura no servidor, a conta já vem pública na releitura.
+    const account = vi
+      .fn<SteamSource['account']>()
+      .mockResolvedValueOnce(steamAccount(null))
+      .mockResolvedValue(steamAccount('public'));
+    await render({}, true, { account });
     button('Tentar de novo')?.click();
     await settle();
     expect(error).not.toHaveBeenCalled();
@@ -233,7 +244,11 @@ describe('HomePage', () => {
   });
 
   it('"Já deixei público" com a Steam pública: o aviso some (spec 003, CA7)', async () => {
-    await render({}, true, { account: () => Promise.resolve(steamAccount('private')) });
+    const account = vi
+      .fn<SteamSource['account']>()
+      .mockResolvedValueOnce(steamAccount('private'))
+      .mockResolvedValue(steamAccount('public'));
+    await render({}, true, { account });
     button('Já deixei público')?.click();
     await settle();
     expect(success).toHaveBeenCalledWith('Steam pública. Seus dados vão aparecer no card.');
@@ -314,5 +329,46 @@ describe('HomePage', () => {
     expect(information).toHaveBeenCalledWith(
       'Não deu para copiar. Seu link de convite: http://localhost/convite/ana',
     );
+  });
+
+  it('relê o card a cada minuto, para o "jogando agora" acompanhar a Steam (spec 003, CA10)', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    try {
+      const load = vi
+        .fn<HomeDataSource['load']>()
+        .mockResolvedValueOnce(homeData())
+        .mockResolvedValue(homeData({ card: { ...homeData().card, playingNow: 'Hades' } }));
+      await render({ load });
+      expect(element.querySelector('.player-card__status')?.textContent).not.toContain('Hades');
+      vi.advanceTimersByTime(REFRESH_EVERY_MS);
+      await settle();
+      expect(load).toHaveBeenCalledTimes(2);
+      expect(element.querySelector('.player-card__status')?.textContent?.trim()).toBe(
+        'Jogando Hades agora',
+      );
+      fixture.destroy();
+      vi.advanceTimersByTime(REFRESH_EVERY_MS);
+      expect(load).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('"Já deixei público" com a Steam pública relê o card (spec 003, CA7)', async () => {
+    const load = vi.fn<HomeDataSource['load']>(() => Promise.resolve(homeData()));
+    await render({ load }, true, { account: () => Promise.resolve(steamAccount('private')) });
+    button('Já deixei público')?.click();
+    await settle();
+    await settle();
+    expect(load).toHaveBeenCalledTimes(2);
+  });
+
+  it('"Tentar de novo" com a Steam pública relê o card (spec 003, CA19)', async () => {
+    const load = vi.fn<HomeDataSource['load']>(() => Promise.resolve(homeData()));
+    await render({ load }, true, { account: () => Promise.resolve(steamAccount(null)) });
+    button('Tentar de novo')?.click();
+    await settle();
+    await settle();
+    expect(load).toHaveBeenCalledTimes(2);
   });
 });
