@@ -75,7 +75,7 @@ Segue o `plan.md` (Parte 3b e "Ajustes da Parte 3b"). Banco e servidor primeiro,
       parar no erro de uma conta, testado com Deno (CA14, CA15)
 - [x] T17 — Edge Function `steam-presence`: jogo aberto de todas as contas públicas, em lotes de
       100 por chamada à Steam, testada com Deno (CA10)
-- [ ] T18 — Agendamentos: migration liga `pg_cron` e `pg_net` e agenda a leitura diária e o
+- [x] T18 — Agendamentos: migration liga `pg_cron` e `pg_net` e agenda a leitura diária e o
       "jogando agora" a cada 5 minutos, com endereço e chave lidos do Vault; `npm run
 db:agendamentos` grava esses dois valores no Vault local; pgTAP dos agendamentos (CA10, CA14)
 
