@@ -102,4 +102,19 @@ db:agendamentos` grava esses dois valores no Vault local; pgTAP dos agendamentos
     `prints/`.
   - Limites: o "Atualizado há" (CA15) e a virada do mês (CA12) não acontecem num dia só; ficam
     cobertos pelos testes do domínio e do pgTAP (fuso de São Paulo, fotos antes e depois do mês).
-- [ ] T24 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
+- [x] T24 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
+  - `/code-review` (high) em 2026-10-26: 8 achados, 7 corrigidos com testes:
+    - fotos da conta anterior apagadas ao trocar de Steam;
+    - leitura diária com as contas de cada lote em paralelo;
+    - patente contando o jogo novo antes da primeira foto (migration
+      `20261026160000_my_card_stats_jogo_novo`);
+    - releitura de um minuto trazendo também a conta Steam;
+    - foto só dos jogos que mudaram (`latest_playtime`);
+    - home e Steam simuladas com o login simulado;
+    - a chave que os agendamentos precisam na nuvem, registrada no `plan.md`.
+      O tipo da linha de `my_card_stats` fica escrito à mão de propósito (o tipo gerado diz que as
+      colunas nunca vêm nulas).
+  - `/security-review`: nenhuma vulnerabilidade de confiança alta.
+  - `npm run verify:all` passou: lint, formatação, 444 testes do front (linhas 99,76%), 70 das
+    funções, 75 do banco e o build. Fica o aviso de tamanho do pacote inicial (1,27 MB), já
+    anotado.
