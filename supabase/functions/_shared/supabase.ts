@@ -4,8 +4,9 @@
 import { SupabaseClient, createClient } from 'npm:@supabase/supabase-js@2.118.0';
 
 import { hasBearer } from './http.ts';
-import { Fetch, Visibility, readSteam, withTimeout } from './steam-api.ts';
+import { Fetch, Visibility, readPresence, readSteam, withTimeout } from './steam-api.ts';
 import { ReadingPatch, SteamAccount, SyncDeps } from './steam-link.ts';
+import { PresenceDeps } from './steam-presence.ts';
 
 function env(name: string): string {
   const value = Deno.env.get(name);
@@ -115,6 +116,45 @@ export async function listAccounts(
     steamId: row.steam_id,
     baselineMinutes: row.baseline_minutes,
   }));
+}
+
+/** Dependências do "jogando agora" de todas as contas (CA10), para `refreshPresence`. */
+export function presenceDeps(
+  admin: SupabaseClient,
+  fetch: Fetch = withTimeout(globalThis.fetch),
+): PresenceDeps {
+  const key = env('STEAM_WEB_API_KEY');
+  return {
+    listAccounts: async (after, limit) => {
+      let query = admin
+        .from('steam_accounts')
+        .select('user_id, steam_id, current_game')
+        .order('user_id')
+        .limit(limit);
+      if (after) {
+        query = query.gt('user_id', after);
+      }
+      const { data, error } = await query;
+      if (error) {
+        throw error;
+      }
+      return data.map((row) => ({
+        userId: row.user_id,
+        steamId: row.steam_id,
+        currentGame: row.current_game,
+      }));
+    },
+    readPresence: (steamIds) => readPresence(fetch, key, steamIds),
+    savePresence: async (userId, currentGame) => {
+      const { error } = await admin
+        .from('steam_accounts')
+        .update({ current_game: currentGame })
+        .eq('user_id', userId);
+      if (error) {
+        throw error;
+      }
+    },
+  };
 }
 
 /**

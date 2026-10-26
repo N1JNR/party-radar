@@ -73,7 +73,7 @@ Segue o `plan.md` (Parte 3b e "Ajustes da Parte 3b"). Banco e servidor primeiro,
       Steam privada e outra pessoa (CA8, CA9, CA12, CA14, CA16, CA21)
 - [x] T16 — `steam-sync` agendado: chamado com a secret key, lê todas as contas em lotes, sem
       parar no erro de uma conta, testado com Deno (CA14, CA15)
-- [ ] T17 — Edge Function `steam-presence`: jogo aberto de todas as contas públicas, em lotes de
+- [x] T17 — Edge Function `steam-presence`: jogo aberto de todas as contas públicas, em lotes de
       100 por chamada à Steam, testada com Deno (CA10)
 - [ ] T18 — Agendamentos: migration liga `pg_cron` e `pg_net` e agenda a leitura diária e o
       "jogando agora" a cada 5 minutos, com endereço e chave lidos do Vault; `npm run

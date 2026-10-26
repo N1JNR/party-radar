@@ -121,6 +121,36 @@ export function recentMinutes(games: readonly SteamGame[]): number {
   return games.reduce((total, game) => total + game.minutes2Weeks, 0);
 }
 
+/** Contas por chamada de `GetPlayerSummaries` (limite da Steam). */
+export const SUMMARIES_PER_CALL = 100;
+
+/**
+ * Jogo aberto de várias contas numa chamada só (até 100, CA10). Contas que a Steam não devolveu
+ * ficam de fora do resultado; perfil privado volta sem jogo aberto. Steam instável lança erro.
+ */
+export async function readPresence(
+  fetch: Fetch,
+  key: string,
+  steamIds: readonly string[],
+): Promise<Map<string, string | null>> {
+  if (steamIds.length > SUMMARIES_PER_CALL) {
+    throw new Error(`No máximo ${SUMMARIES_PER_CALL} contas por chamada`);
+  }
+  const presence = new Map<string, string | null>();
+  if (steamIds.length === 0) {
+    return presence;
+  }
+  const query = new URLSearchParams({ key, format: 'json', steamids: steamIds.join(',') });
+  const body = await getJson(fetch, `${API}/ISteamUser/GetPlayerSummaries/v0002/?${query}`);
+  for (const steamId of steamIds) {
+    const summary = parsePlayerSummary(body, steamId);
+    if (summary) {
+      presence.set(steamId, summary.currentGame);
+    }
+  }
+  return presence;
+}
+
 /** Lê perfil e jogos de uma conta. Conta inexistente ou Steam instável lançam erro. */
 export async function readSteam(fetch: Fetch, key: string, steamId: string): Promise<SteamReading> {
   const query = (params: Record<string, string>) =>
