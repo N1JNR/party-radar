@@ -6,7 +6,10 @@ import { SUPABASE } from '../../../core/supabase/supabase.client';
 import { PlayerCard } from '../domain/player-card';
 import { HomeData, HomeDataSource } from './home.source';
 
-/** Uma linha de `my_card_stats()`; os campos de texto podem vir nulos. */
+/**
+ * Uma linha de `my_card_stats()`. Escrita à mão de propósito: o `database.types.ts` gerado diz que
+ * as colunas de funções SQL nunca vêm nulas, mas nome, visibilidade, jogo e jogo do mês vêm.
+ */
 interface CardStatsRow {
   steam_name: string | null;
   visibility: string | null;
