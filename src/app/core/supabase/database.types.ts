@@ -134,6 +134,21 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      my_card_stats: {
+        Args: { p_now?: string };
+        Returns: {
+          current_game: string;
+          estimate: boolean;
+          game_of_month: string;
+          game_of_month_minutes: number;
+          last_synced_at: string;
+          month_games: number;
+          month_minutes: number;
+          steam_name: string;
+          total_minutes: number;
+          visibility: string;
+        }[];
+      };
       username_base: { Args: { source: string }; Returns: string };
     };
     Enums: {

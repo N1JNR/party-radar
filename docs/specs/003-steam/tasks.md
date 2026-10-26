@@ -67,7 +67,7 @@ Segue o `plan.md` (Parte 3b e "Ajustes da Parte 3b"). Banco e servidor primeiro,
       2 semanas), RLS só das próprias fotos, pgTAP e `database.types.ts` (CA14, CA16)
 - [x] T14 — Leitura grava a foto do dia: `syncAccount` guarda o tempo de cada jogo (uma foto por
       jogo e dia, a do dia é atualizada), testado com Deno (CA14, CA15)
-- [ ] T15 — Função `my_card_stats()` (`security invoker`, fuso de São Paulo): horas do mês, jogos
+- [x] T15 — Função `my_card_stats()` (`security invoker`, fuso de São Paulo): horas do mês, jogos
       no mês, jogo do mês, horas desde a conexão, se o mês é estimativa, jogo aberto, nome na
       Steam, visibilidade e última leitura; pgTAP com mês da conexão, mês seguinte, sem fotos,
       Steam privada e outra pessoa (CA8, CA9, CA12, CA14, CA16, CA21)
