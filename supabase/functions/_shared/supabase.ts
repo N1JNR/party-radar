@@ -186,6 +186,14 @@ export function syncDeps(
   const key = env('STEAM_WEB_API_KEY');
   return {
     readSteam: (steamId) => readSteam(fetch, key, steamId),
+    latestTotals: async (userId) => {
+      const { data, error } = await admin.rpc('latest_playtime', { p_user_id: userId });
+      if (error) {
+        throw error;
+      }
+      const rows = (data ?? []) as { app_id: number; minutes_total: number }[];
+      return new Map(rows.map((row) => [row.app_id, row.minutes_total]));
+    },
     saveSnapshots: async (userId, day, games) => {
       const { error } = await admin.from('steam_playtime_snapshots').upsert(
         games.map((game) => ({

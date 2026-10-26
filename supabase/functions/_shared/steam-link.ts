@@ -33,9 +33,25 @@ export interface ReadingPatch {
 export interface SyncDeps {
   readSteam(steamId: string): Promise<SteamReading>;
   saveReading(userId: string, patch: ReadingPatch): Promise<void>;
+  /** Último tempo total gravado de cada jogo (`appId` → minutos). */
+  latestTotals(userId: string): Promise<Map<number, number>>;
   /** Grava a foto do dia (`AAAA-MM-DD`) do tempo de cada jogo; a do mesmo dia é atualizada. */
   saveSnapshots(userId: string, day: string, games: readonly SteamGame[]): Promise<void>;
   now(): Date;
+}
+
+/**
+ * Jogos que entram na foto do dia: os jogados (tempo maior que zero) cujo tempo mudou desde a
+ * última foto, ou que ainda não têm foto. As contas do card usam a última foto de cada jogo, então
+ * repetir o mesmo tempo todo dia só encheria a tabela.
+ */
+export function changedGames(
+  games: readonly SteamGame[],
+  latest: ReadonlyMap<number, number>,
+): SteamGame[] {
+  return games.filter(
+    (game) => game.minutesTotal > 0 && latest.get(game.appId) !== game.minutesTotal,
+  );
 }
 
 /** Fuso do "dia" e do "mês" do card (ajustes da Parte 3b). */
@@ -109,7 +125,10 @@ export async function syncAccount(deps: SyncDeps, account: SteamAccount): Promis
   // A foto vem antes: a "última leitura" só avança quando o tempo de jogo também foi guardado.
   // Com os detalhes de jogos privados não há jogos, e a foto do dia fica de fora (CA14).
   if (reading.visibility === 'public' && reading.games.length > 0) {
-    await deps.saveSnapshots(account.userId, cardDay(now), reading.games);
+    const changed = changedGames(reading.games, await deps.latestTotals(account.userId));
+    if (changed.length > 0) {
+      await deps.saveSnapshots(account.userId, cardDay(now), changed);
+    }
   }
   await deps.saveReading(account.userId, patch);
   return { status: 'synced', visibility: reading.visibility };

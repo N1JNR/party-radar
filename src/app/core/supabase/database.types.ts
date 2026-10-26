@@ -134,6 +134,13 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      latest_playtime: {
+        Args: { p_user_id: string };
+        Returns: {
+          app_id: number;
+          minutes_total: number;
+        }[];
+      };
       my_card_stats: {
         Args: { p_now?: string };
         Returns: {

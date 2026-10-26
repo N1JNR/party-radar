@@ -3,7 +3,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(10);
+select plan(13);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-0000000000a1', 'ana.fotos@exemplo.test', '{"full_name": "Ana"}'),
@@ -45,6 +45,25 @@ select is(
    where user_id = '00000000-0000-0000-0000-0000000000b2' and app_id = 730),
   30,
   'guarda as últimas 2 semanas de cada jogo'
+);
+
+-- Último tempo de cada jogo, para gravar só o que mudou.
+select results_eq(
+  $$ select app_id, minutes_total from public.latest_playtime('00000000-0000-0000-0000-0000000000a1') $$,
+  $$ values (1245620, 1260) $$,
+  'latest_playtime traz a última foto de cada jogo'
+);
+
+select is(
+  has_function_privilege('authenticated', 'public.latest_playtime(uuid)', 'execute'),
+  false,
+  'latest_playtime não é chamada pelo app'
+);
+
+select is(
+  has_function_privilege('anon', 'public.latest_playtime(uuid)', 'execute'),
+  false,
+  'nem por quem não está logado'
 );
 
 -- CA16: Ana logada.

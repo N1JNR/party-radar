@@ -6,6 +6,7 @@ import {
   MIN_SYNC_INTERVAL_MS,
   ReadingPatch,
   cardDay,
+  changedGames,
   connectSteam,
   recheckAccount,
   syncAllAccounts,
@@ -64,6 +65,7 @@ function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
     linked,
     cleared,
     snapshots,
+    latestTotals: () => Promise.resolve(new Map()),
     saveSnapshots: (userId, day, games) => {
       snapshots.push({ userId, day, games });
       return Promise.resolve();
@@ -440,4 +442,53 @@ Deno.test('leitura agendada: as contas de um lote são lidas ao mesmo tempo', as
   };
   assertEquals(await syncAllAccounts(d, 50), { synced: 3, unavailable: 0, failed: 0 });
   assertEquals(maximo, 3);
+});
+
+Deno.test('a foto do dia leva só os jogos jogados cujo tempo mudou', async () => {
+  const d = deps({
+    readSteam: () =>
+      Promise.resolve({
+        ...publicReading,
+        games: [
+          { appId: 1, name: 'ELDEN RING', minutesTotal: 1260, minutes2Weeks: 330 }, // jogou mais
+          { appId: 2, name: 'CS2', minutesTotal: 90, minutes2Weeks: 0 }, // parado
+          { appId: 3, name: 'Hades', minutesTotal: 15, minutes2Weeks: 15 }, // jogo novo
+          { appId: 4, name: 'Nunca abri', minutesTotal: 0, minutes2Weeks: 0 }, // nunca jogado
+        ],
+      }),
+    latestTotals: () =>
+      Promise.resolve(
+        new Map([
+          [1, 1200],
+          [2, 90],
+        ]),
+      ),
+  });
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 });
+  assertEquals(
+    d.snapshots[0].games.map((game) => game.appId),
+    [1, 3],
+  );
+});
+
+Deno.test('nada mudou: não grava foto, mas a leitura avança', async () => {
+  const d = deps({
+    latestTotals: () =>
+      Promise.resolve(
+        new Map([
+          [1, 1200],
+          [2, 90],
+        ]),
+      ),
+  });
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 });
+  assertEquals(d.snapshots, []);
+  assertEquals(d.saved.length, 1);
+});
+
+Deno.test('changedGames: sem foto anterior, entram todos os jogados', () => {
+  assertEquals(
+    changedGames(publicReading.games, new Map()).map((game) => game.appId),
+    [1, 2],
+  );
 });
