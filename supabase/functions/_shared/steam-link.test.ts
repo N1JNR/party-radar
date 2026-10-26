@@ -1,10 +1,11 @@
 import { assertEquals, assertRejects } from 'jsr:@std/assert@1';
 
-import { SteamReading, SteamUnavailableError } from './steam-api.ts';
+import { SteamGame, SteamReading, SteamUnavailableError } from './steam-api.ts';
 import {
   ConnectDeps,
   MIN_SYNC_INTERVAL_MS,
   ReadingPatch,
+  cardDay,
   connectSteam,
   recheckAccount,
   syncAccount,
@@ -41,15 +42,28 @@ function openId(overrides: Record<string, string> = {}): OpenIdParams {
   };
 }
 
+interface SavedSnapshots {
+  userId: string;
+  day: string;
+  games: readonly SteamGame[];
+}
+
 function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
   saved: ReadingPatch[];
   linked: string[];
+  snapshots: SavedSnapshots[];
 } {
   const saved: ReadingPatch[] = [];
   const linked: string[] = [];
+  const snapshots: SavedSnapshots[] = [];
   return {
     saved,
     linked,
+    snapshots,
+    saveSnapshots: (userId, day, games) => {
+      snapshots.push({ userId, day, games });
+      return Promise.resolve();
+    },
     allowedOrigins: ['http://localhost:4200'],
     confirmWithSteam: () => Promise.resolve(true),
     useNonce: () => Promise.resolve(true),
@@ -271,4 +285,54 @@ Deno.test('dentro do intervalo, devolve a última leitura sem chamar a Steam (CA
   });
   assertEquals(read, false);
   assertEquals(d.saved, []);
+});
+
+Deno.test('leitura pública grava a foto do dia com o tempo de cada jogo (CA14)', async () => {
+  const d = deps();
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 });
+  assertEquals(d.snapshots, [{ userId: USER, day: '2026-10-19', games: publicReading.games }]);
+});
+
+Deno.test(
+  'detalhes de jogos privados ou Steam fora do ar: sem foto do dia (CA6, CA15)',
+  async () => {
+    const privada = deps({
+      readSteam: () =>
+        Promise.resolve({ personaName: 'x', visibility: 'private', currentGame: null, games: [] }),
+    });
+    await syncAccount(privada, { userId: USER, steamId: STEAM_ID, baselineMinutes: null });
+    assertEquals(privada.snapshots, []);
+
+    const fora = deps({ readSteam: () => Promise.reject(new SteamUnavailableError('fora')) });
+    await syncAccount(fora, { userId: USER, steamId: STEAM_ID, baselineMinutes: null });
+    assertEquals(fora.snapshots, []);
+  },
+);
+
+Deno.test('conta pública sem jogos: guarda a leitura, sem foto', async () => {
+  const d = deps({
+    readSteam: () =>
+      Promise.resolve({ personaName: 'x', visibility: 'public', currentGame: null, games: [] }),
+  });
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: null });
+  assertEquals(d.snapshots, []);
+  assertEquals(d.saved.length, 1);
+});
+
+Deno.test('se a foto falhar, a última leitura não avança (CA15)', async () => {
+  const d = deps({ saveSnapshots: () => Promise.reject(new Error('banco fora')) });
+  await assertRejects(
+    () => syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 }),
+    Error,
+    'banco fora',
+  );
+  assertEquals(d.saved, []);
+});
+
+Deno.test('o dia do card segue o fuso de São Paulo', () => {
+  assertEquals(cardDay(new Date('2026-10-19T18:02:00Z')), '2026-10-19');
+  // 01h30 UTC ainda é 22h30 do dia anterior em São Paulo.
+  assertEquals(cardDay(new Date('2026-10-20T01:30:00Z')), '2026-10-19');
+  assertEquals(cardDay(new Date('2026-10-20T03:00:00Z')), '2026-10-20');
+  assertEquals(cardDay(new Date('2026-11-01T02:59:00Z')), '2026-10-31');
 });

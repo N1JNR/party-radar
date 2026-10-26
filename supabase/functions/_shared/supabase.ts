@@ -115,6 +115,22 @@ export function syncDeps(
   const key = env('STEAM_WEB_API_KEY');
   return {
     readSteam: (steamId) => readSteam(fetch, key, steamId),
+    saveSnapshots: async (userId, day, games) => {
+      const { error } = await admin.from('steam_playtime_snapshots').upsert(
+        games.map((game) => ({
+          user_id: userId,
+          app_id: game.appId,
+          game_name: game.name,
+          taken_on: day,
+          minutes_total: game.minutesTotal,
+          minutes_2weeks: game.minutes2Weeks,
+        })),
+        { onConflict: 'user_id,app_id,taken_on' },
+      );
+      if (error) {
+        throw error;
+      }
+    },
     saveReading: async (userId: string, patch: ReadingPatch) => {
       const { error } = await admin
         .from('steam_accounts')

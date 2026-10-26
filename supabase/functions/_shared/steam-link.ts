@@ -1,7 +1,13 @@
 // Conectar a Steam e ler a conta (spec 003, CA2–CA7). A lógica recebe as dependências de fora
 // (Steam, banco), para ser testada sem rede; as Edge Functions só ligam as peças.
 
-import { SteamReading, SteamUnavailableError, Visibility, recentMinutes } from './steam-api.ts';
+import {
+  SteamGame,
+  SteamReading,
+  SteamUnavailableError,
+  Visibility,
+  recentMinutes,
+} from './steam-api.ts';
 import { OpenIdParams, checkAssertion } from './steam-openid.ts';
 
 /** Caminho da volta da Steam no app. */
@@ -27,7 +33,23 @@ export interface ReadingPatch {
 export interface SyncDeps {
   readSteam(steamId: string): Promise<SteamReading>;
   saveReading(userId: string, patch: ReadingPatch): Promise<void>;
+  /** Grava a foto do dia (`AAAA-MM-DD`) do tempo de cada jogo; a do mesmo dia é atualizada. */
+  saveSnapshots(userId: string, day: string, games: readonly SteamGame[]): Promise<void>;
   now(): Date;
+}
+
+/** Fuso do "dia" e do "mês" do card (ajustes da Parte 3b). */
+export const CARD_TIME_ZONE = 'America/Sao_Paulo';
+
+/** O dia de `date` no fuso de São Paulo, como `AAAA-MM-DD`. */
+export function cardDay(date: Date): string {
+  // `en-CA` formata a data como AAAA-MM-DD.
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: CARD_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
 }
 
 export type SyncResult = { status: 'synced'; visibility: Visibility } | { status: 'unavailable' };
@@ -74,14 +96,20 @@ export async function syncAccount(deps: SyncDeps, account: SteamAccount): Promis
     }
     throw error;
   }
+  const now = deps.now();
   const patch: ReadingPatch = {
     personaName: reading.personaName,
     visibility: reading.visibility,
     currentGame: reading.currentGame,
-    lastSyncedAt: deps.now().toISOString(),
+    lastSyncedAt: now.toISOString(),
   };
   if (account.baselineMinutes === null && reading.visibility === 'public') {
     patch.baselineMinutes = recentMinutes(reading.games);
+  }
+  // A foto vem antes: a "última leitura" só avança quando o tempo de jogo também foi guardado.
+  // Com os detalhes de jogos privados não há jogos, e a foto do dia fica de fora (CA14).
+  if (reading.visibility === 'public' && reading.games.length > 0) {
+    await deps.saveSnapshots(account.userId, cardDay(now), reading.games);
   }
   await deps.saveReading(account.userId, patch);
   return { status: 'synced', visibility: reading.visibility };
