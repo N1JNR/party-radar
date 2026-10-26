@@ -4,7 +4,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(14);
+select plan(15);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-0000000000a1', 'ana.card@exemplo.test', '{"full_name": "Ana"}'),
@@ -20,7 +20,7 @@ values
   ('00000000-0000-0000-0000-0000000000a1', '76561198000000011', 'ana_steam', 'public', 'ELDEN RING',
    300, '2026-09-20 15:00-03', '2026-10-26 12:00-03'),
   ('00000000-0000-0000-0000-0000000000b2', '76561198000000012', 'bia_steam', 'public', null,
-   90, '2026-10-05 15:00-03', '2026-10-26 12:00-03'),
+   90, '2026-10-03 15:00-03', '2026-10-26 12:00-03'),
   ('00000000-0000-0000-0000-0000000000c3', '76561198000000013', 'caio_steam', 'private', null,
    null, '2026-10-10 15:00-03', '2026-10-26 12:00-03');
 
@@ -38,7 +38,8 @@ values
   -- Ana, jogo C: comprado em outubro (240 - 120 + as 2 semanas da primeira foto, 120 = 240).
   ('00000000-0000-0000-0000-0000000000a1', 3, 'CS2', '2026-10-10', 120, 120),
   ('00000000-0000-0000-0000-0000000000a1', 3, 'CS2', '2026-10-26', 240, 60),
-  -- Bia: conectou em outubro (560 - 500 + 90 = 150).
+  -- Bia: conectou em 03/10, mas a primeira leitura (e as primeiras fotos) só deu certo em 05/10.
+  -- Mês: 560 - 500 + 90 = 150. Patente: 90 + 60 = 150, sem somar as 2 semanas duas vezes.
   ('00000000-0000-0000-0000-0000000000b2', 7, 'Celeste', '2026-10-05', 500, 90),
   ('00000000-0000-0000-0000-0000000000b2', 7, 'Celeste', '2026-10-26', 560, 20);
 
@@ -54,10 +55,12 @@ select results_eq(
   'mês: soma o que cada jogo cresceu, conta só os jogos jogados e pega o de mais horas (CA8)'
 );
 
+-- 300 (ponto de partida) + 400 (ELDEN RING) + 0 (Hades) + 120 (CS2 cresceu) + 120 (CS2 antes da
+-- primeira foto, comprado depois da conexão).
 select is(
   (select total_minutes from public.my_card_stats('2026-10-26 15:00Z')),
-  820,
-  'patente: ponto de partida + o que cada jogo cresceu desde a primeira foto (CA9)'
+  940,
+  'patente: ponto de partida + o que cada jogo cresceu + o jogo comprado depois da conexão (CA9)'
 );
 
 select results_eq(
@@ -89,6 +92,11 @@ select is(
   (select count(*)::integer from public.my_card_stats('2026-10-26 15:00Z')),
   1,
   'uma linha só, com os dados de quem está logado (CA16)'
+);
+
+select ok(
+  (select month_minutes <= total_minutes from public.my_card_stats('2026-10-26 15:00Z')),
+  'as horas do mês nunca passam das horas desde a conexão'
 );
 
 -- Bia: conectou no mês, então é estimativa.
