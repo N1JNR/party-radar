@@ -196,7 +196,6 @@ describe('AppShellComponent', () => {
         partner: null,
         platforms: [],
       },
-      steamPublic: true,
       friendsCount: 2,
       friendsPlaying: [playing('bia'), playing('caio')],
       squads: [squad],

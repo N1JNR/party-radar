@@ -85,7 +85,7 @@ db:agendamentos` grava esses dois valores no Vault local; pgTAP dos agendamentos
       na Steam" e "Atualizado há <tempo>", 100% testado (CA8, CA9, CA15, CA21)
 - [x] T20 — `SupabaseHomeSource`: perfil, `my_card_stats()`, "Onde joga" PC 100%, título
       escondido, amigos, squads e pergunta vazios, link de convite (CA8–CA13, CA21)
-- [ ] T21 — Fonte da home real por padrão (a simulada só com `?simular=` em desenvolvimento) e
+- [x] T21 — Fonte da home real por padrão (a simulada só com `?simular=` em desenvolvimento) e
       fim do `steamPublic` duplicado: o aviso de privada vem só da conta Steam (CA6, CA13)
 - [ ] T22 — Card e página: horas do mês, "estimativa", "<nome> na Steam", "Atualizado há"; o
       "jogando agora" é relido a cada minuto (CA8, CA10, CA12, CA15, CA21)

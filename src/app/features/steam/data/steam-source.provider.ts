@@ -1,6 +1,7 @@
 import { DOCUMENT, Provider, inject } from '@angular/core';
 
 import { environment } from '../../../../environments/environment';
+import { useFakeHome } from '../../home/data/home-source.provider';
 import { FakeSteamSource } from './fake-steam.source';
 import { STEAM_SOURCE, SteamSource } from './steam.source';
 import { SupabaseSteamSource } from './supabase-steam.source';
@@ -10,7 +11,7 @@ import { SupabaseSteamSource } from './supabase-steam.source';
  * que a URL traga `?simular=` (os mesmos cenários da home).
  */
 export function useFakeSteam(production: boolean, search: string): boolean {
-  return !production && new URLSearchParams(search).has('simular');
+  return useFakeHome(production, search);
 }
 
 export function provideSteamSource(production = environment.production): Provider[] {

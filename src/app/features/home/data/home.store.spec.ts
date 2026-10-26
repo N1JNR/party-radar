@@ -30,7 +30,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
         { platform: 'ps5', hours: 12 },
       ],
     },
-    steamPublic: false,
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -155,7 +154,7 @@ describe('HomeStore', () => {
     const store = setup({});
     await store.load();
     const before = store.menuSquads();
-    store.data.update((data) => (data ? { ...data, steamPublic: true } : data));
+    store.data.update((data) => (data ? { ...data, friendsCount: data.friendsCount + 1 } : data));
     expect(store.menuSquads()).toBe(before);
   });
 
@@ -287,14 +286,13 @@ describe('HomeStore', () => {
       expect(store.showStrengthen()).toBe(false);
     });
 
-    it('se a conta Steam não puder ser lida, a home abre e segue o que ela diz', async () => {
+    it('se a conta Steam não puder ser lida, a home abre sem passo nem aviso da Steam', async () => {
       const store = setup({}, { account: () => Promise.reject(new Error('rede')) });
       await store.load();
       expect(store.status()).toBe('ready');
       expect(store.steam()).toBeNull();
-      expect(store.steamStep()).toBe('private');
-      store.data.update((data) => (data ? { ...data, steamPublic: true } : data));
       expect(store.steamStep()).toBe('public');
+      expect(store.showSteamNotice()).toBe(false);
     });
 
     it('"Já deixei público" com a Steam pública: o aviso some (CA7)', async () => {
@@ -305,7 +303,7 @@ describe('HomeStore', () => {
       expect(await checking).toBe('public');
       expect(store.steamStep()).toBe('public');
       expect(store.showSteamNotice()).toBe(false);
-      expect(store.data()?.steamPublic).toBe(true);
+      expect(store.steam()?.visibility).toBe('public');
       expect(store.markingSteam()).toBe(false);
     });
 

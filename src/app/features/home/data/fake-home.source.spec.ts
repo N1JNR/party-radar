@@ -85,7 +85,6 @@ describe('FakeHomeSource', () => {
       partner: { name: 'Rafa', probable: true },
     });
     expect(isFirstAccess(data.card)).toBe(false);
-    expect(data.steamPublic).toBe(true);
     expect(data.inviteLink).toMatch(/\/convite\/ana$/);
   });
 
@@ -107,7 +106,6 @@ describe('FakeHomeSource', () => {
     expect(isFirstAccess(data.card)).toBe(true);
     expect(data.card.title).toBeNull();
     expect(data.card.partner).toBeNull();
-    expect(data.steamPublic).toBe(false);
     expect(data.friendsCount).toBe(0);
     expect(data.friendsPlaying).toEqual([]);
     expect(data.squads).toEqual([]);
@@ -116,7 +114,6 @@ describe('FakeHomeSource', () => {
 
   it('Steam privada: card cheio com a Steam privada (CA8)', async () => {
     const data = await (await setup('steam-private')).load();
-    expect(data.steamPublic).toBe(false);
     expect(isFirstAccess(data.card)).toBe(false);
   });
 

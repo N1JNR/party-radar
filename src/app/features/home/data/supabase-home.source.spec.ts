@@ -57,7 +57,6 @@ describe('SupabaseHomeSource', () => {
       partner: null,
       platforms: [{ platform: 'pc', hours: 9 }],
     });
-    expect(data.steamPublic).toBe(true);
   });
 
   it('amigos, squads e pergunta ficam vazios até a spec de amigos (CA13)', async () => {
@@ -96,14 +95,9 @@ describe('SupabaseHomeSource', () => {
     expect(card.stats.hours).toBeCloseTo(820 / 60);
   });
 
-  it('Steam privada: o aviso usa a visibilidade lida', async () => {
-    const { source } = setup({ data: [{ ...statsRow, visibility: 'private' }], error: null });
-    expect((await source.load()).steamPublic).toBe(false);
-  });
-
   it('sem Steam conectada (nenhuma linha): card zerado, sem nome na Steam', async () => {
     const { source } = setup({ data: [], error: null });
-    const { card, steamPublic } = await source.load();
+    const { card } = await source.load();
     expect(card).toMatchObject({
       monthHours: 0,
       games: 0,
@@ -113,7 +107,6 @@ describe('SupabaseHomeSource', () => {
       estimate: false,
       stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
     });
-    expect(steamPublic).toBe(true);
   });
 
   it('resposta nula conta como sem linha', async () => {

@@ -124,7 +124,6 @@ export class FakeHomeSource implements HomeDataSource {
         partner: null,
         platforms: [],
       },
-      steamPublic: false,
       friendsCount: 0,
       friendsPlaying: [],
       squads: [],
@@ -187,7 +186,6 @@ export class FakeHomeSource implements HomeDataSource {
           { platform: 'ps5', hours: 12 },
         ],
       },
-      steamPublic: scenario !== 'steam-private',
       friendsCount: 6,
       friendsPlaying: scenario === 'no-friends-playing' ? [] : friendsPlaying,
       squads:

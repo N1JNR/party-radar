@@ -8,8 +8,6 @@ import { Squad } from '../domain/squad-opportunity';
 /** Tudo o que a home mostra (spec 002). */
 export interface HomeData {
   card: PlayerCard;
-  /** Perfil da Steam público: sem ele, o card fica incompleto (CA8). */
-  steamPublic: boolean;
   /** Amigos adicionados no Party Radar. */
   friendsCount: number;
   friendsPlaying: FriendPresence[];

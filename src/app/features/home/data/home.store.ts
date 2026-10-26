@@ -28,7 +28,7 @@ export class HomeStore {
 
   readonly status = signal<HomeStatus>('loading');
   readonly data = signal<HomeData | null>(null);
-  /** Conta Steam de quem está logado; `null` se não deu para ler (aí vale o que a home diz). */
+  /** Conta Steam de quem está logado; `null` se não deu para ler (sem passo nem aviso da Steam). */
   readonly steam = signal<SteamAccountState | null>(null);
   readonly answering = signal(false);
   readonly markingSteam = signal(false);
@@ -36,8 +36,9 @@ export class HomeStore {
   /** Onde a Steam está, para o "Deixe seu card mais forte" e o aviso de perfil privado. */
   readonly steamStep = computed<SteamStepState>(() => {
     const steam = this.steam();
+    // Sem saber da conta, não afirma nada: nem passo "Conectar Steam" nem aviso de privada.
     if (!steam) {
-      return this.data()?.steamPublic === false ? 'private' : 'public';
+      return 'public';
     }
     if (!steam.connected) {
       return 'not-connected';
@@ -163,7 +164,6 @@ export class HomeStore {
         this.steam.update((steam) =>
           steam ? { ...steam, visibility: result, lastSyncedAt: new Date().toISOString() } : steam,
         );
-        this.update(loadId, (data) => ({ ...data, steamPublic: result === 'public' }));
       }
       return result;
     } catch {

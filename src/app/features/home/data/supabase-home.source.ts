@@ -65,7 +65,6 @@ export class SupabaseHomeSource implements HomeDataSource {
     };
     return {
       card,
-      steamPublic: stats?.visibility !== 'private',
       friendsCount: 0,
       friendsPlaying: [],
       squads: [],
