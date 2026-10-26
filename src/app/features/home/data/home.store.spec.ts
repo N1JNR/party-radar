@@ -379,7 +379,7 @@ describe('HomeStore', () => {
     });
   });
 
-  describe('refreshCard (spec 003, CA7, CA10)', () => {
+  describe('refreshCard (spec 003, CA7, CA10, CA19)', () => {
     it('relê só o card, sem o esqueleto de carregando', async () => {
       const load = vi
         .fn<HomeDataSource['load']>()
@@ -414,6 +414,30 @@ describe('HomeStore', () => {
       await store.refreshCard();
       expect(store.card()).toBe(before);
       expect(store.status()).toBe('ready');
+    });
+
+    it('relê também a conta Steam: "Lendo…" some quando o servidor termina a leitura (CA19)', async () => {
+      const account = vi
+        .fn<SteamSource['account']>()
+        .mockResolvedValueOnce(steamAccount({ visibility: null }))
+        .mockResolvedValueOnce(steamAccount({ visibility: 'public' }));
+      const store = setup({}, { account });
+      await store.load();
+      expect(store.steamStep()).toBe('reading');
+      await store.refreshCard();
+      expect(store.steamStep()).toBe('public');
+      expect(store.showStrengthen()).toBe(false);
+    });
+
+    it('se a conta Steam falhar na releitura, fica o estado anterior', async () => {
+      const account = vi
+        .fn<SteamSource['account']>()
+        .mockResolvedValueOnce(steamAccount({ visibility: 'private' }))
+        .mockRejectedValueOnce(new Error('rede'));
+      const store = setup({}, { account });
+      await store.load();
+      await store.refreshCard();
+      expect(store.steamStep()).toBe('private');
     });
 
     it('se a pessoa saiu no meio, a resposta é ignorada', async () => {

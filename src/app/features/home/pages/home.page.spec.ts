@@ -218,7 +218,12 @@ describe('HomePage', () => {
   });
 
   it('primeira leitura pendente: "Tentar de novo" com a Steam pública fecha o quadro (CA19)', async () => {
-    await render({}, true, { account: () => Promise.resolve(steamAccount(null)) });
+    // Depois da leitura no servidor, a conta já vem pública na releitura.
+    const account = vi
+      .fn<SteamSource['account']>()
+      .mockResolvedValueOnce(steamAccount(null))
+      .mockResolvedValue(steamAccount('public'));
+    await render({}, true, { account });
     button('Tentar de novo')?.click();
     await settle();
     expect(error).not.toHaveBeenCalled();
@@ -239,7 +244,11 @@ describe('HomePage', () => {
   });
 
   it('"Já deixei público" com a Steam pública: o aviso some (spec 003, CA7)', async () => {
-    await render({}, true, { account: () => Promise.resolve(steamAccount('private')) });
+    const account = vi
+      .fn<SteamSource['account']>()
+      .mockResolvedValueOnce(steamAccount('private'))
+      .mockResolvedValue(steamAccount('public'));
+    await render({}, true, { account });
     button('Já deixei público')?.click();
     await settle();
     expect(success).toHaveBeenCalledWith('Steam pública. Seus dados vão aparecer no card.');
