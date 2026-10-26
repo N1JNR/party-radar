@@ -1,7 +1,9 @@
 import { DOCUMENT, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { AUTH_GATEWAY } from '../../../core/auth/auth.gateway';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { FakeAuthGateway } from '../../../core/auth/fake-auth.gateway';
 import { SUPABASE } from '../../../core/supabase/supabase.client';
 import { FakeHomeSource } from './fake-home.source';
 import { provideHomeSource, useFakeHome } from './home-source.provider';
@@ -21,17 +23,28 @@ describe('useFakeHome', () => {
 });
 
 describe('provideHomeSource', () => {
-  function sourceFor(production: boolean | undefined, defaultView: unknown): unknown {
+  function sourceFor(
+    production: boolean | undefined,
+    defaultView: unknown,
+    fakeLogin = false,
+  ): unknown {
     TestBed.configureTestingModule({
       providers: [
         production === undefined ? provideHomeSource() : provideHomeSource(production),
         { provide: DOCUMENT, useValue: { defaultView } },
         { provide: SUPABASE, useValue: {} },
         { provide: AuthStore, useValue: { user: signal(null) } },
+        ...(fakeLogin
+          ? [FakeAuthGateway, { provide: AUTH_GATEWAY, useExisting: FakeAuthGateway }]
+          : []),
       ],
     });
     return TestBed.inject(HOME_DATA_SOURCE);
   }
+
+  it('com o login simulado (sem sessão de verdade), a home também é a simulada', () => {
+    expect(sourceFor(false, { location: { search: '' } }, true)).toBeInstanceOf(FakeHomeSource);
+  });
 
   it('fornece a home real por padrão', () => {
     expect(sourceFor(false, { location: { search: '' } })).toBeInstanceOf(SupabaseHomeSource);

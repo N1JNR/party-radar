@@ -1,7 +1,7 @@
 import { DOCUMENT, Provider, inject } from '@angular/core';
 
 import { environment } from '../../../../environments/environment';
-import { useFakeHome } from '../../home/data/home-source.provider';
+import { useFakeHome, usingFakeLogin } from '../../home/data/home-source.provider';
 import { FakeSteamSource } from './fake-steam.source';
 import { STEAM_SOURCE, SteamSource } from './steam.source';
 import { SupabaseSteamSource } from './supabase-steam.source';
@@ -22,7 +22,7 @@ export function provideSteamSource(production = environment.production): Provide
       provide: STEAM_SOURCE,
       useFactory: (): SteamSource => {
         const search = inject(DOCUMENT).defaultView?.location.search ?? '';
-        return useFakeSteam(production, search)
+        return useFakeSteam(production, search) || usingFakeLogin()
           ? inject(FakeSteamSource)
           : inject(SupabaseSteamSource);
       },
