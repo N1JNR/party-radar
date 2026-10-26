@@ -53,13 +53,16 @@ function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
   saved: ReadingPatch[];
   linked: string[];
   snapshots: SavedSnapshots[];
+  cleared: string[];
 } {
   const saved: ReadingPatch[] = [];
   const linked: string[] = [];
   const snapshots: SavedSnapshots[] = [];
+  const cleared: string[] = [];
   return {
     saved,
     linked,
+    cleared,
     snapshots,
     saveSnapshots: (userId, day, games) => {
       snapshots.push({ userId, day, games });
@@ -70,6 +73,10 @@ function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
     useNonce: () => Promise.resolve(true),
     findOwner: () => Promise.resolve(null),
     onSyncError: () => undefined,
+    clearSnapshots: (userId) => {
+      cleared.push(userId);
+      return Promise.resolve();
+    },
     saveLink: (_userId, steamId) => {
       linked.push(steamId);
       return Promise.resolve('linked');
@@ -184,12 +191,15 @@ Deno.test('reconectar a mesma conta mantém o ponto de partida (CA19)', async ()
   assertEquals((await connectSteam(d, USER, openId())).status, 'connected');
   assertEquals(d.linked, []);
   assertEquals('baselineMinutes' in d.saved[0], false);
+  assertEquals(d.cleared, []);
 });
 
 Deno.test('trocar de conta liga a nova do zero e lê o ponto de partida dela (CA19)', async () => {
   const d = deps();
   assertEquals((await connectSteam(d, USER, openId())).status, 'connected');
   assertEquals(d.linked, [STEAM_ID]);
+  assertEquals(d.cleared, [USER]);
+  assertEquals(d.snapshots.length, 1);
   assertEquals(d.saved[0].baselineMinutes, 330);
 });
 

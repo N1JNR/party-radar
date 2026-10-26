@@ -173,6 +173,8 @@ export interface ConnectDeps extends SyncDeps {
    * `taken` quando outro perfil ligou a mesma conta ao mesmo tempo (CA4).
    */
   saveLink(userId: string, steamId: string): Promise<'linked' | 'taken'>;
+  /** Apaga as fotos de tempo de jogo do usuário: são da conta Steam anterior (CA19). */
+  clearSnapshots(userId: string): Promise<void>;
   /** Registra uma falha inesperada na primeira leitura (a conta continua conectada). */
   onSyncError(error: unknown): void;
 }
@@ -229,6 +231,10 @@ export async function connectSteam(
   // "Lendo seus dados da Steam…" com "Tentar de novo" (CA19), em vez de dizer que não conectou.
   let sync: SyncResult;
   try {
+    // Conta nova para este perfil: as fotos da conta anterior não podem somar no card (CA19).
+    if (!owner) {
+      await deps.clearSnapshots(userId);
+    }
     sync = await syncAccount(deps, { userId, steamId: check.steamId, baselineMinutes });
   } catch (error) {
     deps.onSyncError(error);
