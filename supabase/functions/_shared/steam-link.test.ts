@@ -421,3 +421,23 @@ Deno.test('sem contas: não lê nada', async () => {
   };
   assertEquals(await syncAllAccounts(d), { synced: 0, unavailable: 0, failed: 0 });
 });
+
+Deno.test('leitura agendada: as contas de um lote são lidas ao mesmo tempo', async () => {
+  let abertas = 0;
+  let maximo = 0;
+  const d = {
+    ...deps({
+      readSteam: async () => {
+        abertas++;
+        maximo = Math.max(maximo, abertas);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        abertas--;
+        return publicReading;
+      },
+    }),
+    listAccounts: (after: string | null) => Promise.resolve(after === null ? contas(3) : []),
+    onAccountError: () => undefined,
+  };
+  assertEquals(await syncAllAccounts(d, 50), { synced: 3, unavailable: 0, failed: 0 });
+  assertEquals(maximo, 3);
+});

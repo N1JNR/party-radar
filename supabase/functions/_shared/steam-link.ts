@@ -132,8 +132,9 @@ export interface SyncAllResult {
 }
 
 /**
- * Leitura diária de todas as contas (CA14), agendada no banco. Lê em lotes, uma conta por vez;
- * Steam fora do ar ou erro de uma conta não param as outras (CA15).
+ * Leitura diária de todas as contas (CA14), agendada no banco. Lê em lotes, com as contas de
+ * cada lote em paralelo: uma por vez, a função passaria do tempo limite com poucas centenas de
+ * contas. Steam fora do ar ou erro de uma conta não param as outras (CA15).
  */
 export async function syncAllAccounts(
   deps: SyncAllDeps,
@@ -143,15 +144,15 @@ export async function syncAllAccounts(
   let after: string | null = null;
   for (;;) {
     const accounts = await deps.listAccounts(after, batchSize);
-    for (const account of accounts) {
-      try {
-        const sync = await syncAccount(deps, account);
-        result[sync.status === 'synced' ? 'synced' : 'unavailable']++;
-      } catch (error) {
+    const syncs = await Promise.allSettled(accounts.map((account) => syncAccount(deps, account)));
+    syncs.forEach((sync, i) => {
+      if (sync.status === 'fulfilled') {
+        result[sync.value.status === 'synced' ? 'synced' : 'unavailable']++;
+      } else {
         result.failed++;
-        deps.onAccountError(account.userId, error);
+        deps.onAccountError(accounts[i].userId, sync.reason);
       }
-    }
+    });
     if (accounts.length < batchSize) {
       return result;
     }

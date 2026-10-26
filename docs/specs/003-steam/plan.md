@@ -155,7 +155,8 @@ estimativa, jogo aberto, visibilidade e `last_synced_at`.
   (`project_url` e `service_role_key`). No local, `npm run db:agendamentos` lê os dois do
   `supabase status` e grava no Vault; na nuvem, eles entram uma vez pelo painel ou pela CLI.
 - **`steam-sync` agendado:** quando quem chama é a secret key (não um usuário), lê todas as contas
-  em lotes de 50, uma conta por vez dentro do lote; o erro de uma conta não para as outras.
+  em lotes de 50, com as contas de cada lote em paralelo (uma por vez passaria do tempo limite
+  da função); o erro de uma conta não para as outras.
 
 ## Integrações externas
 
