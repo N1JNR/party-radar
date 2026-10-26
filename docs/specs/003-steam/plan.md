@@ -166,7 +166,10 @@ estimativa, jogo aberto, visibilidade e `last_synced_at`.
   (`supabase/functions/.env` no local; `supabase secrets` na nuvem). Limite da Steam: 100 mil
   chamadas por dia; com lotes de 100 contas no "jogando agora", sobra folga.
 - **Agendamento:** `pg_cron` chama as funções por `pg_net`, com a secret key guardada no Vault do
-  Supabase, nunca em migration.
+  Supabase, nunca em migration. Na nuvem, o `service_role_key` do Vault precisa ser a chave
+  `service_role` (JWT) do projeto, a mesma que as funções recebem em `SUPABASE_SERVICE_ROLE_KEY`:
+  as chaves novas `sb_secret_…` não passam no `verify_jwt` do gateway nem na comparação das
+  funções, e os agendamentos falhariam em silêncio (só aparece em `net._http_response`).
 
 ## Estratégia de testes
 
