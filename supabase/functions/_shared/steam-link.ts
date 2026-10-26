@@ -115,6 +115,50 @@ export async function syncAccount(deps: SyncDeps, account: SteamAccount): Promis
   return { status: 'synced', visibility: reading.visibility };
 }
 
+/** Contas lidas por vez na leitura agendada (ajustes da Parte 3b). */
+export const SYNC_BATCH_SIZE = 50;
+
+export interface SyncAllDeps extends SyncDeps {
+  /** Próximas contas, em ordem de `userId`, depois de `after` (`null` = do começo). */
+  listAccounts(after: string | null, limit: number): Promise<SteamAccount[]>;
+  /** Registra o erro inesperado de uma conta; a leitura segue para as outras. */
+  onAccountError(userId: string, error: unknown): void;
+}
+
+export interface SyncAllResult {
+  synced: number;
+  unavailable: number;
+  failed: number;
+}
+
+/**
+ * Leitura diária de todas as contas (CA14), agendada no banco. Lê em lotes, uma conta por vez;
+ * Steam fora do ar ou erro de uma conta não param as outras (CA15).
+ */
+export async function syncAllAccounts(
+  deps: SyncAllDeps,
+  batchSize = SYNC_BATCH_SIZE,
+): Promise<SyncAllResult> {
+  const result: SyncAllResult = { synced: 0, unavailable: 0, failed: 0 };
+  let after: string | null = null;
+  for (;;) {
+    const accounts = await deps.listAccounts(after, batchSize);
+    for (const account of accounts) {
+      try {
+        const sync = await syncAccount(deps, account);
+        result[sync.status === 'synced' ? 'synced' : 'unavailable']++;
+      } catch (error) {
+        result.failed++;
+        deps.onAccountError(account.userId, error);
+      }
+    }
+    if (accounts.length < batchSize) {
+      return result;
+    }
+    after = accounts[accounts.length - 1].userId;
+  }
+}
+
 export interface ConnectDeps extends SyncDeps {
   /** Origens em que o app roda (ex.: `http://localhost:4200`); a volta só vale para elas. */
   allowedOrigins: readonly string[];

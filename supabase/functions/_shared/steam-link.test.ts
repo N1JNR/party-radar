@@ -8,6 +8,7 @@ import {
   cardDay,
   connectSteam,
   recheckAccount,
+  syncAllAccounts,
   syncAccount,
 } from './steam-link.ts';
 import { OpenIdParams, STEAM_OPENID_ENDPOINT } from './steam-openid.ts';
@@ -335,4 +336,78 @@ Deno.test('o dia do card segue o fuso de São Paulo', () => {
   assertEquals(cardDay(new Date('2026-10-20T01:30:00Z')), '2026-10-19');
   assertEquals(cardDay(new Date('2026-10-20T03:00:00Z')), '2026-10-20');
   assertEquals(cardDay(new Date('2026-11-01T02:59:00Z')), '2026-10-31');
+});
+
+function contas(total: number) {
+  return Array.from({ length: total }, (_, i) => ({
+    userId: `u${String(i).padStart(3, '0')}`,
+    steamId: `7656119800000${String(i).padStart(4, '0')}`,
+    baselineMinutes: 10,
+  }));
+}
+
+Deno.test('leitura agendada: lê todas as contas, em lotes (CA14)', async () => {
+  const todas = contas(5);
+  const pedidos: (string | null)[] = [];
+  const d = {
+    ...deps(),
+    listAccounts: (after: string | null, limit: number) => {
+      pedidos.push(after);
+      const start = after === null ? 0 : todas.findIndex((c) => c.userId === after) + 1;
+      return Promise.resolve(todas.slice(start, start + limit));
+    },
+    onAccountError: () => undefined,
+  };
+  assertEquals(await syncAllAccounts(d, 2), { synced: 5, unavailable: 0, failed: 0 });
+  assertEquals(pedidos, [null, 'u001', 'u003']);
+  assertEquals(
+    d.snapshots.map((s) => s.userId),
+    ['u000', 'u001', 'u002', 'u003', 'u004'],
+  );
+});
+
+Deno.test('lote cheio no fim: pede mais uma vez e para no vazio', async () => {
+  const todas = contas(4);
+  const pedidos: (string | null)[] = [];
+  const d = {
+    ...deps(),
+    listAccounts: (after: string | null, limit: number) => {
+      pedidos.push(after);
+      const start = after === null ? 0 : todas.findIndex((c) => c.userId === after) + 1;
+      return Promise.resolve(todas.slice(start, start + limit));
+    },
+    onAccountError: () => undefined,
+  };
+  assertEquals(await syncAllAccounts(d, 2), { synced: 4, unavailable: 0, failed: 0 });
+  assertEquals(pedidos, [null, 'u001', 'u003']);
+});
+
+Deno.test('Steam fora do ar ou erro de uma conta não param as outras (CA15)', async () => {
+  const erros: string[] = [];
+  const d = {
+    ...deps({
+      readSteam: (steamId) => {
+        if (steamId.endsWith('0001')) {
+          return Promise.reject(new SteamUnavailableError('fora'));
+        }
+        if (steamId.endsWith('0002')) {
+          return Promise.reject(new Error('bug'));
+        }
+        return Promise.resolve(publicReading);
+      },
+    }),
+    listAccounts: (after: string | null) => Promise.resolve(after === null ? contas(4) : []),
+    onAccountError: (userId: string) => erros.push(userId),
+  };
+  assertEquals(await syncAllAccounts(d, 50), { synced: 2, unavailable: 1, failed: 1 });
+  assertEquals(erros, ['u002']);
+});
+
+Deno.test('sem contas: não lê nada', async () => {
+  const d = {
+    ...deps(),
+    listAccounts: () => Promise.resolve([]),
+    onAccountError: () => undefined,
+  };
+  assertEquals(await syncAllAccounts(d), { synced: 0, unavailable: 0, failed: 0 });
 });

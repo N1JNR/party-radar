@@ -71,7 +71,7 @@ Segue o `plan.md` (Parte 3b e "Ajustes da Parte 3b"). Banco e servidor primeiro,
       no mês, jogo do mês, horas desde a conexão, se o mês é estimativa, jogo aberto, nome na
       Steam, visibilidade e última leitura; pgTAP com mês da conexão, mês seguinte, sem fotos,
       Steam privada e outra pessoa (CA8, CA9, CA12, CA14, CA16, CA21)
-- [ ] T16 — `steam-sync` agendado: chamado com a secret key, lê todas as contas em lotes, sem
+- [x] T16 — `steam-sync` agendado: chamado com a secret key, lê todas as contas em lotes, sem
       parar no erro de uma conta, testado com Deno (CA14, CA15)
 - [ ] T17 — Edge Function `steam-presence`: jogo aberto de todas as contas públicas, em lotes de
       100 por chamada à Steam, testada com Deno (CA10)

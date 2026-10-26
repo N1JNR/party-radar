@@ -3,6 +3,7 @@
 
 import { SupabaseClient, createClient } from 'npm:@supabase/supabase-js@2.118.0';
 
+import { hasBearer } from './http.ts';
 import { Fetch, Visibility, readSteam, withTimeout } from './steam-api.ts';
 import { ReadingPatch, SteamAccount, SyncDeps } from './steam-link.ts';
 
@@ -84,6 +85,36 @@ export async function accountOf(
   const visibility =
     data.visibility === 'public' || data.visibility === 'private' ? data.visibility : null;
   return { userId, steamId: data.steam_id, baselineMinutes: data.baseline_minutes, visibility };
+}
+
+/** Chamada do agendamento do banco: traz a secret key (service role), não a sessão de alguém. */
+export function isScheduledCall(request: Request): boolean {
+  return hasBearer(request, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
+}
+
+/** Próximas contas Steam, em ordem de `user_id`, para a leitura agendada (CA14). */
+export async function listAccounts(
+  admin: SupabaseClient,
+  after: string | null,
+  limit: number,
+): Promise<SteamAccount[]> {
+  let query = admin
+    .from('steam_accounts')
+    .select('user_id, steam_id, baseline_minutes')
+    .order('user_id')
+    .limit(limit);
+  if (after) {
+    query = query.gt('user_id', after);
+  }
+  const { data, error } = await query;
+  if (error) {
+    throw error;
+  }
+  return data.map((row) => ({
+    userId: row.user_id,
+    steamId: row.steam_id,
+    baselineMinutes: row.baseline_minutes,
+  }));
 }
 
 /**
