@@ -63,7 +63,7 @@ Segue o `plan.md` (Parte 3b e "Ajustes da Parte 3b"). Banco e servidor primeiro,
 
 **Banco e servidor**
 
-- [ ] T13 — Migration `steam_playtime_snapshots` (foto diária por jogo: tempo total e das últimas
+- [x] T13 — Migration `steam_playtime_snapshots` (foto diária por jogo: tempo total e das últimas
       2 semanas), RLS só das próprias fotos, pgTAP e `database.types.ts` (CA14, CA16)
 - [ ] T14 — Leitura grava a foto do dia: `syncAccount` guarda o tempo de cada jogo (uma foto por
       jogo e dia, a do dia é atualizada), testado com Deno (CA14, CA15)
@@ -77,7 +77,7 @@ Segue o `plan.md` (Parte 3b e "Ajustes da Parte 3b"). Banco e servidor primeiro,
       100 por chamada à Steam, testada com Deno (CA10)
 - [ ] T18 — Agendamentos: migration liga `pg_cron` e `pg_net` e agenda a leitura diária e o
       "jogando agora" a cada 5 minutos, com endereço e chave lidos do Vault; `npm run
-  db:agendamentos` grava esses dois valores no Vault local; pgTAP dos agendamentos (CA10, CA14)
+db:agendamentos` grava esses dois valores no Vault local; pgTAP dos agendamentos (CA10, CA14)
 
 **Front**
 

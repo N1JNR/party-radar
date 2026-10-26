@@ -101,6 +101,34 @@ export type Database = {
         };
         Relationships: [];
       };
+      steam_playtime_snapshots: {
+        Row: {
+          app_id: number;
+          game_name: string;
+          minutes_2weeks: number;
+          minutes_total: number;
+          taken_on: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          app_id: number;
+          game_name: string;
+          minutes_2weeks?: number;
+          minutes_total: number;
+          taken_on: string;
+          user_id: string;
+        };
+        Update: {
+          app_id?: number;
+          game_name?: string;
+          minutes_2weeks?: number;
+          minutes_total?: number;
+          taken_on?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
