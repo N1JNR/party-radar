@@ -41,6 +41,7 @@ dd {
   overflow-wrap: anywhere;
 }
 .player-card__username,
+.player-card__steam,
 .player-card__stat-caption,
 .player-card__remaining,
 .player-card__hours-caption {
@@ -103,6 +104,12 @@ dd {
 }
 .player-card__hours .player-card__phrase {
   margin-top: var(--spacing-xs);
+}
+// "Estimativa" e "Atualizado há": informação de apoio, sem competir com as horas.
+.player-card__note {
+  margin-top: var(--spacing-xxs);
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-xs);
 }
 
 // Jogo do mês e parceiro lado a lado, com as plataformas na linha de baixo, inteira (as barras

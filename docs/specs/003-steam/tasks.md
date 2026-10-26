@@ -87,7 +87,7 @@ db:agendamentos` grava esses dois valores no Vault local; pgTAP dos agendamentos
       escondido, amigos, squads e pergunta vazios, link de convite (CA8–CA13, CA21)
 - [x] T21 — Fonte da home real por padrão (a simulada só com `?simular=` em desenvolvimento) e
       fim do `steamPublic` duplicado: o aviso de privada vem só da conta Steam (CA6, CA13)
-- [ ] T22 — Card e página: horas do mês, "estimativa", "<nome> na Steam", "Atualizado há"; o
+- [x] T22 — Card e página: horas do mês, "estimativa", "<nome> na Steam", "Atualizado há"; o
       "jogando agora" é relido a cada minuto (CA8, CA10, CA12, CA15, CA21)
 - [ ] T23 — Conferência de ponta a ponta com a conta Steam do Jorge (horas, jogo do mês, patente,
       jogando agora, nome na Steam, leitura agendada), com prints (CA8–CA15, CA21)

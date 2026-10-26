@@ -378,4 +378,57 @@ describe('HomeStore', () => {
       expect(store.card()?.partner?.probable).toBe(true);
     });
   });
+
+  describe('refreshCard (spec 003, CA7, CA10)', () => {
+    it('relê só o card, sem o esqueleto de carregando', async () => {
+      const load = vi
+        .fn<HomeDataSource['load']>()
+        .mockResolvedValueOnce(homeData())
+        .mockResolvedValueOnce(
+          homeData({ card: { ...homeData().card, playingNow: 'Hades' }, friendsCount: 99 }),
+        );
+      const store = setup({ load });
+      await store.load();
+      const refreshing = store.refreshCard();
+      expect(store.status()).toBe('ready');
+      await refreshing;
+      expect(store.card()?.playingNow).toBe('Hades');
+      expect(store.data()?.friendsCount).toBe(homeData().friendsCount);
+    });
+
+    it('antes de a home carregar, não faz nada', async () => {
+      const load = vi.fn<HomeDataSource['load']>(() => Promise.resolve(homeData()));
+      const store = setup({ load });
+      await store.refreshCard();
+      expect(load).not.toHaveBeenCalled();
+    });
+
+    it('se falhar, o card continua como estava', async () => {
+      const load = vi
+        .fn<HomeDataSource['load']>()
+        .mockResolvedValueOnce(homeData())
+        .mockRejectedValueOnce(new Error('rede'));
+      const store = setup({ load });
+      await store.load();
+      const before = store.card();
+      await store.refreshCard();
+      expect(store.card()).toBe(before);
+      expect(store.status()).toBe('ready');
+    });
+
+    it('se a pessoa saiu no meio, a resposta é ignorada', async () => {
+      let resolve: (data: HomeData) => void = () => undefined;
+      const load = vi
+        .fn<HomeDataSource['load']>()
+        .mockResolvedValueOnce(homeData())
+        .mockImplementationOnce(() => new Promise((r) => (resolve = r)));
+      const store = setup({ load });
+      await store.load();
+      const refreshing = store.refreshCard();
+      store.reset();
+      resolve(homeData());
+      await refreshing;
+      expect(store.data()).toBeNull();
+    });
+  });
 });

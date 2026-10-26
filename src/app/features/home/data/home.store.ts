@@ -174,6 +174,23 @@ export class HomeStore {
   }
 
   /** Aplica a resposta só se os dados ainda são os da carga em que a ação começou. */
+  /**
+   * Relê o card sem o esqueleto de carregando (spec 003, CA10: "jogando agora" a cada minuto;
+   * CA7: dados depois de a Steam ficar pública). Só troca o card; se falhar, fica o que estava.
+   */
+  async refreshCard(): Promise<void> {
+    if (this.status() !== 'ready') {
+      return;
+    }
+    const loadId = this.loadId;
+    try {
+      const { card } = await this.source.load();
+      this.update(loadId, (data) => ({ ...data, card }));
+    } catch {
+      // Falha passageira: o card continua com a última leitura.
+    }
+  }
+
   private update(loadId: number, change: (data: HomeData) => HomeData): void {
     if (loadId !== this.loadId) {
       return;

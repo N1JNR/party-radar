@@ -9,6 +9,7 @@ import {
 
 import { PatenteProgress, remainingLabel } from '../../domain/patentes';
 import {
+  ESTIMATE_NOTE,
   FIRST_ACCESS_PHRASES,
   PlatformShare,
   PlayerCard,
@@ -16,6 +17,8 @@ import {
   gamesLabel,
   matchesLabel,
   playingLabel,
+  steamNameLabel,
+  updatedAgoLabel,
 } from '../../domain/player-card';
 
 /**
@@ -34,12 +37,22 @@ export class PlayerCardComponent {
   readonly progress = input.required<PatenteProgress>();
   readonly platforms = input.required<readonly PlatformShare[]>();
   readonly firstAccess = input(false);
+  /** Agora, para o "Atualizado há <tempo>" (spec 003, CA15). */
+  readonly now = input(new Date());
   readonly seePatentes = output<void>();
 
   protected readonly phrases = computed(() => FIRST_ACCESS_PHRASES);
+  // Por `computed`, como as frases: na suíte inteira, a constante ainda não existe quando os
+  // campos da classe são criados.
+  protected readonly estimateNote = computed(() => ESTIMATE_NOTE);
   protected readonly tagNeutral = PoTagType.Neutral;
   protected readonly playing = computed(() => playingLabel(this.card().playingNow));
-  protected readonly hours = computed(() => formatHours(this.card().stats.hours));
+  protected readonly steamName = computed(() => steamNameLabel(this.card().steamName));
+  protected readonly updatedAgo = computed(() =>
+    updatedAgoLabel(this.card().updatedAt, this.now()),
+  );
+  /** Horas do mês (spec 003, CA8); a patente usa as horas desde a conexão. */
+  protected readonly hours = computed(() => formatHours(this.card().monthHours));
   protected readonly games = computed(() => gamesLabel(this.card().games));
   protected readonly gameOfMonthHours = computed(() =>
     formatHours(this.card().gameOfMonth?.hours ?? 0),
