@@ -18,6 +18,10 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       playingNow: null,
       title: 'Sofredor de Souls',
       stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
+      monthHours: 42,
+      estimate: false,
+      steamName: null,
+      updatedAt: null,
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
       partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
@@ -121,6 +125,10 @@ describe('HomeStore', () => {
     empty.card = {
       ...empty.card,
       stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
+      monthHours: 0,
+      estimate: false,
+      steamName: null,
+      updatedAt: null,
       games: 0,
     };
     const store = setup({ load: () => Promise.resolve(empty) });

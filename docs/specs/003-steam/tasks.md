@@ -81,7 +81,7 @@ db:agendamentos` grava esses dois valores no Vault local; pgTAP dos agendamentos
 
 **Front**
 
-- [ ] T19 — Domínio do card: horas do mês separadas das horas da patente, "estimativa", "<nome>
+- [x] T19 — Domínio do card: horas do mês separadas das horas da patente, "estimativa", "<nome>
       na Steam" e "Atualizado há <tempo>", 100% testado (CA8, CA9, CA15, CA21)
 - [ ] T20 — `SupabaseHomeSource`: perfil, `my_card_stats()`, "Onde joga" PC 100%, título
       escondido, amigos, squads e pergunta vazios, link de convite (CA8–CA13, CA21)
