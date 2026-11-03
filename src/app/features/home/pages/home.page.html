@@ -45,7 +45,11 @@
           }
 
           @if (store.progress(); as progress) {
-            <app-rank-track [progress]="progress" [hours]="data.card.stats.hours" />
+            <app-rank-track
+              [progress]="progress"
+              [season]="store.season()"
+              [careerHours]="store.careerHours()"
+            />
           }
 
           @if (store.showRadar()) {

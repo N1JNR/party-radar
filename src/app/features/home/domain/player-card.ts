@@ -1,5 +1,3 @@
-import type { PlayStats } from './patentes';
-
 export type Platform = 'pc' | 'ps5' | 'xbox' | 'switch' | 'mobile';
 
 export const PLATFORM_LABELS: Record<Platform, string> = {
@@ -22,8 +20,6 @@ export interface PlayerCard {
   avatarUrl: string | null;
   /** Jogo aberto agora, ou `null` se a pessoa não está jogando (CA5). */
   playingNow: string | null;
-  /** Horas desde a conexão da Steam: a base da patente (spec 003, CA9). */
-  stats: PlayStats;
   /** Horas jogadas no mês (spec 003, CA8). */
   monthHours: number;
   /** Mês da conexão: as horas partem das "últimas 2 semanas" da Steam (decisão da spec 003). */

@@ -113,7 +113,6 @@ export class FakeHomeSource implements HomeDataSource {
       card: {
         ...this.identity(),
         playingNow: null,
-        stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
         monthHours: 0,
         estimate: false,
         steamName: null,
@@ -123,6 +122,8 @@ export class FakeHomeSource implements HomeDataSource {
       },
       games: [],
       previousIsEstimate: false,
+      season: null,
+      trophies: [],
       friendsCount: 0,
       friendsPlaying: [],
       squads: [],
@@ -171,7 +172,6 @@ export class FakeHomeSource implements HomeDataSource {
       card: {
         ...this.identity(),
         playingNow: 'Elden Ring',
-        stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
         monthHours: 42,
         estimate: false,
         steamName: null,
@@ -230,6 +230,8 @@ export class FakeHomeSource implements HomeDataSource {
         },
       ],
       previousIsEstimate: false,
+      season: { number: 2, daysLeft: 52, hours: 42, topGame: 'Elden Ring' },
+      trophies: [{ season: 1, rankId: 'veterano', hours: 46, topGame: 'CS2' }],
       friendsCount: 6,
       friendsPlaying: scenario === 'no-friends-playing' ? [] : friendsPlaying,
       squads:

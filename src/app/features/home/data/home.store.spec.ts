@@ -16,7 +16,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       username: 'ana',
       avatarUrl: null,
       playingNow: null,
-      stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
       monthHours: 42,
       estimate: false,
       steamName: null,
@@ -35,6 +34,8 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       },
     ],
     previousIsEstimate: false,
+    season: { number: 1, daysLeft: 52, hours: 42, topGame: 'Elden Ring' },
+    trophies: [],
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -108,6 +109,9 @@ describe('HomeStore', () => {
     expect(store.progress()).toBeNull();
     expect(store.hasGames()).toBe(false);
     expect(store.previousHours()).toBe(0);
+    expect(store.season()).toBeNull();
+    expect(store.trophies()).toEqual([]);
+    expect(store.careerHours()).toBe(0);
     expect(store.opportunities()).toEqual([]);
     expect(store.menuSquads()).toBeNull();
   });
@@ -118,10 +122,18 @@ describe('HomeStore', () => {
     expect(store.status()).toBe('ready');
     expect(store.card()?.name).toBe('Ana Souza');
     expect(store.progress()?.current.name).toBe('Veterano de lobby');
+    expect(store.season()?.hours).toBe(42);
+    expect(store.careerHours()).toBe(42);
     expect(store.hasGames()).toBe(true);
     expect(store.previousHours()).toBe(12);
     expect(store.opportunities()[0].game).toBe('Fortnite');
     expect(store.menuSquads()).toEqual([{ id: 'sexta', name: 'Squad da Sexta', playing: 2 }]);
+  });
+
+  it('sem temporada, a patente é NPC (spec 005, CA16)', async () => {
+    const store = setup({ load: () => Promise.resolve(homeData({ season: null })) });
+    await store.load();
+    expect(store.progress()?.current.id).toBe('npc');
   });
 
   it('sem jogos, mostra o checklist e o radar vazio (spec 004, CA18)', async () => {

@@ -5,6 +5,7 @@ import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import { SUPABASE } from '../../../core/supabase/supabase.client';
 import { PlayerCard } from '../domain/player-card';
 import { GameKind, RADAR_AXES } from '../domain/player-radar';
+import { sortTrophies } from '../domain/season';
 import { HomeData, HomeDataSource } from './home.source';
 
 /**
@@ -20,8 +21,23 @@ interface CardStatsRow {
   month_games: number;
   game_of_month: string | null;
   game_of_month_minutes: number | null;
-  total_minutes: number;
   estimate: boolean;
+}
+
+/** Uma linha de `my_season()` (spec 005). O jogo pode vir nulo. */
+interface SeasonRow {
+  season_number: number;
+  days_left: number;
+  minutes: number;
+  top_game: string | null;
+}
+
+/** Uma linha de `season_trophies` (spec 005). */
+interface TrophyRow {
+  season_number: number;
+  rank_id: string;
+  minutes: number;
+  top_game: string | null;
 }
 
 /** Uma linha de `my_games()` (spec 004). */
@@ -43,8 +59,8 @@ const toKind = (category: string): GameKind =>
   (RADAR_AXES as readonly string[]).includes(category) ? (category as GameKind) : 'outros';
 
 /**
- * Home de verdade (spec 003, Parte 3b): nome e foto do Discord (perfil) e os números da Steam,
- * calculados no banco por `my_card_stats()`. Amigos, squads e a pergunta de parceria ficam vazios
+ * Home de verdade (spec 003, Parte 3b; spec 005): nome e foto do Discord (perfil) e os números da
+ * Steam, calculados no banco por `my_card_stats()`, `my_games()` e `my_season()`. Amigos, squads e a pergunta de parceria ficam vazios
  * até a spec de amigos (CA13).
  */
 @Injectable()
@@ -54,9 +70,11 @@ export class SupabaseHomeSource implements HomeDataSource {
   private readonly navigation = inject(ExternalNavigation);
 
   async load(): Promise<HomeData> {
-    const [statsResult, gamesResult] = await Promise.all([
+    const [statsResult, gamesResult, seasonResult, trophiesResult] = await Promise.all([
       this.supabase.rpc('my_card_stats'),
       this.supabase.rpc('my_games'),
+      this.supabase.rpc('my_season'),
+      this.supabase.from('season_trophies').select('season_number, rank_id, minutes, top_game'),
     ]);
     if (statsResult.error) {
       throw statsResult.error;
@@ -64,9 +82,18 @@ export class SupabaseHomeSource implements HomeDataSource {
     if (gamesResult.error) {
       throw gamesResult.error;
     }
+    if (seasonResult.error) {
+      throw seasonResult.error;
+    }
+    if (trophiesResult.error) {
+      throw trophiesResult.error;
+    }
     // Sem Steam conectada, a função não devolve linha: o card fica zerado (primeiro acesso).
     const stats = ((statsResult.data ?? []) as unknown as CardStatsRow[]).at(0) ?? null;
     const gameRows = (gamesResult.data ?? []) as unknown as GameRow[];
+    // Sem Steam conectada, também não há temporada (spec 005, CA16).
+    const seasonRow = ((seasonResult.data ?? []) as unknown as SeasonRow[]).at(0) ?? null;
+    const trophyRows = (trophiesResult.data ?? []) as TrophyRow[];
     const user = this.auth.user();
     const username = user?.username ?? 'jogador';
     const card: PlayerCard = {
@@ -74,7 +101,6 @@ export class SupabaseHomeSource implements HomeDataSource {
       username,
       avatarUrl: user?.avatarUrl ?? null,
       playingNow: stats?.current_game ?? null,
-      stats: { hours: toHours(stats?.total_minutes), hoursWithFriends: 0, distinctFriends: 0 },
       monthHours: toHours(stats?.month_minutes),
       estimate: stats?.estimate ?? false,
       steamName: stats?.steam_name ?? null,
@@ -95,6 +121,20 @@ export class SupabaseHomeSource implements HomeDataSource {
         previousMonthHours: toHours(row.previous_month_minutes),
       })),
       previousIsEstimate: gameRows.some((row) => row.previous_is_estimate),
+      season: seasonRow && {
+        number: seasonRow.season_number,
+        daysLeft: seasonRow.days_left,
+        hours: toHours(seasonRow.minutes),
+        topGame: seasonRow.top_game,
+      },
+      trophies: sortTrophies(
+        trophyRows.map((row) => ({
+          season: row.season_number,
+          rankId: row.rank_id,
+          hours: toHours(row.minutes),
+          topGame: row.top_game,
+        })),
+      ),
       friendsCount: 0,
       friendsPlaying: [],
       squads: [],

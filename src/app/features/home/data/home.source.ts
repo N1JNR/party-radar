@@ -4,6 +4,7 @@ import { FriendPresence } from '../domain/friend-presence';
 import { PartnershipQuestion } from '../domain/partnership';
 import { PlayerCard } from '../domain/player-card';
 import { PlayedGame } from '../domain/player-radar';
+import { SeasonProgress, SeasonTrophy } from '../domain/season';
 import { Squad } from '../domain/squad-opportunity';
 
 /** Tudo o que a home mostra (spec 002). */
@@ -13,6 +14,10 @@ export interface HomeData {
   games: PlayedGame[];
   /** O mês anterior foi o da conexão com a Steam: as horas dele são estimativa (spec 004, CA11). */
   previousIsEstimate: boolean;
+  /** A temporada em andamento; `null` sem Steam conectada (spec 005, CA16). */
+  season: SeasonProgress | null;
+  /** Temporadas terminadas, da mais recente para a mais antiga (spec 005, CA12). */
+  trophies: SeasonTrophy[];
   /** Amigos adicionados no Party Radar. */
   friendsCount: number;
   friendsPlaying: FriendPresence[];

@@ -29,7 +29,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       username: 'ana',
       avatarUrl: null,
       playingNow: 'Elden Ring',
-      stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
       monthHours: 42,
       estimate: false,
       steamName: null,
@@ -48,6 +47,8 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       },
     ],
     previousIsEstimate: false,
+    season: { number: 1, daysLeft: 52, hours: 42, topGame: 'Elden Ring' },
+    trophies: [],
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -86,7 +87,6 @@ const firstAccess = (): HomeData =>
     card: {
       ...homeData().card,
       playingNow: null,
-      stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
       monthHours: 0,
       estimate: false,
       steamName: null,
@@ -96,6 +96,8 @@ const firstAccess = (): HomeData =>
     },
     games: [],
     previousIsEstimate: false,
+    season: null,
+    trophies: [],
     friendsCount: 0,
     friendsPlaying: [],
     squads: [],

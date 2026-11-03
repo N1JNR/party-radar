@@ -9,13 +9,24 @@ import {
 } from '@angular/core';
 
 import { PATENTES, PatenteProgress, remainingLabel } from '../../domain/patentes';
-import { formatHours } from '../../domain/player-card';
+import { SeasonProgress, careerLabel, seasonHoursLabel, seasonLabel } from '../../domain/season';
 
 type RankState = 'done' | 'current' | 'next';
 
+/** Em texto, para não depender da cor; só a patente seguinte é "Próxima" (spec 005, CA18). */
+function stateLabel(state: RankState, distance: number): string {
+  if (state === 'done') {
+    return 'Conquistada';
+  }
+  if (state === 'current') {
+    return 'Patente atual';
+  }
+  return distance === 1 ? 'Próxima' : 'A conquistar';
+}
+
 /**
- * Trilha da patente (spec 004, CA12): todas as patentes em ordem, a atual em destaque e o progresso
- * até a próxima, sempre também em texto. A spec 005 troca as regras, não este desenho.
+ * Trilha da patente (spec 004, CA12; spec 005): todas as patentes em ordem, a atual em destaque e o
+ * progresso na temporada até a próxima, sempre também em texto.
  */
 @Component({
   selector: 'app-rank-track',
@@ -25,12 +36,22 @@ type RankState = 'done' | 'current' | 'next';
 })
 export class RankTrackComponent {
   readonly progress = input.required<PatenteProgress>();
-  /** Horas que contam para a patente. */
-  readonly hours = input.required<number>();
+  /** A temporada em andamento; `null` sem Steam conectada (spec 005, CA16). */
+  readonly season = input<SeasonProgress | null>(null);
+  /** Horas totais na Steam, que não zeram com a temporada (spec 005, CA14). */
+  readonly careerHours = input(0);
 
   private readonly scroller = viewChild.required<ElementRef<HTMLElement>>('scroller');
 
-  protected readonly hoursLabel = computed(() => formatHours(this.hours()));
+  protected readonly seasonText = computed(() => {
+    const season = this.season();
+    return season ? seasonLabel(season) : '';
+  });
+  protected readonly hoursText = computed(() => seasonHoursLabel(this.season()?.hours ?? 0));
+  protected readonly career = computed(() => {
+    const hours = this.careerHours();
+    return hours > 0 ? careerLabel(hours) : null;
+  });
   protected readonly remaining = computed(() => remainingLabel(this.progress()));
   protected readonly ranks = computed(() => {
     const progress = this.progress();
@@ -41,9 +62,10 @@ export class RankTrackComponent {
       return {
         id: patente.id,
         name: patente.name,
-        rule: patente.rule,
+        goal: patente.goal,
+        pace: patente.pace,
         state,
-        stateLabel: { done: 'Conquistada', current: 'Patente atual', next: 'Próxima' }[state],
+        stateLabel: stateLabel(state, index - currentIndex),
         fill: state === 'done' ? 100 : state === 'current' ? progress.percent : 0,
         last: index === PATENTES.length - 1,
       };
