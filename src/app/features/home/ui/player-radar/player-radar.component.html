@@ -86,7 +86,7 @@
             [attr.aria-pressed]="share.kind === selectedKind()"
             (click)="pick(share.kind)"
           >
-            {{ share.label }} {{ share.percent }}%
+            {{ share.label }} {{ percentLabel(share) }}
           </button>
         }
       </div>

@@ -110,6 +110,11 @@ export function kindShares(games: readonly PlayedGame[], period: RadarPeriod): K
   }));
 }
 
+/** "82%"; com horas, mas abaixo de 1%, "<1%" (CA2): "0%" pareceria que não jogou. */
+export function percentLabel(share: KindShare): string {
+  return share.hours > 0 && share.percent === 0 ? '<1%' : `${share.percent}%`;
+}
+
 /**
  * Título do jogador: o tipo com pelo menos 40% das horas; abaixo disso, "Jogador versátil". Sem horas,
  * sem título (CA5, CA18, CA19). "Outros" não dá título.

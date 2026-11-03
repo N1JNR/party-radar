@@ -128,8 +128,7 @@ function draw(context: CanvasRenderingContext2D, summary: RadarSummary): void {
   context.textBaseline = 'alphabetic';
   context.fillStyle = COLORS.text;
   context.font = `700 96px ${HEADING}`;
-  // Na imagem, horas inteiras: "788h 12min" não cabe ao lado do jogo principal.
-  context.fillText(formatHours(Math.round(summary.hours)), PADDING, bottom - 44);
+  context.fillText(formatHours(summary.hours), PADDING, bottom - 44);
   context.font = `500 28px ${BODY}`;
   context.fillText(`em ${gamesLabel(summary.games)}`, PADDING, bottom);
 
@@ -139,8 +138,7 @@ function draw(context: CanvasRenderingContext2D, summary: RadarSummary): void {
     context.font = `600 40px ${HEADING}`;
     context.fillText(fitText(context, summary.top.name, TOP_GAME_WIDTH), right, bottom - 44);
     context.font = `500 28px ${BODY}`;
-    const topHours = formatHours(Math.round(summary.top.totalHours));
-    context.fillText(`o jogo da vida: ${topHours}`, right, bottom);
+    context.fillText(`o jogo da vida: ${formatHours(summary.top.totalHours)}`, right, bottom);
   }
 }
 

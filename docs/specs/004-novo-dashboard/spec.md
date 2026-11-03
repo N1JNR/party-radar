@@ -68,7 +68,7 @@ blocos e na lista, mas não vira eixo do radar.
   para cada um dos 7 tipos de jogo e o título do jogador ao lado.
 - **CA2** — Dado as minhas horas por tipo, então a porcentagem mostrada em cada tipo é a real (a soma
   das porcentagens dá 100%, contando "Outros"), mesmo que o desenho do radar use uma escala que
-  deixa os tipos pequenos visíveis.
+  deixa os tipos pequenos visíveis. Um tipo com horas, mas abaixo de 1%, mostra "<1%".
 - **CA3** — Dado o radar na tela, quando troco entre "Desde sempre" e "Este mês", então o radar, as
   porcentagens, as horas, os blocos e o título passam a ser os do período escolhido.
 - **CA4** — Dado a lista de tipos, quando toco num tipo, então o eixo dele acende no radar, os blocos

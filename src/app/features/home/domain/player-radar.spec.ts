@@ -13,6 +13,7 @@ import {
   gamesIn,
   kindShares,
   monthLabel,
+  percentLabel,
   playerTitle,
   previousMonthHours,
   radarAxes,
@@ -50,6 +51,27 @@ const library: PlayedGame[] = [
 
 const percentOf = (shares: readonly KindShare[], kind: GameKind) =>
   shares.find((share) => share.kind === kind)?.percent;
+
+describe('percentLabel', () => {
+  const share = (hours: number, percent: number): KindShare => ({
+    kind: 'outros',
+    label: 'Outros',
+    hours,
+    percent,
+  });
+
+  it('mostra a porcentagem (CA2)', () => {
+    expect(percentLabel(share(100, 82))).toBe('82%');
+  });
+
+  it('com horas, mas abaixo de 1%, mostra "<1%" (CA2)', () => {
+    expect(percentLabel(share(2, 0))).toBe('<1%');
+  });
+
+  it('sem horas, mostra 0%', () => {
+    expect(percentLabel(share(0, 0))).toBe('0%');
+  });
+});
 
 describe('radarSummary', () => {
   const base: PlayedGame = {

@@ -10,6 +10,7 @@ import {
   gameBlocks,
   gameCount,
   kindShares,
+  percentLabel,
   playerTitle,
   radarAxes,
   radarDescription,
@@ -32,6 +33,7 @@ import { GameBlocksComponent } from '../game-blocks/game-blocks.component';
 export class PlayerRadarComponent {
   readonly games = input.required<readonly PlayedGame[]>();
 
+  protected readonly percentLabel = percentLabel;
   protected readonly center = RADAR_CENTER;
   protected readonly rings = [0.25, 0.5, 0.75, 1].map((step) => step * RADAR_RADIUS);
 

@@ -106,15 +106,15 @@ describe('RadarImageService', () => {
     ]);
   });
 
-  it('mostra horas inteiras, para caber ao lado do jogo principal', async () => {
+  it('mostra as mesmas horas da tela, sem arredondar para cima', async () => {
     const { context, texts } = fakeContext();
     const { service } = setup({ context });
 
-    await service.create(radarSummary('ana', [game({ totalHours: 313.4 })]));
+    await service.create(radarSummary('ana', [game({ totalHours: 312.7 })]));
 
     const all = texts.map((entry) => entry.text);
-    expect(all).toContain('313h');
-    expect(all).toContain('o jogo da vida: 313h');
+    expect(all).toContain('312h');
+    expect(all).toContain('o jogo da vida: 312h');
   });
 
   it('diminui o título longo até caber', async () => {
