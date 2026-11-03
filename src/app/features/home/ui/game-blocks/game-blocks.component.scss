@@ -1,0 +1,79 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xxs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+// Quebra a linha depois dos 2 maiores.
+.blocks__break {
+  flex: 0 0 100%;
+  height: 0;
+}
+.block {
+  flex-basis: 96px;
+  flex-shrink: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 88px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--pr-surface-raised);
+  color: var(--pr-text-muted);
+  transition:
+    background-color 180ms ease-out,
+    color 180ms ease-out;
+}
+.block--big {
+  min-height: 160px;
+}
+.block--lit {
+  color: var(--color-neutral-dark-95);
+}
+.block__hours {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+}
+.block--big .block__hours {
+  font-size: var(--font-size-xl);
+}
+.block__name {
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+// Cor de cada tipo, só com tokens do tema; o contraste com o texto claro é de 4,5:1 ou mais.
+.block--tiro {
+  background: var(--color-brand-01-dark);
+}
+.block--esporte {
+  background: var(--color-feedback-info-lighter);
+}
+.block--corrida {
+  background: var(--color-feedback-negative-lighter);
+}
+.block--simulacao {
+  background: var(--color-feedback-positive-lighter);
+}
+.block--arcade {
+  background: var(--color-feedback-warning-lighter);
+}
+.block--rpg {
+  background: var(--color-brand-01-darker);
+}
+.block--aventura {
+  background: var(--color-feedback-positive-light);
+}
+.block--outros {
+  background: var(--color-neutral-light-30);
+}

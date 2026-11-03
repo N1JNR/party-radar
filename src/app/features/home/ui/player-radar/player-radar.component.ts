@@ -7,6 +7,7 @@ import {
   RADAR_CENTER,
   RADAR_RADIUS,
   RadarPeriod,
+  gameBlocks,
   gameCount,
   kindShares,
   playerTitle,
@@ -15,6 +16,7 @@ import {
   radarPolygon,
   totalHours,
 } from '../../domain/player-radar';
+import { GameBlocksComponent } from '../game-blocks/game-blocks.component';
 
 /**
  * Radar do jogador (spec 004): a forma de cada um, com o período e os tipos de jogo. É a peça de
@@ -22,6 +24,7 @@ import {
  */
 @Component({
   selector: 'app-player-radar',
+  imports: [GameBlocksComponent],
   templateUrl: './player-radar.component.html',
   styleUrl: './player-radar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,6 +50,7 @@ export class PlayerRadarComponent {
     const chosen = this.chosenKind();
     return visible.some((share) => share.kind === chosen) ? chosen : (visible[0]?.kind ?? null);
   });
+  protected readonly blocks = computed(() => gameBlocks(this.games(), this.period()));
   protected readonly axes = computed(() => radarAxes(this.shares()));
   protected readonly polygon = computed(() => radarPolygon(this.axes()));
   protected readonly description = computed(() => radarDescription(this.shares()));

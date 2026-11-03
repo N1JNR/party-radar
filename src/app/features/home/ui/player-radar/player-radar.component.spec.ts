@@ -145,6 +145,18 @@ describe('PlayerRadarComponent', () => {
     expect(fixture.componentInstance.selectedKind()).toBeNull();
   });
 
+  it('os blocos acompanham o período e o tipo escolhido (CA3, CA4, CA10)', () => {
+    render(library);
+    expect(element.querySelectorAll('.block')).toHaveLength(5);
+    expect(element.querySelector('.block--tiro .block__name')?.textContent).toBe('Jogo 1');
+    click('Esporte');
+    expect(element.querySelector('.block--tiro')).toBeNull();
+    expect(element.querySelector('.block--esporte .block__name')?.textContent).toBe('Jogo 2');
+    click('Este mês');
+    expect(element.querySelectorAll('.block')).toHaveLength(1);
+    expect(element.querySelector('.block__hours')?.textContent).toBe('15h');
+  });
+
   it('tem a varredura, que o CSS desliga com prefers-reduced-motion (CA24)', () => {
     render(library);
     expect(element.querySelector('.radar__sweep')).not.toBeNull();
