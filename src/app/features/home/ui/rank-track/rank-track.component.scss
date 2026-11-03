@@ -15,8 +15,12 @@
   max-width: 70ch;
   color: var(--pr-text-muted);
 }
-.track__source {
+.track__line {
   display: block;
+}
+.track__share {
+  display: block;
+  margin-bottom: var(--spacing-md);
 }
 // A trilha rola no próprio espaço no celular; a página nunca rola na horizontal (CA22).
 .track__scroll {
@@ -63,12 +67,12 @@
   width: var(--spacing-md);
   height: var(--spacing-md);
 }
-.track__line {
+.track__line-fill {
   flex: 1;
   height: var(--spacing-xs);
   background: var(--color-neutral-light-20);
 }
-.track__line span {
+.track__line-fill span {
   display: block;
   height: 100%;
   background: var(--pr-highlight);

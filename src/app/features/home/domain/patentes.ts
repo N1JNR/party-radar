@@ -1,187 +1,102 @@
-/** Quanto a pessoa jogou desde que entrou no Party Radar. */
-export interface PlayStats {
-  /** Horas jogadas no total. */
-  hours: number;
-  /** Horas jogadas junto com amigos (parcerias confirmadas ou prováveis). */
-  hoursWithFriends: number;
-  /** Quantos amigos diferentes jogaram com a pessoa. */
-  distinctFriends: number;
-}
-
 export type PatenteId = 'npc' | 'recruta' | 'soldado' | 'veterano' | 'lenda' | 'sem-vida-social';
 
 export interface Patente {
   id: PatenteId;
   name: string;
-  /** Regra em texto, mostrada na régua de patentes. */
-  rule: string;
+  /** Meta em texto, mostrada na trilha. */
+  goal: string;
+  /** Ritmo para chegar lá numa temporada; `null` em quem acabou de chegar. */
+  pace: string | null;
+  /** Horas na temporada. */
   minHours: number;
-  minHoursWithFriends: number;
-  minDistinctFriends: number;
 }
 
 /**
- * Patentes em ordem crescente (spec 002, "Conteúdo de referência"). As duas últimas exigem
- * jogar junto, para puxar o lado social do app. Valores a validar na spec de integração.
+ * Patentes em ordem crescente (spec 005). A mesma tabela está em `season_rank()`, no banco, que grava
+ * a patente dos troféus: os testes dos dois lados conferem as metas da spec.
  */
 export const PATENTES: readonly Patente[] = [
-  {
-    id: 'npc',
-    name: 'NPC',
-    rule: 'Acabou de chegar',
-    minHours: 0,
-    minHoursWithFriends: 0,
-    minDistinctFriends: 0,
-  },
+  { id: 'npc', name: 'NPC', goal: 'Início da temporada', pace: null, minHours: 0 },
   {
     id: 'recruta',
     name: 'Recruta da fila',
-    rule: '1h jogada',
-    minHours: 1,
-    minHoursWithFriends: 0,
-    minDistinctFriends: 0,
+    goal: '5h',
+    pace: 'cerca de 35 min por semana',
+    minHours: 5,
   },
   {
     id: 'soldado',
     name: 'Soldado do fim de semana',
-    rule: '10h jogadas',
-    minHours: 10,
-    minHoursWithFriends: 0,
-    minDistinctFriends: 0,
+    goal: '15h',
+    pace: 'cerca de 2h por semana',
+    minHours: 15,
   },
   {
     id: 'veterano',
     name: 'Veterano de lobby',
-    rule: '40h jogadas',
+    goal: '40h',
+    pace: 'cerca de 5h por semana',
     minHours: 40,
-    minHoursWithFriends: 0,
-    minDistinctFriends: 0,
   },
-  {
-    id: 'lenda',
-    name: 'Lenda do squad',
-    rule: '80h, com 20h jogando com amigos',
-    minHours: 80,
-    minHoursWithFriends: 20,
-    minDistinctFriends: 0,
-  },
+  { id: 'lenda', name: 'Lenda do squad', goal: '120h', pace: 'cerca de 2h por dia', minHours: 120 },
   {
     id: 'sem-vida-social',
     name: 'Sem vida social',
-    rule: '200h, com 5 amigos diferentes',
+    goal: '200h',
+    pace: 'cerca de 3h20 por dia',
     minHours: 200,
-    minHoursWithFriends: 0,
-    minDistinctFriends: 5,
   },
 ];
 
-function meets(stats: PlayStats, patente: Patente): boolean {
-  return (
-    stats.hours >= patente.minHours &&
-    stats.hoursWithFriends >= patente.minHoursWithFriends &&
-    stats.distinctFriends >= patente.minDistinctFriends
-  );
-}
-
 /** Valores negativos ou inválidos contam como zero. */
-function sanitize(stats: PlayStats): PlayStats {
-  const clean = (n: number) => (Number.isFinite(n) && n > 0 ? n : 0);
-  return {
-    hours: clean(stats.hours),
-    hoursWithFriends: clean(stats.hoursWithFriends),
-    distinctFriends: Math.floor(clean(stats.distinctFriends)),
-  };
+const clean = (hours: number) => (Number.isFinite(hours) && hours > 0 ? hours : 0);
+
+/** A patente mais alta que as horas alcançam. */
+export function patenteFor(hours: number): Patente {
+  const valid = clean(hours);
+  return PATENTES.reduce((current, patente) => (valid >= patente.minHours ? patente : current));
 }
 
-/** A patente mais alta cujos requisitos a pessoa já cumpre, em ordem (não pula degraus). */
-export function patenteFor(stats: PlayStats): Patente {
-  const clean = sanitize(stats);
-  let current = PATENTES[0];
-  for (const patente of PATENTES) {
-    if (!meets(clean, patente)) {
-      break;
-    }
-    current = patente;
-  }
-  return current;
+/** A patente de um troféu, pelo id gravado; id desconhecido vira NPC, sem quebrar a tela. */
+export function patenteById(id: string): Patente {
+  return PATENTES.find((patente) => patente.id === id) ?? PATENTES[0];
 }
 
 export interface PatenteProgress {
   current: Patente;
   /** `null` na última patente. */
   next: Patente | null;
-  /** Horas que faltam para a próxima (0 se as horas já bastam). */
+  /** Horas que faltam para a próxima. */
   hoursRemaining: number;
-  /** Horas com amigos que faltam para a próxima (0 se não exige ou já bastam). */
-  friendHoursRemaining: number;
-  /** Amigos diferentes que faltam para a próxima (0 se não exige ou já bastam). */
-  friendsRemaining: number;
   /** Progresso em horas entre a patente atual e a próxima, de 0 a 100. */
   percent: number;
 }
 
-/** Onde a pessoa está e o que falta para subir (CA4 e CA7). */
-export function progressFor(stats: PlayStats): PatenteProgress {
-  const clean = sanitize(stats);
-  const current = patenteFor(clean);
+/** Onde a pessoa está e o que falta para subir (spec 005, CA4). */
+export function progressFor(hours: number): PatenteProgress {
+  const valid = clean(hours);
+  const current = patenteFor(valid);
   const next = PATENTES[PATENTES.indexOf(current) + 1] ?? null;
   if (!next) {
-    return {
-      current,
-      next,
-      hoursRemaining: 0,
-      friendHoursRemaining: 0,
-      friendsRemaining: 0,
-      percent: 100,
-    };
+    return { current, next, hoursRemaining: 0, percent: 100 };
   }
   const span = next.minHours - current.minHours;
-  const done = clean.hours - current.minHours;
   return {
     current,
     next,
-    hoursRemaining: Math.max(0, Math.ceil(next.minHours - clean.hours)),
-    friendHoursRemaining: Math.max(0, Math.ceil(next.minHoursWithFriends - clean.hoursWithFriends)),
-    friendsRemaining: Math.max(0, next.minDistinctFriends - clean.distinctFriends),
-    percent: Math.min(100, Math.max(0, Math.floor((done / span) * 100))),
+    hoursRemaining: Math.ceil(next.minHours - valid),
+    percent: Math.floor(((valid - current.minHours) / span) * 100),
   };
-}
-
-function joinParts(parts: string[]): string {
-  return parts.length > 1
-    ? `${parts.slice(0, -1).join(', ')} e ${parts[parts.length - 1]}`
-    : parts[0];
 }
 
 /**
  * O que falta para a próxima patente, em texto: "Falta 1h para Recruta da fila." ou
- * "Faltam 38h e 9h com amigos para Lenda do squad." Vazio na última patente.
+ * "Faltam 78h para Lenda do squad." Vazio na última patente.
  */
 export function remainingLabel(progress: PatenteProgress): string {
   if (!progress.next) {
     return '';
   }
-  const parts: string[] = [];
-  if (progress.hoursRemaining > 0) {
-    parts.push(`${progress.hoursRemaining}h`);
-  }
-  if (progress.friendHoursRemaining > 0) {
-    parts.push(`${progress.friendHoursRemaining}h com amigos`);
-  }
-  if (progress.friendsRemaining > 0) {
-    parts.push(
-      progress.friendsRemaining === 1
-        ? '1 amigo diferente'
-        : `${progress.friendsRemaining} amigos diferentes`,
-    );
-  }
-  if (parts.length === 0) {
-    return '';
-  }
-  const singular =
-    parts.length === 1 &&
-    (progress.hoursRemaining === 1 ||
-      progress.friendHoursRemaining === 1 ||
-      progress.friendsRemaining === 1);
-  return `${singular ? 'Falta' : 'Faltam'} ${joinParts(parts)} para ${progress.next.name}.`;
+  const verb = progress.hoursRemaining === 1 ? 'Falta' : 'Faltam';
+  return `${verb} ${progress.hoursRemaining}h para ${progress.next.name}.`;
 }

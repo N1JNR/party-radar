@@ -4,6 +4,7 @@ import { PoNotificationService } from '@po-ui/ng-components';
 import { ClipboardService } from '../../../core/platform/clipboard.service';
 import { ShareService } from '../../../core/platform/share.service';
 import { RadarImageService } from '../data/radar-image';
+import { SeasonImageService } from '../data/season-image';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import {
   NOT_CONNECTED,
@@ -29,7 +30,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       username: 'ana',
       avatarUrl: null,
       playingNow: 'Elden Ring',
-      stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
       monthHours: 42,
       estimate: false,
       steamName: null,
@@ -48,6 +48,8 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       },
     ],
     previousIsEstimate: false,
+    season: { number: 1, daysLeft: 52, hours: 42, topGame: 'Elden Ring' },
+    trophies: [],
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -86,7 +88,6 @@ const firstAccess = (): HomeData =>
     card: {
       ...homeData().card,
       playingNow: null,
-      stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
       monthHours: 0,
       estimate: false,
       steamName: null,
@@ -96,6 +97,8 @@ const firstAccess = (): HomeData =>
     },
     games: [],
     previousIsEstimate: false,
+    season: null,
+    trophies: [],
     friendsCount: 0,
     friendsPlaying: [],
     squads: [],
@@ -112,6 +115,7 @@ describe('HomePage', () => {
 
   let go: ReturnType<typeof vi.fn>;
   let createImage: ReturnType<typeof vi.fn>;
+  let createSeasonImage: ReturnType<typeof vi.fn>;
   let shareImage: ReturnType<typeof vi.fn>;
 
   async function render(
@@ -125,12 +129,14 @@ describe('HomePage', () => {
     go = vi.fn();
     copy = vi.fn(() => Promise.resolve(copied));
     createImage = vi.fn(() => Promise.resolve(new Blob(['png'], { type: 'image/png' })));
+    createSeasonImage = vi.fn(() => Promise.resolve(new Blob(['png'], { type: 'image/png' })));
     shareImage = vi.fn(() => Promise.resolve('shared'));
     TestBed.configureTestingModule({
       providers: [
         { provide: PoNotificationService, useValue: { information, success, error } },
         { provide: ClipboardService, useValue: { copy } },
         { provide: RadarImageService, useValue: { create: createImage } },
+        { provide: SeasonImageService, useValue: { create: createSeasonImage } },
         { provide: ShareService, useValue: { shareImage } },
         {
           provide: ExternalNavigation,
@@ -261,6 +267,87 @@ describe('HomePage', () => {
     );
     expect(success).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
+  });
+
+  it('mostra a temporada e a carreira na trilha (spec 005, CA1, CA14)', async () => {
+    await render();
+    const text = element.querySelector('app-rank-track')?.textContent?.replace(/\s+/g, ' ');
+    expect(text).toContain('Temporada 1: faltam 52 dias.');
+    expect(text).toContain('42h nesta temporada, somando todos os seus jogos.');
+    expect(text).toContain('Carreira: 42h na Steam.');
+  });
+
+  it('sem troféus, a seção não aparece (spec 005, CA12)', async () => {
+    await render();
+    expect(element.querySelector('app-season-trophies')).toBeNull();
+  });
+
+  it('"Compartilhar temporada" gera a imagem da temporada (spec 005, CA13)', async () => {
+    await render();
+    button('Compartilhar temporada')?.click();
+    await settle();
+    expect(createSeasonImage.mock.calls[0][0]).toEqual({
+      username: 'ana',
+      season: 1,
+      rankId: 'veterano',
+      hours: 42,
+      topGame: 'Elden Ring',
+      daysLeft: 52,
+    });
+    expect(shareImage).toHaveBeenCalledWith(
+      expect.any(Blob),
+      'temporada-1-party-radar.png',
+      'Temporada 1 no Party Radar',
+    );
+  });
+
+  it('o troféu gera a própria imagem, com a patente gravada (spec 005, CA12, CA13)', async () => {
+    await render({
+      load: () =>
+        Promise.resolve(
+          homeData({
+            trophies: [{ season: 3, rankId: 'lenda', hours: 130, topGame: 'CS2' }],
+          }),
+        ),
+    });
+    expect(element.querySelector('.trophies__name')?.textContent).toBe(
+      'Temporada 3: Lenda do squad',
+    );
+    element.querySelector<HTMLButtonElement>('app-season-trophies button')?.click();
+    await settle();
+    expect(createSeasonImage.mock.calls[0][0]).toMatchObject({
+      season: 3,
+      rankId: 'lenda',
+      daysLeft: null,
+    });
+  });
+
+  it('se a imagem da temporada falhar, avisa e continua na tela (spec 004, CA16)', async () => {
+    await render();
+    createSeasonImage.mockRejectedValue(new Error('canvas'));
+    button('Compartilhar temporada')?.click();
+    await settle();
+    expect(error).toHaveBeenCalledWith('Não foi possível gerar a imagem. Tente de novo.');
+    expect(button('Compartilhar temporada')).toBeDefined();
+  });
+
+  it('sem horas na temporada, não há compartilhar da temporada (spec 005, CA13)', async () => {
+    await render({
+      load: () =>
+        Promise.resolve(homeData({ season: { number: 1, daysLeft: 52, hours: 0, topGame: null } })),
+    });
+    expect(button('Compartilhar temporada')).toBeUndefined();
+  });
+
+  it('sem Steam conectada, fica em NPC, sem temporada nem troféus (spec 005, CA16)', async () => {
+    await render({ load: () => Promise.resolve(firstAccess()) }, true, {
+      account: () => Promise.resolve(NOT_CONNECTED),
+    });
+    expect(element.querySelector('app-rank-track h2')?.textContent?.trim()).toBe(
+      'Sua patente: NPC',
+    );
+    expect(element.querySelector('app-season-trophies')).toBeNull();
+    expect(button('Compartilhar temporada')).toBeUndefined();
   });
 
   it('avisa quando a imagem foi baixada (spec 004, CA14)', async () => {

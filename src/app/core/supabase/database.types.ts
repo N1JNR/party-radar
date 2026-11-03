@@ -67,6 +67,50 @@ export type Database = {
         };
         Relationships: [];
       };
+      season_config: {
+        Row: {
+          first_day: string;
+          id: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          first_day: string;
+          id?: boolean;
+        };
+        Update: {
+          first_day?: string;
+          id?: boolean;
+        };
+        Relationships: [];
+      };
+      season_trophies: {
+        Row: {
+          awarded_at: string;
+          minutes: number;
+          rank_id: string;
+          season_number: number;
+          top_game: string | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          awarded_at?: string;
+          minutes: number;
+          rank_id: string;
+          season_number: number;
+          top_game?: string | null;
+          user_id: string;
+        };
+        Update: {
+          awarded_at?: string;
+          minutes?: number;
+          rank_id?: string;
+          season_number?: number;
+          top_game?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       steam_accounts: {
         Row: {
           baseline_minutes: number | null;
@@ -148,6 +192,22 @@ export type Database = {
         };
         Relationships: [];
       };
+      steam_reading_days: {
+        Row: {
+          day: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          day: string;
+          user_id: string;
+        };
+        Update: {
+          day?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -187,6 +247,33 @@ export type Database = {
           total_minutes: number;
         }[];
       };
+      my_season: {
+        Args: { p_now?: string };
+        Returns: {
+          days_left: number;
+          ends_on: string;
+          minutes: number;
+          season_number: number;
+          starts_on: string;
+          top_game: string;
+        }[];
+      };
+      season_at: {
+        Args: { p_day: string };
+        Returns: {
+          ends_on: string;
+          season_number: number;
+          starts_on: string;
+        }[];
+      };
+      season_minutes: {
+        Args: { p_ends_on: string; p_starts_on: string; p_today: string; p_user_id: string };
+        Returns: {
+          minutes: number;
+          top_game: string;
+        }[];
+      };
+      season_rank: { Args: { p_minutes: number }; Returns: string };
       username_base: { Args: { source: string }; Returns: string };
     };
     Enums: {

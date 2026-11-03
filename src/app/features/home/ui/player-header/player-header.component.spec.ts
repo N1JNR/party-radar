@@ -8,7 +8,6 @@ const card: PlayerCard = {
   username: 'palmajnr_',
   avatarUrl: null,
   playingNow: null,
-  stats: { hours: 61, hoursWithFriends: 0, distinctFriends: 0 },
   monthHours: 15,
   estimate: false,
   steamName: null,

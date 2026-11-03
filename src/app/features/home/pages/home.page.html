@@ -45,7 +45,21 @@
           }
 
           @if (store.progress(); as progress) {
-            <app-rank-track [progress]="progress" [hours]="data.card.stats.hours" />
+            <app-rank-track
+              [progress]="progress"
+              [season]="store.season()"
+              [careerHours]="store.careerHours()"
+              [canShare]="store.canShareSeason()"
+              [sharing]="sharing()"
+              (share)="shareSeason(data)"
+            />
+          }
+          @if (store.trophies().length > 0) {
+            <app-season-trophies
+              [trophies]="store.trophies()"
+              [sharing]="sharing()"
+              (share)="shareTrophy(data, $event)"
+            />
           }
 
           @if (store.showRadar()) {

@@ -18,7 +18,6 @@ const statsRow = {
   month_games: 2,
   game_of_month: 'ELDEN RING',
   game_of_month_minutes: 300,
-  total_minutes: 820,
   estimate: false,
 };
 
@@ -34,16 +33,40 @@ const gameRow = {
 
 const noGames = { data: [], error: null };
 
+const seasonRow = {
+  season_number: 2,
+  starts_on: '2026-11-03',
+  ends_on: '2027-01-01',
+  days_left: 52,
+  minutes: 2520,
+  top_game: 'ARC Raiders',
+};
+
+const trophyRow = (season: number) => ({
+  season_number: season,
+  rank_id: 'veterano',
+  minutes: 2760,
+  top_game: 'Elden Ring',
+});
+
 function setup(
   result: { data: unknown; error: unknown },
   current: AuthUser | null = user,
   games: { data: unknown; error: unknown } = noGames,
+  season: { data: unknown; error: unknown } = noGames,
+  trophies: { data: unknown; error: unknown } = noGames,
 ) {
-  const rpc = vi.fn((name: string) => Promise.resolve(name === 'my_games' ? games : result));
+  const rpc = vi.fn((name: string) => {
+    if (name === 'my_games') {
+      return Promise.resolve(games);
+    }
+    return Promise.resolve(name === 'my_season' ? season : result);
+  });
+  const from = vi.fn(() => ({ select: () => Promise.resolve(trophies) }));
   TestBed.configureTestingModule({
     providers: [
       SupabaseHomeSource,
-      { provide: SUPABASE, useValue: { rpc } },
+      { provide: SUPABASE, useValue: { rpc, from } },
       { provide: AuthStore, useValue: { user: signal(current) } },
       { provide: ExternalNavigation, useValue: { origin: () => 'http://localhost:4200' } },
     ],
@@ -61,7 +84,6 @@ describe('SupabaseHomeSource', () => {
       username: 'palmajnr_',
       avatarUrl: 'https://cdn/a.png',
       playingNow: 'ELDEN RING',
-      stats: { hours: 820 / 60, hoursWithFriends: 0, distinctFriends: 0 },
       monthHours: 9,
       estimate: false,
       steamName: 'N1JNR',
@@ -79,6 +101,55 @@ describe('SupabaseHomeSource', () => {
     expect(data.squads).toEqual([]);
     expect(data.question).toBeNull();
     expect(data.inviteLink).toBe('http://localhost:4200/convite/palmajnr_');
+  });
+
+  it('traz a temporada, com as horas em vez de minutos (spec 005, CA1)', async () => {
+    const { source, rpc } = setup({ data: [statsRow], error: null }, user, noGames, {
+      data: [seasonRow],
+      error: null,
+    });
+    const data = await source.load();
+    expect(rpc).toHaveBeenCalledWith('my_season');
+    expect(data.season).toEqual({ number: 2, daysLeft: 52, hours: 42, topGame: 'ARC Raiders' });
+  });
+
+  it('sem Steam conectada, não há temporada (spec 005, CA16)', async () => {
+    const { source } = setup({ data: [], error: null });
+    const data = await source.load();
+    expect(data.season).toBeNull();
+    expect(data.trophies).toEqual([]);
+  });
+
+  it('resposta nula da temporada e dos troféus conta como vazia', async () => {
+    const empty = { data: null, error: null };
+    const { source } = setup({ data: [], error: null }, user, noGames, empty, empty);
+    const data = await source.load();
+    expect(data.season).toBeNull();
+    expect(data.trophies).toEqual([]);
+  });
+
+  it('traz os troféus, do mais recente para o mais antigo (spec 005, CA12)', async () => {
+    const { source } = setup({ data: [statsRow], error: null }, user, noGames, noGames, {
+      data: [trophyRow(1), trophyRow(3), trophyRow(2)],
+      error: null,
+    });
+    const { trophies } = await source.load();
+    expect(trophies.map((trophy) => trophy.season)).toEqual([3, 2, 1]);
+    expect(trophies[0]).toEqual({
+      season: 3,
+      rankId: 'veterano',
+      hours: 46,
+      topGame: 'Elden Ring',
+    });
+  });
+
+  it('erro na temporada ou nos troféus sobe, para a home mostrar o erro', async () => {
+    const failed = { data: null, error: new Error('rede') };
+    const first = setup({ data: [statsRow], error: null }, user, noGames, failed);
+    await expect(first.source.load()).rejects.toThrow('rede');
+    TestBed.resetTestingModule();
+    const second = setup({ data: [statsRow], error: null }, user, noGames, noGames, failed);
+    await expect(second.source.load()).rejects.toThrow('rede');
   });
 
   it('mês da conexão: marca a estimativa', async () => {
@@ -102,7 +173,6 @@ describe('SupabaseHomeSource', () => {
     const { card } = await source.load();
     expect(card.monthHours).toBe(0);
     expect(card.gameOfMonth).toBeNull();
-    expect(card.stats.hours).toBeCloseTo(820 / 60);
   });
 
   it('sem Steam conectada (nenhuma linha): card zerado, sem nome na Steam', async () => {
@@ -115,7 +185,6 @@ describe('SupabaseHomeSource', () => {
       updatedAt: null,
       playingNow: null,
       estimate: false,
-      stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
     });
   });
 

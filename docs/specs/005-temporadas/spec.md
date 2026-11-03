@@ -1,6 +1,6 @@
 # 005 — Temporadas: patente que recomeça
 
-**Status:** aprovada em 2026-11-03
+**Status:** aprovada em 2026-11-03; textos da trilha aprovados no mesmo dia, na conferência da spec 004
 **Relacionada a:** `004-novo-dashboard` (a trilha onde a patente aparece) · `003-steam` (as fotos
 diárias de tempo de jogo) · spec de amigos (o placar do squad, que vem depois).
 
@@ -41,6 +41,21 @@ zero.
 As exigências de horas com amigos e de amigos diferentes saem das patentes por enquanto: sem a spec
 de amigos, ninguém conseguiria cumpri-las. Elas podem voltar como outro tipo de conquista depois.
 
+**Textos da trilha:** a trilha deixa claro que as horas são da temporada e somam todos os jogos.
+
+> **Sua patente: Veterano de lobby**
+> Temporada 1: faltam 52 dias.
+> 42h nesta temporada, somando todos os seus jogos. Faltam 78h para Lenda do squad.
+
+| Patente                  | Texto da meta       | Ritmo                      |
+| ------------------------ | ------------------- | -------------------------- |
+| NPC                      | Início da temporada | sem ritmo                  |
+| Recruta da fila          | 5h                  | cerca de 35 min por semana |
+| Soldado do fim de semana | 15h                 | cerca de 2h por semana     |
+| Veterano de lobby        | 40h                 | cerca de 5h por semana     |
+| Lenda do squad           | 120h                | cerca de 2h por dia        |
+| Sem vida social          | 200h                | cerca de 3h20 por dia      |
+
 ## Fora do escopo
 
 - Placar do squad e coroa de campeão: entram com a spec de amigos.
@@ -60,7 +75,8 @@ de amigos, ninguém conseguiria cumpri-las. Elas podem voltar como outro tipo de
 - **CA3** — Dado que joguei durante a temporada, então só o tempo jogado dentro dela conta; o que foi
   jogado antes do primeiro dia não conta, e o primeiro mês estimado (spec 003) também não.
 - **CA4** — Dado as horas na temporada, então a patente e o "quanto falta" seguem a tabela de metas, e
-  ao bater uma meta a patente sobe na leitura seguinte.
+  ao bater uma meta a patente sobe na leitura seguinte. A trilha usa os textos desta spec e não fala em
+  amigos.
 - **CA5** — Dado as datas, então início, fim e o dia de cada jogo seguem o fuso de São Paulo, e a
   temporada dura 60 dias.
 
@@ -100,7 +116,7 @@ de amigos, ninguém conseguiria cumpri-las. Elas podem voltar como outro tipo de
 - **CA17 (segurança)** — Dado dois usuários, então nenhum lê as horas de temporada nem os troféus do outro (até a
   spec de amigos definir o que amigos veem) e ninguém altera temporada, horas ou troféus pelo app.
 - **CA18 (acessibilidade)** — Dado a trilha e os troféus, então eles são lidos pelo leitor de tela, com a
-  patente e o progresso em texto.
+  patente e o progresso em texto. Só a patente seguinte é "Próxima"; as depois dela são "A conquistar".
 
 ## Telas
 

@@ -16,7 +16,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       username: 'ana',
       avatarUrl: null,
       playingNow: null,
-      stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
       monthHours: 42,
       estimate: false,
       steamName: null,
@@ -35,6 +34,8 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       },
     ],
     previousIsEstimate: false,
+    season: { number: 1, daysLeft: 52, hours: 42, topGame: 'Elden Ring' },
+    trophies: [],
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -108,6 +109,9 @@ describe('HomeStore', () => {
     expect(store.progress()).toBeNull();
     expect(store.hasGames()).toBe(false);
     expect(store.previousHours()).toBe(0);
+    expect(store.season()).toBeNull();
+    expect(store.trophies()).toEqual([]);
+    expect(store.careerHours()).toBe(0);
     expect(store.opportunities()).toEqual([]);
     expect(store.menuSquads()).toBeNull();
   });
@@ -118,10 +122,50 @@ describe('HomeStore', () => {
     expect(store.status()).toBe('ready');
     expect(store.card()?.name).toBe('Ana Souza');
     expect(store.progress()?.current.name).toBe('Veterano de lobby');
+    expect(store.season()?.hours).toBe(42);
+    expect(store.careerHours()).toBe(42);
     expect(store.hasGames()).toBe(true);
     expect(store.previousHours()).toBe(12);
     expect(store.opportunities()[0].game).toBe('Fortnite');
     expect(store.menuSquads()).toEqual([{ id: 'sexta', name: 'Squad da Sexta', playing: 2 }]);
+  });
+
+  it('compartilha a temporada só com horas nela (spec 005, CA13)', async () => {
+    const store = setup(
+      {
+        load: () =>
+          Promise.resolve(
+            homeData({ season: { number: 1, daysLeft: 9, hours: 0, topGame: null } }),
+          ),
+      },
+      { account: () => Promise.resolve(steamAccount({ visibility: 'public' })) },
+    );
+    await store.load();
+    expect(store.canShareSeason()).toBe(false);
+  });
+
+  it('com horas e a Steam lida, compartilha a temporada (spec 005, CA13)', async () => {
+    const store = setup(
+      {},
+      { account: () => Promise.resolve(steamAccount({ visibility: 'public' })) },
+    );
+    await store.load();
+    expect(store.canShareSeason()).toBe(true);
+  });
+
+  it('com a Steam privada, não compartilha a temporada (spec 005, CA13)', async () => {
+    const store = setup(
+      {},
+      { account: () => Promise.resolve(steamAccount({ visibility: 'private' })) },
+    );
+    await store.load();
+    expect(store.canShareSeason()).toBe(false);
+  });
+
+  it('sem temporada, a patente é NPC (spec 005, CA16)', async () => {
+    const store = setup({ load: () => Promise.resolve(homeData({ season: null })) });
+    await store.load();
+    expect(store.progress()?.current.id).toBe('npc');
   });
 
   it('sem jogos, mostra o checklist e o radar vazio (spec 004, CA18)', async () => {
@@ -360,6 +404,23 @@ describe('HomeStore', () => {
   });
 
   describe('refreshCard (spec 003, CA7, CA10, CA19)', () => {
+    it('atualiza a temporada e os troféus, sem recarregar a página (spec 005, CA4, CA12)', async () => {
+      const load = vi.fn(() => Promise.resolve(homeData()));
+      const store = setup({ load });
+      await store.load();
+      expect(store.progress()?.current.id).toBe('veterano');
+      load.mockResolvedValue(
+        homeData({
+          season: { number: 2, daysLeft: 3, hours: 120, topGame: 'CS2' },
+          trophies: [{ season: 1, rankId: 'recruta', hours: 6, topGame: null }],
+        }),
+      );
+      await store.refreshCard();
+      expect(store.season()?.number).toBe(2);
+      expect(store.progress()?.current.id).toBe('lenda');
+      expect(store.trophies().map((trophy) => trophy.season)).toEqual([1]);
+    });
+
     it('relê só o card, sem o esqueleto de carregando', async () => {
       const load = vi
         .fn<HomeDataSource['load']>()

@@ -55,12 +55,19 @@ function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
   linked: string[];
   snapshots: SavedSnapshots[];
   cleared: string[];
+  readingDays: string[];
 } {
   const saved: ReadingPatch[] = [];
   const linked: string[] = [];
   const snapshots: SavedSnapshots[] = [];
   const cleared: string[] = [];
+  const readingDays: string[] = [];
   return {
+    readingDays,
+    markReadingDay: (_userId, day) => {
+      readingDays.push(day);
+      return Promise.resolve();
+    },
     saved,
     linked,
     cleared,
@@ -331,6 +338,38 @@ Deno.test('conta pública sem jogos: guarda a leitura, sem foto', async () => {
   await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: null });
   assertEquals(d.snapshots, []);
   assertEquals(d.saved.length, 1);
+});
+
+Deno.test('leitura pública registra o dia, mesmo sem jogo novo (spec 005, CA7)', async () => {
+  const d = deps({
+    latestTotals: () =>
+      Promise.resolve(new Map(publicReading.games.map((game) => [game.appId, game.minutesTotal]))),
+  });
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 });
+  assertEquals(d.snapshots, []);
+  assertEquals(d.readingDays.length, 1);
+});
+
+Deno.test(
+  'Steam privada não registra o dia: o intervalo conta na volta (spec 005, CA8)',
+  async () => {
+    const d = deps({
+      readSteam: () =>
+        Promise.resolve({ personaName: 'x', visibility: 'private', currentGame: null, games: [] }),
+    });
+    await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 });
+    assertEquals(d.readingDays, []);
+  },
+);
+
+Deno.test('se o registro do dia falhar, a última leitura não avança (spec 005, CA7)', async () => {
+  const d = deps({ markReadingDay: () => Promise.reject(new Error('banco fora')) });
+  await assertRejects(
+    () => syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 }),
+    Error,
+    'banco fora',
+  );
+  assertEquals(d.saved, []);
 });
 
 Deno.test('se a foto falhar, a última leitura não avança (CA15)', async () => {

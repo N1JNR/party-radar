@@ -2,7 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { STEAM_SOURCE, SteamAccountState, SteamRecheck } from '../../steam/data/steam.source';
 import { progressFor } from '../domain/patentes';
-import { previousMonthHours } from '../domain/player-radar';
+import { previousMonthHours, totalHours } from '../domain/player-radar';
 import { playingCount, squadOpportunities } from '../domain/squad-opportunity';
 import { SteamStepState } from '../domain/strengthen';
 import { HOME_DATA_SOURCE, HomeData } from './home.source';
@@ -68,10 +68,14 @@ export class HomeStore {
   readonly showSteamNotice = computed(() => this.steamStep() === 'private');
 
   readonly card = computed(() => this.data()?.card ?? null);
-  readonly progress = computed(() => {
-    const card = this.card();
-    return card ? progressFor(card.stats) : null;
-  });
+  readonly season = computed(() => this.data()?.season ?? null);
+  readonly trophies = computed(() => this.data()?.trophies ?? []);
+  /** A patente vale para a temporada: sem ela, NPC (spec 005, CA2 e CA16). */
+  readonly progress = computed(() => (this.data() ? progressFor(this.season()?.hours ?? 0) : null));
+  /** Só compartilha a temporada com horas nela e com a Steam lida (spec 005, CA13). */
+  readonly canShareSeason = computed(() => (this.season()?.hours ?? 0) > 0 && this.showRadar());
+  /** Horas totais na Steam (spec 005, CA14). */
+  readonly careerHours = computed(() => totalHours(this.data()?.games ?? [], 'all'));
   readonly opportunities = computed(() => {
     const data = this.data();
     return data ? squadOpportunities(data.squads, data.friendsPlaying) : [];
@@ -198,6 +202,8 @@ export class HomeStore {
         card: home.card,
         games: home.games,
         previousIsEstimate: home.previousIsEstimate,
+        season: home.season,
+        trophies: home.trophies,
       }));
     }
     if (steam) {

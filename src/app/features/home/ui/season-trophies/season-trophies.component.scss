@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.trophies__title {
+  margin: 0 0 var(--spacing-xs);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  line-height: var(--line-height-xs);
+}
+.trophies__list {
+  display: grid;
+  gap: var(--spacing-xxs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.trophies__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--pr-surface-raised);
+}
+.trophies__text {
+  min-width: 0;
+}
+.trophies__name {
+  margin: 0;
+  color: var(--pr-highlight);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.trophies__detail {
+  margin: 0;
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,20 @@
+<section class="trophies" aria-labelledby="trophies-title">
+  <h2 id="trophies-title" class="trophies__title">Troféus</h2>
+  <ul class="trophies__list">
+    @for (item of items(); track item.trophy.season) {
+      <li class="trophies__item">
+        <div class="trophies__text">
+          <p class="trophies__name">{{ item.label }}</p>
+          <p class="trophies__detail">{{ item.detail }}</p>
+        </div>
+        <po-button
+          p-kind="tertiary"
+          p-label="Compartilhar"
+          [p-aria-label]="'Compartilhar ' + item.label"
+          [p-loading]="sharing()"
+          (p-click)="share.emit(item.trophy)"
+        />
+      </li>
+    }
+  </ul>
+</section>
