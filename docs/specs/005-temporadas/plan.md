@@ -142,6 +142,9 @@ Nenhuma nova. A Steam segue como está: se a leitura falhar, nada é gravado e a
 - **Leitura diária:** as 23h55 ainda não rodaram de ponta a ponta com a máquina ligada. Sem ela, as horas
   caem no dia em que a leitura voltar. Na virada da temporada, elas podem ir para a seguinte. Conferir o
   agendamento antes de publicar.
+- **Intervalo que cruza o início da temporada:** com uma só foto não dá para separar o que foi jogado
+  antes do primeiro dia, então esse tempo entra, até 8 horas por dia. Com a leitura diária, o intervalo
+  não existe. Foi o que aconteceu no banco local na conferência: 8h no primeiro dia.
 - **Fim da temporada:** tempo lido depois do fechamento não muda o troféu.
 - **Trocar de conta Steam no meio da temporada:** a spec 003 apaga as fotos da conta anterior, então as
   horas da temporada recomeçam. Os troféus ficam.
