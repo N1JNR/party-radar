@@ -78,7 +78,7 @@ describe('SeasonImageService', () => {
       'Temporada 1',
       'Veterano de lobby',
       '42h',
-      'nesta temporada, somando todos os jogos',
+      'na temporada, somando todos os jogos',
       'ARC Raiders',
       'o jogo principal da temporada',
       'Faltam 52 dias',

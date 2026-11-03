@@ -77,7 +77,7 @@ function draw(context: CanvasRenderingContext2D, image: SeasonImage): void {
   context.font = `700 200px ${HEADING}`;
   context.fillText(formatHours(image.hours), PADDING, 930);
   context.font = `500 28px ${BODY}`;
-  context.fillText('nesta temporada, somando todos os jogos', PADDING, 985);
+  context.fillText('na temporada, somando todos os jogos', PADDING, 985);
 
   if (image.topGame) {
     context.font = `600 40px ${HEADING}`;
