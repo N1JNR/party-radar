@@ -32,4 +32,4 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T13e — Achados da revisão: leitor de tela anuncia os tipos abaixo de 1% (CA23)
 - [x] T13f — Achados da revisão: a imagem carrega todas as fontes que usa (CA14)
 - [x] T13g — Achados da revisão: sai o código sem uso depois do player-card
-- [ ] T13 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
+- [x] T13 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
