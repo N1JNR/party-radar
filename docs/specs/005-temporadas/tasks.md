@@ -5,12 +5,12 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 **Banco e servidor**
 
-- [ ] T1 — Data inicial e `season_at()`, com a virada no fuso de São Paulo (CA2, CA5)
-- [ ] T2 — `steam_reading_days` com RLS, preenchida a partir das fotos antigas (CA7, CA17)
-- [ ] T3 — A leitura da Steam registra o dia (CA7, CA8)
-- [ ] T4 — `season_minutes()` com o limite diário e `season_rank()` (CA3, CA4, CA6, CA7, CA8, CA9, CA17)
-- [ ] T5 — `my_season()` para quem está logado (CA1, CA16, CA17)
-- [ ] T6 — `season_trophies`, `private.close_seasons()` e agendamento (CA10, CA11, CA17)
+- [x] T1 — Data inicial e `season_at()`, com a virada no fuso de São Paulo (CA2, CA5)
+- [x] T2 — `steam_reading_days` com RLS, preenchida a partir das fotos antigas (CA7, CA17)
+- [x] T3 — A leitura da Steam registra o dia (CA7, CA8)
+- [x] T4 — `season_minutes()` com o limite diário e `season_rank()` (CA3, CA4, CA6, CA7, CA8, CA9, CA17)
+- [x] T5 — `my_season()` para quem está logado (CA1, CA16, CA17)
+- [x] T6 — `season_trophies`, `private.close_seasons()` e agendamento (CA10, CA11, CA17)
 
 **Front**
 
