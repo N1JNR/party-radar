@@ -33,6 +33,8 @@ export interface ReadingPatch {
 export interface SyncDeps {
   readSteam(steamId: string): Promise<SteamReading>;
   saveReading(userId: string, patch: ReadingPatch): Promise<void>;
+  /** Dá tipo aos jogos que ainda não têm (spec 004, CA7). Falha aqui não derruba a leitura. */
+  classifyGames(games: readonly SteamGame[]): Promise<void>;
   /** Último tempo total gravado de cada jogo (`appId` → minutos). */
   latestTotals(userId: string): Promise<Map<number, number>>;
   /** Grava a foto do dia (`AAAA-MM-DD`) do tempo de cada jogo; a do mesmo dia é atualizada. */
@@ -131,6 +133,8 @@ export async function syncAccount(deps: SyncDeps, account: SteamAccount): Promis
     }
   }
   await deps.saveReading(account.userId, patch);
+  // Depois de a leitura estar salva: sem tipo, o jogo só conta em "Outros" até a próxima (CA8).
+  await deps.classifyGames(reading.games).catch(() => undefined);
   return { status: 'synced', visibility: reading.visibility };
 }
 
