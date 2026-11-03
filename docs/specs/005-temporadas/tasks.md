@@ -25,4 +25,4 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 **Fechamento**
 
 - [x] T14 — Conferência com a conta do Jorge em 390, 768 e 1280 px, com prints (CA1–CA18)
-- [ ] T15 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
+- [x] T15 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
