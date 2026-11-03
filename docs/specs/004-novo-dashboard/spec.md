@@ -1,6 +1,6 @@
 # 004 — Novo dashboard: radar do jogador
 
-**Status:** aguardando aprovação
+**Status:** aprovada em 2026-11-03
 **Relacionada a:** `002-home` (a tela que muda) · `003-steam` (os dados reais) · `005-temporadas`
 (a patente por temporada, que entra depois) · artboard **D — Temporada com radar** do canvas
 "Party Radar — Novo Meu card".
@@ -144,7 +144,7 @@ valer também nele (uma vez ao abrir).
 
 ## Decisões a aprovar
 
-- [ ] Direção visual: **D** (estrutura da Temporada com o radar).
-- [ ] 7 tipos de jogo e a tabela de títulos acima (nomes sugeridos por mim).
-- [ ] Título a partir de 40% das horas; abaixo disso, "Jogador versátil".
-- [ ] Compartilhar é uma imagem baixada ou enviada pelo aparelho; sem link público por enquanto.
+- [x] Direção visual: **D** (estrutura da Temporada com o radar).
+- [x] 7 tipos de jogo e a tabela de títulos acima (nomes sugeridos por mim).
+- [x] Título a partir de 40% das horas; abaixo disso, "Jogador versátil".
+- [x] Compartilhar é uma imagem baixada ou enviada pelo aparelho; sem link público por enquanto.

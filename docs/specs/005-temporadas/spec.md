@@ -1,6 +1,6 @@
 # 005 — Temporadas: patente que recomeça
 
-**Status:** aguardando aprovação
+**Status:** aprovada em 2026-11-03
 **Relacionada a:** `004-novo-dashboard` (a trilha onde a patente aparece) · `003-steam` (as fotos
 diárias de tempo de jogo) · spec de amigos (o placar do squad, que vem depois).
 
@@ -117,9 +117,9 @@ nome da temporada, os dias restantes, a carreira e os troféus.
 
 ## Decisões a aprovar
 
-- [ ] Temporada de **60 dias**, com as mesmas datas para todos.
-- [ ] Tabela de metas acima (chute inicial, a calibrar depois da primeira temporada).
-- [ ] Limite de **8 horas por dia** para a temporada.
-- [ ] Sair a exigência de amigos das patentes por enquanto.
-- [ ] Temporada 1 começa no dia em que esta entrega for ao ar.
-- [ ] Carreira sem patente: só as horas totais.
+- [x] Temporada de **60 dias**, com as mesmas datas para todos.
+- [x] Tabela de metas acima (chute inicial, a calibrar depois da primeira temporada).
+- [x] Limite de **8 horas por dia** para a temporada.
+- [x] Sair a exigência de amigos das patentes por enquanto.
+- [x] Temporada 1 começa no dia em que esta entrega for ao ar.
+- [x] Carreira sem patente: só as horas totais.
