@@ -23,5 +23,6 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 **Fechamento**
 
 - [x] T12a — Ajustes da conferência: a imagem mostra as mesmas horas da tela; tipo com horas e abaixo de 1% mostra "<1%" (CA2, CA14)
+- [x] T12b — A trilha diz de onde vêm as horas, pedido do Jorge na conferência (CA12)
 - [ ] T12 — Conferência com a conta do Jorge em 390, 768 e 1280 px, com prints (CA1–CA24)
 - [ ] T13 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final

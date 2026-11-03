@@ -22,7 +22,7 @@ const stateOf = (element: HTMLElement, name: string) =>
 describe('RankTrackComponent', () => {
   it('mostra as 6 patentes em ordem e a atual em destaque (spec 004, CA12)', () => {
     const element = render(61);
-    expect(element.querySelector('h2')?.textContent?.trim()).toBe('Veterano de lobby');
+    expect(element.querySelector('h2')?.textContent?.trim()).toBe('Sua patente: Veterano de lobby');
     expect([...element.querySelectorAll('.track__name')].map((node) => node.textContent)).toEqual(
       PATENTES.map((patente) => patente.name),
     );
@@ -38,9 +38,9 @@ describe('RankTrackComponent', () => {
     expect(stateOf(element, 'Lenda do squad')).toBe('Próxima');
   });
 
-  it('diz as horas e o que falta para a próxima (CA12)', () => {
+  it('diz de onde vêm as horas e o que falta para a próxima (CA12)', () => {
     const text = render(61).querySelector('.track__text')?.textContent?.replace(/\s+/g, ' ');
-    expect(text).toContain('61h desde que você conectou a Steam.');
+    expect(text).toContain('Soma de todos os seus jogos na Steam desde que você conectou: 61h.');
     expect(text).toContain('Faltam 19h e 20h com amigos para Lenda do squad.');
   });
 
@@ -53,7 +53,7 @@ describe('RankTrackComponent', () => {
 
   it('na última patente, avisa que chegou ao topo', () => {
     const element = render(200, 30, 5);
-    expect(element.querySelector('h2')?.textContent?.trim()).toBe('Sem vida social');
+    expect(element.querySelector('h2')?.textContent?.trim()).toBe('Sua patente: Sem vida social');
     expect(element.querySelector('.track__text')?.textContent).toContain(
       'Você chegou à última patente.',
     );
@@ -62,6 +62,7 @@ describe('RankTrackComponent', () => {
   it('sem horas, não fala em conexão com a Steam (CA18)', () => {
     const text = render(0).querySelector('.track__text')?.textContent;
     expect(text).not.toContain('desde que você conectou');
+    expect(text).not.toContain('Soma');
     expect(text).toContain('Falta 1h para Recruta da fila.');
   });
 

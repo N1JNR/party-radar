@@ -97,7 +97,8 @@ blocos e na lista, mas não vira eixo do radar.
 **Patente e corrida**
 
 - **CA12** — Dado a minha patente, então a trilha mostra as 6 patentes em ordem, destaca a atual, mostra
-  o progresso até a próxima e diz o que falta em texto, não só na cor.
+  o progresso até a próxima e diz o que falta em texto, não só na cor. O texto deixa claro de onde
+  vêm as horas: a soma de todos os jogos na Steam desde que a pessoa conectou a conta.
 - **CA13 (vazio)** — Dado que ainda não existe a spec de amigos, então a "Corrida do squad" explica
   o que virá e mostra "Copiar convite", sem nenhum nome ou número de exemplo.
 

@@ -15,6 +15,9 @@
   max-width: 70ch;
   color: var(--pr-text-muted);
 }
+.track__source {
+  display: block;
+}
 // A trilha rola no próprio espaço no celular; a página nunca rola na horizontal (CA22).
 .track__scroll {
   overflow-x: auto;
