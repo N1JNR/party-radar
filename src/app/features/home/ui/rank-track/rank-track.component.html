@@ -1,0 +1,28 @@
+<section class="track" aria-labelledby="track-title">
+  <h2 id="track-title" class="track__title">{{ progress().current.name }}</h2>
+  <p class="track__text">
+    {{ hoursLabel() }} desde que você conectou a Steam.
+    @if (remaining(); as text) {
+      {{ text }}
+    } @else {
+      Você chegou à última patente.
+    }
+  </p>
+  <div class="track__scroll" tabindex="0" role="group" aria-label="Trilha das patentes">
+    <ol class="track__list">
+      @for (rank of ranks(); track rank.id) {
+        <li class="track__item" [class]="'track__item--' + rank.state">
+          <div class="track__rail" aria-hidden="true">
+            <span class="track__mark"></span>
+            @if (!rank.last) {
+              <span class="track__line"><span [style.width.%]="rank.fill"></span></span>
+            }
+          </div>
+          <p class="track__name">{{ rank.name }}</p>
+          <p class="track__rule">{{ rank.rule }}</p>
+          <p class="pr-sr-only">{{ rank.stateLabel }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
