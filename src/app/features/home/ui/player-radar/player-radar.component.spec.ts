@@ -53,7 +53,7 @@ describe('PlayerRadarComponent', () => {
     render(library);
     expect(
       [...element.querySelectorAll('.radar__kind')].map((node) => node.textContent?.trim()),
-    ).toEqual(['Tiro 82%', 'Esporte 14%', 'Aventura 3%', 'RPG 1%', 'Outros 0%']);
+    ).toEqual(['Tiro 82%', 'Esporte 14%', 'Aventura 3%', 'RPG 1%', 'Outros <1%']);
   });
 
   it('descreve o radar para leitor de tela (CA23)', () => {
