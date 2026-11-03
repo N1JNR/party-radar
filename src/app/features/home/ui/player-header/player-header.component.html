@@ -1,0 +1,27 @@
+<header class="player">
+  <div class="player__avatar" [class.player__avatar--playing]="playing()">
+    <po-avatar [p-src]="card().avatarUrl ?? ''" p-size="lg" />
+  </div>
+  <div class="player__who">
+    <h1 class="player__name">{{ card().name }}</h1>
+    <p class="player__line">&#64;{{ card().username }}</p>
+    @if (steamName(); as steam) {
+      <p class="player__line">{{ steam }}</p>
+    }
+    @if (playing(); as status) {
+      <p class="player__status">{{ status }}</p>
+    }
+    @if (updatedAgo(); as ago) {
+      <p class="player__line">{{ ago }}</p>
+    }
+  </div>
+  @if (canShare()) {
+    <po-button
+      p-kind="primary"
+      p-icon="an an-share-network"
+      p-label="Compartilhar meu radar"
+      [p-loading]="sharing()"
+      (p-click)="share.emit()"
+    />
+  }
+</header>

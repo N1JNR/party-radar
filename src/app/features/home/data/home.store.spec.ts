@@ -30,7 +30,16 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
         { platform: 'ps5', hours: 12 },
       ],
     },
-    games: [],
+    games: [
+      {
+        appId: 1,
+        name: 'Elden Ring',
+        kind: 'rpg',
+        totalHours: 42,
+        monthHours: 18,
+        previousMonthHours: 12,
+      },
+    ],
     previousIsEstimate: false,
     friendsCount: 6,
     friendsPlaying: [
@@ -103,38 +112,33 @@ describe('HomeStore', () => {
     expect(store.status()).toBe('loading');
     expect(store.card()).toBeNull();
     expect(store.progress()).toBeNull();
-    expect(store.firstAccess()).toBe(false);
-    expect(store.platforms()).toEqual([]);
+    expect(store.hasGames()).toBe(false);
+    expect(store.previousHours()).toBe(0);
     expect(store.opportunities()).toEqual([]);
     expect(store.menuSquads()).toBeNull();
   });
 
-  it('carrega e calcula patente, plataformas, oportunidades e squads do menu', async () => {
+  it('carrega e calcula patente, jogos, oportunidades e squads do menu', async () => {
     const store = setup({});
     await store.load();
     expect(store.status()).toBe('ready');
     expect(store.card()?.name).toBe('Ana Souza');
     expect(store.progress()?.current.name).toBe('Veterano de lobby');
-    expect(store.platforms().map((p) => p.percent)).toEqual([70, 30]);
+    expect(store.hasGames()).toBe(true);
+    expect(store.previousHours()).toBe(12);
     expect(store.opportunities()[0].game).toBe('Fortnite');
     expect(store.menuSquads()).toEqual([{ id: 'sexta', name: 'Squad da Sexta', playing: 2 }]);
-    expect(store.firstAccess()).toBe(false);
   });
 
-  it('marca o primeiro acesso', async () => {
-    const empty = homeData();
-    empty.card = {
-      ...empty.card,
-      stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
-      monthHours: 0,
-      estimate: false,
-      steamName: null,
-      updatedAt: null,
-      games: 0,
-    };
-    const store = setup({ load: () => Promise.resolve(empty) });
+  it('sem jogos, mostra o checklist e o radar vazio (spec 004, CA18)', async () => {
+    const store = setup(
+      { load: () => Promise.resolve(homeData({ games: [] })) },
+      { account: () => Promise.resolve(steamAccount({ visibility: 'public' })) },
+    );
     await store.load();
-    expect(store.firstAccess()).toBe(true);
+    expect(store.hasGames()).toBe(false);
+    expect(store.showStrengthen()).toBe(true);
+    expect(store.showRadar()).toBe(true);
   });
 
   it('erro na carga vira o estado de erro, e "Tentar de novo" carrega (CA15)', async () => {
@@ -275,9 +279,9 @@ describe('HomeStore', () => {
       );
       await store.load();
       expect(store.steamStep()).toBe('reading');
-      expect(store.firstAccess()).toBe(false);
       expect(store.showStrengthen()).toBe(true);
       expect(store.showSteamNotice()).toBe(false);
+      expect(store.showRadar()).toBe(false);
     });
 
     it('conectada e privada: mostra o aviso (CA6)', async () => {
@@ -286,6 +290,7 @@ describe('HomeStore', () => {
       expect(store.steamStep()).toBe('private');
       expect(store.showSteamNotice()).toBe(true);
       expect(store.showStrengthen()).toBe(false);
+      expect(store.showRadar()).toBe(false);
     });
 
     it('se a conta Steam não puder ser lida, a home abre sem passo nem aviso da Steam', async () => {

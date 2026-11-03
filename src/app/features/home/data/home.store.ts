@@ -2,7 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { STEAM_SOURCE, SteamAccountState, SteamRecheck } from '../../steam/data/steam.source';
 import { progressFor } from '../domain/patentes';
-import { isFirstAccess, platformShares } from '../domain/player-card';
+import { previousMonthHours } from '../domain/player-radar';
 import { playingCount, squadOpportunities } from '../domain/squad-opportunity';
 import { SteamStepState } from '../domain/strengthen';
 import { HOME_DATA_SOURCE, HomeData } from './home.source';
@@ -45,27 +45,31 @@ export class HomeStore {
     }
     return steam.visibility ?? 'reading';
   });
+  /** Tem horas na Steam: há o que mostrar no radar e o que compartilhar (spec 004). */
+  readonly hasGames = computed(() => (this.data()?.games.length ?? 0) > 0);
+  /** Horas do mês anterior (spec 004, CA11). */
+  readonly previousHours = computed(() => previousMonthHours(this.data()?.games ?? []));
   /**
-   * O checklist aparece no primeiro acesso, enquanto a Steam não foi conectada (CA1) e enquanto a
-   * primeira leitura dela não terminou (CA2, CA19).
+   * O checklist aparece enquanto não há jogos, enquanto a Steam não foi conectada (CA1) e enquanto
+   * a primeira leitura dela não terminou (CA2, CA19).
    */
   readonly showStrengthen = computed(() => {
     const step = this.steamStep();
-    return this.firstAccess() || step === 'not-connected' || step === 'reading';
+    return !this.hasGames() || step === 'not-connected' || step === 'reading';
+  });
+  /** Com a Steam privada ou em leitura, o aviso fica no lugar do radar (spec 004, CA20). */
+  readonly showRadar = computed(() => {
+    const step = this.steamStep();
+    return step !== 'private' && step !== 'reading';
   });
   /** Aviso da Steam privada (spec 003, CA6). */
   readonly showSteamNotice = computed(() => this.steamStep() === 'private');
 
   readonly card = computed(() => this.data()?.card ?? null);
-  readonly firstAccess = computed(() => {
-    const card = this.card();
-    return card ? isFirstAccess(card) : false;
-  });
   readonly progress = computed(() => {
     const card = this.card();
     return card ? progressFor(card.stats) : null;
   });
-  readonly platforms = computed(() => platformShares(this.card()?.platforms ?? []));
   readonly opportunities = computed(() => {
     const data = this.data();
     return data ? squadOpportunities(data.squads, data.friendsPlaying) : [];

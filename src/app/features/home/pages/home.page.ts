@@ -12,22 +12,30 @@ import { ClipboardService } from '../../../core/platform/clipboard.service';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import { STILL_PRIVATE_MESSAGE, steamLoginUrl } from '../../steam/domain/steam-connect';
 import { HomeStore } from '../data/home.store';
+import { MonthSummaryComponent } from '../ui/month-summary/month-summary.component';
 import { PartnershipQuestionComponent } from '../ui/partnership-question/partnership-question.component';
-import { PlayerCardComponent } from '../ui/player-card/player-card.component';
+import { PlayerHeaderComponent } from '../ui/player-header/player-header.component';
+import { PlayerRadarComponent } from '../ui/player-radar/player-radar.component';
 import { PlayingNowComponent } from '../ui/playing-now/playing-now.component';
+import { RankTrackComponent } from '../ui/rank-track/rank-track.component';
 import { SquadOpportunityComponent } from '../ui/squad-opportunity/squad-opportunity.component';
+import { SquadRaceComponent } from '../ui/squad-race/squad-race.component';
 import { SteamNoticeComponent } from '../ui/steam-notice/steam-notice.component';
 import { StrengthenCardComponent } from '../ui/strengthen-card/strengthen-card.component';
 
 /** De quanto em quanto tempo a página relê o card (spec 003, CA10). */
 export const REFRESH_EVERY_MS = 60_000;
 
-/** "Meu card": a home do app (spec 002). Orquestra o estado da home e os componentes. */
+/** "Meu card": a home do app (specs 002 e 004). Orquestra o estado da home e os componentes. */
 @Component({
   selector: 'app-home-page',
   imports: [
     PoButtonModule,
-    PlayerCardComponent,
+    PlayerHeaderComponent,
+    RankTrackComponent,
+    PlayerRadarComponent,
+    MonthSummaryComponent,
+    SquadRaceComponent,
     StrengthenCardComponent,
     SteamNoticeComponent,
     PartnershipQuestionComponent,

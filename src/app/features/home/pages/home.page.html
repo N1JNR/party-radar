@@ -1,25 +1,13 @@
 <main class="home">
-  <header class="home__header">
-    <h1 class="home__title">Meu card</h1>
-    @if (store.status() === 'ready') {
-      <po-button
-        p-kind="primary"
-        p-icon="an an-share-network"
-        p-label="Compartilhar card"
-        (p-click)="soon('Compartilhar card')"
-      />
-    }
-  </header>
-
   @switch (store.status()) {
     @case ('loading') {
-      <div class="home__grid" aria-hidden="true">
-        <div class="home__main">
-          <div class="skeleton skeleton--card"></div>
-        </div>
-        <div class="home__side">
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
+      <div class="home__stack" aria-hidden="true">
+        <div class="skeleton skeleton--header"></div>
+        <div class="skeleton skeleton--track"></div>
+        <div class="skeleton skeleton--radar"></div>
+        <div class="home__footer">
+          <div class="skeleton skeleton--footer"></div>
+          <div class="skeleton skeleton--footer"></div>
         </div>
       </div>
       <p class="pr-sr-only" role="status">Carregando seu card…</p>
@@ -33,52 +21,66 @@
     }
     @default {
       @if (store.data(); as data) {
-        <div class="home__grid">
-          <div class="home__main">
-            @if (store.progress(); as progress) {
-              <app-player-card
-                [card]="data.card"
-                [progress]="progress"
-                [platforms]="store.platforms()"
-                [firstAccess]="store.firstAccess()"
-                [now]="now()"
-                (seePatentes)="soon('Ver patentes')"
-              />
-            }
-            <app-squad-opportunity
-              [hasSquads]="data.squads.length > 0"
-              [opportunity]="store.opportunities().at(0) ?? null"
-              (callSquad)="soon('Chamar o squad')"
-              (formSquad)="soon('Formar squad')"
+        <div class="home__stack">
+          <app-player-header
+            [card]="data.card"
+            [now]="now()"
+            [canShare]="store.hasGames()"
+            (share)="soon('Compartilhar meu radar')"
+          />
+
+          @if (store.showStrengthen()) {
+            <app-strengthen-card
+              [steam]="store.steamStep()"
+              [friendsCount]="data.friendsCount"
+              [checking]="store.markingSteam()"
+              (invite)="copyInvite(data.inviteLink)"
+              (connectSteam)="connectSteam()"
+              (retrySteam)="retrySteam()"
             />
-          </div>
-          <div class="home__side">
-            @if (store.showStrengthen()) {
-              <app-strengthen-card
-                [steam]="store.steamStep()"
-                [friendsCount]="data.friendsCount"
-                [checking]="store.markingSteam()"
-                (invite)="copyInvite(data.inviteLink)"
-                (connectSteam)="connectSteam()"
-                (retrySteam)="retrySteam()"
-              />
-            }
-            @if (store.showSteamNotice()) {
-              <app-steam-notice [marking]="store.markingSteam()" (confirmed)="recheckSteam()" />
-            }
-            @if (data.question; as question) {
-              <app-partnership-question
-                [question]="question"
-                [now]="now()"
-                [answering]="store.answering()"
-                (answered)="answer($event)"
-              />
-            }
+          }
+          @if (store.showSteamNotice()) {
+            <app-steam-notice [marking]="store.markingSteam()" (confirmed)="recheckSteam()" />
+          }
+
+          @if (store.progress(); as progress) {
+            <app-rank-track [progress]="progress" [hours]="data.card.stats.hours" />
+          }
+
+          @if (store.showRadar()) {
+            <app-player-radar [games]="data.games" />
+          }
+
+          @if (data.question; as question) {
+            <app-partnership-question
+              [question]="question"
+              [now]="now()"
+              [answering]="store.answering()"
+              (answered)="answer($event)"
+            />
+          }
+          @if (store.opportunities().at(0); as opportunity) {
+            <app-squad-opportunity
+              [opportunity]="opportunity"
+              (callSquad)="soon('Chamar o squad')"
+            />
+          }
+          @if (data.friendsPlaying.length > 0) {
             <app-playing-now
               [friends]="data.friendsPlaying"
               [now]="now()"
               (invite)="copyInvite(data.inviteLink)"
             />
+          }
+
+          <div class="home__footer">
+            <app-month-summary
+              [card]="data.card"
+              [previousHours]="store.previousHours()"
+              [previousIsEstimate]="data.previousIsEstimate"
+              [now]="now()"
+            />
+            <app-squad-race (invite)="copyInvite(data.inviteLink)" />
           </div>
         </div>
       }

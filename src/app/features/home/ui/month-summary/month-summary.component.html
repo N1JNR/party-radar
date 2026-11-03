@@ -1,0 +1,14 @@
+<section class="month" aria-labelledby="month-title">
+  <h2 id="month-title" class="month__title">{{ title() }}</h2>
+  <p class="month__hours">{{ hours() }}</p>
+  <p class="month__text">{{ detail() }}</p>
+  @if (gameOfMonth(); as game) {
+    <p class="month__text">{{ game }}</p>
+  }
+  @if (previous(); as text) {
+    <p class="month__text">{{ text }}</p>
+  }
+  @if (estimateNote(); as note) {
+    <p class="month__note">{{ note }}</p>
+  }
+</section>

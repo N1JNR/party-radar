@@ -59,6 +59,12 @@ describe('RankTrackComponent', () => {
     );
   });
 
+  it('sem horas, não fala em conexão com a Steam (CA18)', () => {
+    const text = render(0).querySelector('.track__text')?.textContent;
+    expect(text).not.toContain('desde que você conectou');
+    expect(text).toContain('Falta 1h para Recruta da fila.');
+  });
+
   it('a trilha rola pelo teclado no celular (CA22, CA23)', () => {
     const scroll = render(0).querySelector('.track__scroll');
     expect(scroll?.getAttribute('tabindex')).toBe('0');

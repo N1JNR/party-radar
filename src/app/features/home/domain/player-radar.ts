@@ -240,6 +240,22 @@ export function previousMonthHours(games: readonly PlayedGame[]): number {
   return games.reduce((sum, game) => sum + Math.max(0, game.previousMonthHours || 0), 0);
 }
 
+/** Nome do mês no fuso do card, com inicial maiúscula: `offset` -1 é o mês anterior (CA11). */
+export function monthLabel(date: Date, offset = 0): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: 'numeric',
+  }).formatToParts(date);
+  const year = Number(parts.find((part) => part.type === 'year')?.value);
+  const month = Number(parts.find((part) => part.type === 'month')?.value);
+  // Dia 15 ao meio-dia UTC: longe da virada do mês em qualquer fuso.
+  const name = new Intl.DateTimeFormat('pt-BR', { month: 'long', timeZone: 'UTC' }).format(
+    new Date(Date.UTC(year, month - 1 + offset, 15, 12)),
+  );
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 /** Jogo mais jogado desde sempre, para a imagem de compartilhar (CA14). */
 export function topGame(games: readonly PlayedGame[]): PlayedGame | null {
   return gamesIn(games, 'all')[0] ?? null;

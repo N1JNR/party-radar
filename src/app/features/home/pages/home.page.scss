@@ -1,5 +1,4 @@
-// Container de até 1120 px (DESIGN.md, seção 4). Duas colunas no desktop: o card e, ao lado,
-// os avisos e quem está jogando. Uma coluna abaixo de 1024 px.
+// Container de até 1120 px (DESIGN.md, seção 4), numa coluna: cabeçalho, trilha, radar e o rodapé.
 .home {
   box-sizing: border-box;
   max-width: 1120px;
@@ -7,44 +6,38 @@
   padding: var(--spacing-md) var(--spacing-sm) var(--spacing-xl);
   color: var(--pr-text);
 }
-.home__header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-}
-.home__title {
-  margin: 0;
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  line-height: var(--line-height-xs);
-}
-.home__grid {
+.home__stack {
   display: grid;
-  gap: var(--spacing-md);
-}
-.home__main,
-.home__side {
-  display: grid;
-  align-content: start;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   min-width: 0;
 }
+.home__footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: var(--border-width-sm) solid var(--color-neutral-light-30);
+}
 
-// Esqueleto (CA14): blocos na cor da superfície, sem texto falso e sem animação.
+// Esqueleto (spec 004, CA17): os mesmos blocos da tela, para nada pular quando os dados chegam.
 .skeleton {
-  height: 160px;
   border-radius: var(--border-radius-lg);
   background: var(--pr-surface-raised);
 }
-.skeleton--card {
-  height: 520px;
+.skeleton--header {
+  height: 80px;
+}
+.skeleton--track {
+  height: 200px;
+}
+.skeleton--radar {
+  height: 480px;
+}
+.skeleton--footer {
+  height: 160px;
 }
 
-// Erro (CA15).
+// Erro (spec 004, CA21).
 .home__error {
   display: grid;
   justify-items: start;
@@ -66,15 +59,5 @@
 @media (min-width: 768px) {
   .home {
     padding: var(--spacing-lg);
-  }
-  .home__title {
-    font-size: var(--font-size-xl);
-  }
-}
-
-@media (min-width: 1024px) {
-  .home__grid {
-    grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
-    align-items: start;
   }
 }

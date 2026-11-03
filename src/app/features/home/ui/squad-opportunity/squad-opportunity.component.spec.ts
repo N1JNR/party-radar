@@ -23,9 +23,8 @@ describe('SquadOpportunityComponent', () => {
   let fixture: ComponentFixture<SquadOpportunityComponent>;
   let element: HTMLElement;
 
-  function render(hasSquads: boolean, value: SquadOpportunity | null): void {
+  function render(value: SquadOpportunity): void {
     fixture = TestBed.createComponent(SquadOpportunityComponent);
-    fixture.componentRef.setInput('hasSquads', hasSquads);
     fixture.componentRef.setInput('opportunity', value);
     fixture.detectChanges();
     element = fixture.nativeElement as HTMLElement;
@@ -34,7 +33,7 @@ describe('SquadOpportunityComponent', () => {
   const button = () => element.querySelector<HTMLButtonElement>('po-button button')!;
 
   it('destaca o squad no mesmo jogo, com nomes e plataformas (CA12)', () => {
-    render(true, opportunity);
+    render(opportunity);
     const call = vi.fn();
     fixture.componentInstance.callSquad.subscribe(call);
     expect(element.querySelector('h2')?.textContent?.trim()).toBe(
@@ -52,20 +51,5 @@ describe('SquadOpportunityComponent', () => {
     expect(button().textContent).toContain('Chamar o squad');
     button().click();
     expect(call).toHaveBeenCalledWith(opportunity);
-  });
-
-  it('sem squads: "Nenhum squad ainda" com "Formar squad" (CA10)', () => {
-    render(false, null);
-    const formSquad = vi.fn();
-    fixture.componentInstance.formSquad.subscribe(formSquad);
-    expect(element.querySelector('h2')?.textContent?.trim()).toBe('Nenhum squad ainda');
-    expect(button().textContent).toContain('Formar squad');
-    button().click();
-    expect(formSquad).toHaveBeenCalledTimes(1);
-  });
-
-  it('com squads e sem oportunidade, não mostra nada', () => {
-    render(true, null);
-    expect(element.querySelector('section')).toBeNull();
   });
 });

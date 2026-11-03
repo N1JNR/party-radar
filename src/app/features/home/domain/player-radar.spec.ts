@@ -12,6 +12,7 @@ import {
   gameCount,
   gamesIn,
   kindShares,
+  monthLabel,
   playerTitle,
   previousMonthHours,
   radarAxes,
@@ -238,5 +239,21 @@ describe('previousMonthHours e topGame', () => {
   it('o jogo mais jogado desde sempre (CA14)', () => {
     expect(topGame(library)?.appId).toBe(1);
     expect(topGame([])).toBeNull();
+  });
+});
+
+describe('monthLabel', () => {
+  it('nome do mês em português, com inicial maiúscula (CA11)', () => {
+    expect(monthLabel(new Date('2026-11-15T12:00:00Z'))).toBe('Novembro');
+  });
+
+  it('segue o fuso de São Paulo na virada do mês', () => {
+    expect(monthLabel(new Date('2026-11-01T02:00:00Z'))).toBe('Outubro');
+    expect(monthLabel(new Date('2026-11-01T04:00:00Z'))).toBe('Novembro');
+  });
+
+  it('mês anterior, inclusive na virada do ano', () => {
+    expect(monthLabel(new Date('2026-11-15T12:00:00Z'), -1)).toBe('Outubro');
+    expect(monthLabel(new Date('2027-01-15T12:00:00Z'), -1)).toBe('Dezembro');
   });
 });
