@@ -14,8 +14,12 @@ documento "Party Radar + Gamer Wrapped — Plano" e as telas no canvas "Party Ra
    No app fica só o card "Chamado ativo" no Radar.
 5. **Perfil** simples com as contas conectadas.
 
-**Fora do MVP:** Wrapped e patentes (versão 2), troféus PSN, Xbox, app nas lojas (Capacitor).
-As sessões de jogo são gravadas desde o primeiro dia para o Wrapped nascer com dados.
+**Entrou antes do previsto:** a home "Meu card", com patentes, radar do jogador e imagem de
+compartilhar (specs 002 e 004), e as temporadas (spec 005), para dar o que mostrar antes de haver
+amigos no app.
+
+**Fora do MVP:** Wrapped (versão 2), troféus PSN, Xbox, app nas lojas (Capacitor).
+As leituras da Steam são gravadas desde a conexão para o Wrapped nascer com dados.
 
 ## Decisões técnicas
 
@@ -29,11 +33,19 @@ As sessões de jogo são gravadas desde o primeiro dia para o Wrapped nascer com
 | Mobile           | Mesmo projeto empacotado com Capacitor quando houver tração       |
 | Monetização      | Fora do escopo agora                                              |
 
-## Ordem sugerida das specs
+## Ordem das specs
+
+Feitas, em andamento ou já aprovadas (a pasta de cada uma está em `docs/specs/`):
 
 1. `001-login` — login com o Discord e sessão
-2. `002-conectar-contas` — vincular Discord (connections) e Steam
-3. `003-amigos` — pedidos, aceite, remoção e bloqueio
-4. `004-radar` — presença em tempo real
-5. `005-chamados` — chamar, squad e integração com o Discord
-6. `006-perfil`
+2. `002-home` — a home "Meu card"
+3. `003-steam` — conectar a Steam e trazer os dados reais
+4. `004-novo-dashboard` — radar do jogador, trilha da patente e imagem de compartilhar
+5. `005-temporadas` — patente por temporada de 60 dias
+
+Próximas, nesta ordem (o número sai quando a spec for criada):
+
+- Amigos — pedidos, aceite, remoção e bloqueio; corrida do squad com dados reais
+- Radar de presença — amigos em tempo real
+- Chamados — chamar, squad e integração com o Discord
+- Perfil

@@ -23,6 +23,25 @@ export type Database = {
   };
   public: {
     Tables: {
+      game_categories: {
+        Row: {
+          app_id: number;
+          category: string;
+          source: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          app_id: number;
+          category: string;
+          source?: string;
+        };
+        Update: {
+          app_id?: number;
+          category?: string;
+          source?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -154,6 +173,18 @@ export type Database = {
           steam_name: string;
           total_minutes: number;
           visibility: string;
+        }[];
+      };
+      my_games: {
+        Args: { p_now?: string };
+        Returns: {
+          app_id: number;
+          category: string;
+          game_name: string;
+          month_minutes: number;
+          previous_is_estimate: boolean;
+          previous_month_minutes: number;
+          total_minutes: number;
         }[];
       };
       username_base: { Args: { source: string }; Returns: string };

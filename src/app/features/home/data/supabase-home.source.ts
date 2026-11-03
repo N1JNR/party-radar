@@ -4,6 +4,7 @@ import { AuthStore } from '../../../core/auth/auth.store';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import { SUPABASE } from '../../../core/supabase/supabase.client';
 import { PlayerCard } from '../domain/player-card';
+import { GameKind, RADAR_AXES } from '../domain/player-radar';
 import { HomeData, HomeDataSource } from './home.source';
 
 /**
@@ -23,13 +24,28 @@ interface CardStatsRow {
   estimate: boolean;
 }
 
+/** Uma linha de `my_games()` (spec 004). */
+interface GameRow {
+  app_id: number;
+  game_name: string;
+  category: string;
+  total_minutes: number;
+  month_minutes: number;
+  previous_month_minutes: number;
+  previous_is_estimate: boolean;
+}
+
 const toHours = (minutes: number | null | undefined) =>
   typeof minutes === 'number' && minutes > 0 ? minutes / 60 : 0;
+
+/** Tipo que o app não conhece (um banco mais novo que o app, por exemplo) conta em "Outros". */
+const toKind = (category: string): GameKind =>
+  (RADAR_AXES as readonly string[]).includes(category) ? (category as GameKind) : 'outros';
 
 /**
  * Home de verdade (spec 003, Parte 3b): nome e foto do Discord (perfil) e os números da Steam,
  * calculados no banco por `my_card_stats()`. Amigos, squads e a pergunta de parceria ficam vazios
- * até a spec de amigos (CA13); o título do mês fica escondido.
+ * até a spec de amigos (CA13).
  */
 @Injectable()
 export class SupabaseHomeSource implements HomeDataSource {
@@ -38,23 +54,28 @@ export class SupabaseHomeSource implements HomeDataSource {
   private readonly navigation = inject(ExternalNavigation);
 
   async load(): Promise<HomeData> {
-    const { data, error } = await this.supabase.rpc('my_card_stats');
-    if (error) {
-      throw error;
+    const [statsResult, gamesResult] = await Promise.all([
+      this.supabase.rpc('my_card_stats'),
+      this.supabase.rpc('my_games'),
+    ]);
+    if (statsResult.error) {
+      throw statsResult.error;
+    }
+    if (gamesResult.error) {
+      throw gamesResult.error;
     }
     // Sem Steam conectada, a função não devolve linha: o card fica zerado (primeiro acesso).
-    const stats = ((data ?? []) as unknown as CardStatsRow[]).at(0) ?? null;
+    const stats = ((statsResult.data ?? []) as unknown as CardStatsRow[]).at(0) ?? null;
+    const gameRows = (gamesResult.data ?? []) as unknown as GameRow[];
     const user = this.auth.user();
     const username = user?.username ?? 'jogador';
-    const monthHours = toHours(stats?.month_minutes);
     const card: PlayerCard = {
       name: user?.name ?? 'Jogador',
       username,
       avatarUrl: user?.avatarUrl ?? null,
       playingNow: stats?.current_game ?? null,
-      title: null,
       stats: { hours: toHours(stats?.total_minutes), hoursWithFriends: 0, distinctFriends: 0 },
-      monthHours,
+      monthHours: toHours(stats?.month_minutes),
       estimate: stats?.estimate ?? false,
       steamName: stats?.steam_name ?? null,
       updatedAt: stats?.last_synced_at ?? null,
@@ -62,12 +83,18 @@ export class SupabaseHomeSource implements HomeDataSource {
       gameOfMonth: stats?.game_of_month
         ? { name: stats.game_of_month, hours: toHours(stats.game_of_month_minutes) }
         : null,
-      partner: null,
-      // A Steam é a única fonte por enquanto: PC com 100% (CA11).
-      platforms: monthHours > 0 ? [{ platform: 'pc', hours: monthHours }] : [],
     };
     return {
       card,
+      games: gameRows.map((row) => ({
+        appId: row.app_id,
+        name: row.game_name,
+        kind: toKind(row.category),
+        totalHours: toHours(row.total_minutes),
+        monthHours: toHours(row.month_minutes),
+        previousMonthHours: toHours(row.previous_month_minutes),
+      })),
+      previousIsEstimate: gameRows.some((row) => row.previous_is_estimate),
       friendsCount: 0,
       friendsPlaying: [],
       squads: [],

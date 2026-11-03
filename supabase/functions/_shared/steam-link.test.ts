@@ -65,6 +65,7 @@ function deps(overrides: Partial<ConnectDeps> = {}): ConnectDeps & {
     linked,
     cleared,
     snapshots,
+    classifyGames: () => Promise.resolve(),
     latestTotals: () => Promise.resolve(new Map()),
     saveSnapshots: (userId, day, games) => {
       snapshots.push({ userId, day, games });
@@ -491,4 +492,28 @@ Deno.test('changedGames: sem foto anterior, entram todos os jogados', () => {
     changedGames(publicReading.games, new Map()).map((game) => game.appId),
     [1, 2],
   );
+});
+
+Deno.test('a leitura manda classificar os jogos, depois de salvar (spec 004, CA7)', async () => {
+  const ordem: string[] = [];
+  const d = deps({
+    saveReading: () => {
+      ordem.push('leitura');
+      return Promise.resolve();
+    },
+    classifyGames: (games) => {
+      ordem.push(`classifica ${games.length}`);
+      return Promise.resolve();
+    },
+  });
+  await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 });
+  assertEquals(ordem, ['leitura', 'classifica 2']);
+});
+
+Deno.test('falha ao classificar não derruba a leitura (spec 004, CA8)', async () => {
+  const d = deps({ classifyGames: () => Promise.reject(new Error('loja fora')) });
+  assertEquals(await syncAccount(d, { userId: USER, steamId: STEAM_ID, baselineMinutes: 120 }), {
+    status: 'synced',
+    visibility: 'public',
+  });
 });

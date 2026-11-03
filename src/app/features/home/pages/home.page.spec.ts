@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PoNotificationService } from '@po-ui/ng-components';
 
 import { ClipboardService } from '../../../core/platform/clipboard.service';
+import { ShareService } from '../../../core/platform/share.service';
+import { RadarImageService } from '../data/radar-image';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import {
   NOT_CONNECTED,
@@ -27,7 +29,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       username: 'ana',
       avatarUrl: null,
       playingNow: 'Elden Ring',
-      title: 'Sofredor de Souls',
       stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
       monthHours: 42,
       estimate: false,
@@ -35,9 +36,18 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       updatedAt: null,
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
-      partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
-      platforms: [{ platform: 'pc', hours: 28 }],
     },
+    games: [
+      {
+        appId: 1,
+        name: 'Elden Ring',
+        kind: 'rpg',
+        totalHours: 42,
+        monthHours: 18,
+        previousMonthHours: 12,
+      },
+    ],
+    previousIsEstimate: false,
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -76,7 +86,6 @@ const firstAccess = (): HomeData =>
     card: {
       ...homeData().card,
       playingNow: null,
-      title: null,
       stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
       monthHours: 0,
       estimate: false,
@@ -84,9 +93,9 @@ const firstAccess = (): HomeData =>
       updatedAt: null,
       games: 0,
       gameOfMonth: null,
-      partner: null,
-      platforms: [],
     },
+    games: [],
+    previousIsEstimate: false,
     friendsCount: 0,
     friendsPlaying: [],
     squads: [],
@@ -102,6 +111,8 @@ describe('HomePage', () => {
   let copy: ReturnType<typeof vi.fn>;
 
   let go: ReturnType<typeof vi.fn>;
+  let createImage: ReturnType<typeof vi.fn>;
+  let shareImage: ReturnType<typeof vi.fn>;
 
   async function render(
     source: Partial<HomeDataSource> = {},
@@ -113,10 +124,14 @@ describe('HomePage', () => {
     error = vi.fn();
     go = vi.fn();
     copy = vi.fn(() => Promise.resolve(copied));
+    createImage = vi.fn(() => Promise.resolve(new Blob(['png'], { type: 'image/png' })));
+    shareImage = vi.fn(() => Promise.resolve('shared'));
     TestBed.configureTestingModule({
       providers: [
         { provide: PoNotificationService, useValue: { information, success, error } },
         { provide: ClipboardService, useValue: { copy } },
+        { provide: RadarImageService, useValue: { create: createImage } },
+        { provide: ShareService, useValue: { shareImage } },
         {
           provide: ExternalNavigation,
           useValue: { origin: () => 'http://localhost:4200', go },
@@ -155,10 +170,13 @@ describe('HomePage', () => {
       b.textContent?.includes(label),
     );
 
-  it('mostra o título "Meu card", o card e as seções (CA4, CA11, CA12)', async () => {
+  it('mostra o jogador, a trilha, o radar, o mês e a corrida (spec 004, CA1, CA11, CA12, CA13)', async () => {
     await render();
-    expect(element.querySelector('h1')?.textContent?.trim()).toBe('Meu card');
-    expect(element.querySelector('app-player-card h2')?.textContent?.trim()).toBe('Ana Souza');
+    expect(element.querySelector('h1')?.textContent?.trim()).toBe('Ana Souza');
+    expect(element.querySelector('app-rank-track')).not.toBeNull();
+    expect(element.querySelector('app-player-radar')).not.toBeNull();
+    expect(element.querySelector('app-month-summary')).not.toBeNull();
+    expect(element.querySelector('app-squad-race')).not.toBeNull();
     expect(element.querySelector('app-partnership-question')).not.toBeNull();
     expect(element.querySelector('app-squad-opportunity h2')?.textContent).toContain(
       '2 do Squad da Sexta no Fortnite',
@@ -172,8 +190,8 @@ describe('HomePage', () => {
     await render({ load: () => new Promise<HomeData>(() => undefined) });
     expect(element.querySelectorAll('.skeleton').length).toBeGreaterThan(0);
     expect(element.querySelector('[role="status"]')?.textContent).toContain('Carregando seu card');
-    expect(element.querySelector('app-player-card')).toBeNull();
-    expect(button('Compartilhar card')).toBeUndefined();
+    expect(element.querySelector('app-player-header')).toBeNull();
+    expect(button('Compartilhar meu radar')).toBeUndefined();
   });
 
   it('erro: mensagem e "Tentar de novo" carrega o card (CA15)', async () => {
@@ -188,19 +206,88 @@ describe('HomePage', () => {
     button('Tentar de novo')?.click();
     await settle();
     expect(load).toHaveBeenCalledTimes(2);
-    expect(element.querySelector('app-player-card')).not.toBeNull();
+    expect(element.querySelector('app-player-header')).not.toBeNull();
   });
 
-  it('primeiro acesso: checklist, aviso da Steam e "Nenhum squad ainda" (CA7, CA8, CA10)', async () => {
+  it('sem jogos: checklist e aviso, sem amigos nem compartilhar (spec 004, CA18, CA20)', async () => {
     await render({ load: () => Promise.resolve(firstAccess()) }, true, {
       account: () => Promise.resolve(steamAccount('private')),
     });
     expect(element.querySelector('app-strengthen-card')).not.toBeNull();
     expect(element.querySelector('app-steam-notice')).not.toBeNull();
     expect(element.querySelector('app-partnership-question')).toBeNull();
-    expect(element.querySelector('app-squad-opportunity h2')?.textContent?.trim()).toBe(
-      'Nenhum squad ainda',
+    expect(element.querySelector('app-squad-opportunity')).toBeNull();
+    expect(element.querySelector('app-playing-now')).toBeNull();
+    expect(element.querySelector('app-squad-race')).not.toBeNull();
+    expect(button('Compartilhar meu radar')).toBeUndefined();
+  });
+
+  it('sem a Steam: radar vazio, "Conectar Steam" e nada de compartilhar (spec 004, CA18)', async () => {
+    await render({ load: () => Promise.resolve(firstAccess()) }, true, {
+      account: () => Promise.resolve(NOT_CONNECTED),
+    });
+    expect(element.querySelector('app-player-radar')).not.toBeNull();
+    expect(element.querySelector('app-player-radar .radar__shape')).toBeNull();
+    expect(button('Conectar Steam')).toBeDefined();
+    expect(button('Compartilhar meu radar')).toBeUndefined();
+  });
+
+  it('com a Steam privada ou em leitura, o radar dá lugar ao aviso (spec 004, CA20)', async () => {
+    await render({}, true, { account: () => Promise.resolve(steamAccount('private')) });
+    expect(element.querySelector('app-steam-notice')).not.toBeNull();
+    expect(element.querySelector('app-player-radar')).toBeNull();
+    expect(button('Compartilhar meu radar')).toBeUndefined();
+  });
+
+  it('compara o mês com o anterior, marcando a estimativa (spec 004, CA11)', async () => {
+    await render({ load: () => Promise.resolve(homeData({ previousIsEstimate: true })) });
+    expect(element.querySelector('app-month-summary')?.textContent).toContain('estimativa');
+  });
+
+  it('"Compartilhar meu radar" gera a imagem e entrega ao aparelho (spec 004, CA14, CA15)', async () => {
+    await render();
+    button('Compartilhar meu radar')?.click();
+    await settle();
+    expect(createImage).toHaveBeenCalledTimes(1);
+    expect(createImage.mock.calls[0][0]).toMatchObject({
+      username: 'ana',
+      title: 'Viciado em side quest',
+      top: { name: 'Elden Ring' },
+    });
+    expect(shareImage).toHaveBeenCalledWith(
+      expect.any(Blob),
+      'meu-radar-party-radar.png',
+      'Meu radar no Party Radar',
     );
+    expect(success).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it('avisa quando a imagem foi baixada (spec 004, CA14)', async () => {
+    await render();
+    shareImage.mockResolvedValue('downloaded');
+    button('Compartilhar meu radar')?.click();
+    await settle();
+    expect(success).toHaveBeenCalledWith('Imagem baixada.');
+  });
+
+  it('se a pessoa desistir, não avisa nada', async () => {
+    await render();
+    shareImage.mockResolvedValue('cancelled');
+    button('Compartilhar meu radar')?.click();
+    await settle();
+    expect(success).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it('se a imagem não puder ser gerada, avisa e continua na tela (spec 004, CA16)', async () => {
+    await render();
+    createImage.mockRejectedValue(new Error('canvas'));
+    button('Compartilhar meu radar')?.click();
+    await settle();
+    expect(error).toHaveBeenCalledWith('Não foi possível gerar a imagem. Tente de novo.');
+    expect(shareImage).not.toHaveBeenCalled();
+    expect(button('Compartilhar meu radar')).toBeDefined();
   });
 
   it('primeira leitura pendente: "Tentar de novo" com a Steam fora avisa o erro (CA19)', async () => {
@@ -279,13 +366,11 @@ describe('HomePage', () => {
     expect(element.querySelector('app-steam-notice')).not.toBeNull();
   });
 
-  it('Joguei tira a pergunta e o "provável" do parceiro (CA11)', async () => {
+  it('Joguei tira a pergunta (CA11)', async () => {
     await render();
-    expect(element.querySelector('.player-card__probable')).not.toBeNull();
     button('Joguei')?.click();
     await settle();
     expect(element.querySelector('app-partnership-question')).toBeNull();
-    expect(element.querySelector('.player-card__probable')).toBeNull();
   });
 
   it('se não salvar a resposta, avisa o erro e mantém a pergunta', async () => {
@@ -296,22 +381,20 @@ describe('HomePage', () => {
     expect(element.querySelector('app-partnership-question')).not.toBeNull();
   });
 
-  it('Compartilhar card, Ver patentes e Chamar o squad avisam "Em breve" (CA13)', async () => {
+  it('Chamar o squad avisa "Em breve" (CA13)', async () => {
     await render();
-    button('Compartilhar card')?.click();
-    button('Ver patentes')?.click();
     button('Chamar o squad')?.click();
-    expect(information.mock.calls.map(([message]) => message)).toEqual([
-      'Em breve: Compartilhar card.',
-      'Em breve: Ver patentes.',
-      'Em breve: Chamar o squad.',
-    ]);
+    expect(information).toHaveBeenCalledWith('Em breve: Chamar o squad.');
   });
 
-  it('Formar squad avisa "Em breve" (CA10)', async () => {
-    await render({ load: () => Promise.resolve(homeData({ squads: [] })) });
-    button('Formar squad')?.click();
-    expect(information).toHaveBeenCalledWith('Em breve: Formar squad.');
+  it('sem dados de amigos, as seções deles não aparecem (spec 004, CA13)', async () => {
+    await render({
+      load: () => Promise.resolve(homeData({ squads: [], friendsPlaying: [], question: null })),
+    });
+    expect(element.querySelector('app-squad-opportunity')).toBeNull();
+    expect(element.querySelector('app-playing-now')).toBeNull();
+    expect(element.querySelector('app-partnership-question')).toBeNull();
+    expect(element.textContent).not.toContain('Nenhum squad ainda');
   });
 
   it('Copiar convite copia o link e confirma (CA9)', async () => {
@@ -339,11 +422,11 @@ describe('HomePage', () => {
         .mockResolvedValueOnce(homeData())
         .mockResolvedValue(homeData({ card: { ...homeData().card, playingNow: 'Hades' } }));
       await render({ load });
-      expect(element.querySelector('.player-card__status')?.textContent).not.toContain('Hades');
+      expect(element.querySelector('.player__status')?.textContent).not.toContain('Hades');
       vi.advanceTimersByTime(REFRESH_EVERY_MS);
       await settle();
       expect(load).toHaveBeenCalledTimes(2);
-      expect(element.querySelector('.player-card__status')?.textContent?.trim()).toBe(
+      expect(element.querySelector('.player__status')?.textContent?.trim()).toBe(
         'Jogando Hades agora',
       );
       fixture.destroy();

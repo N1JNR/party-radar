@@ -1,0 +1,20 @@
+<ul class="blocks" aria-label="Horas por jogo">
+  @for (row of rows(); track $index; let first = $first) {
+    @for (block of row; track block.id) {
+      <li
+        class="block"
+        [class.block--big]="first"
+        [class.block--lit]="block.lit"
+        [class]="block.lit ? 'block--' + selected() : ''"
+        [style.flex-grow]="block.hours"
+        [title]="block.name"
+      >
+        <span class="block__hours">{{ block.label }}</span>
+        <span class="block__name">{{ block.name }}</span>
+      </li>
+    }
+    @if (first) {
+      <li class="blocks__break" aria-hidden="true"></li>
+    }
+  }
+</ul>

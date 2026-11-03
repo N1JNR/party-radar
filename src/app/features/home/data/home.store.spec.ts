@@ -16,7 +16,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       username: 'ana',
       avatarUrl: null,
       playingNow: null,
-      title: 'Sofredor de Souls',
       stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
       monthHours: 42,
       estimate: false,
@@ -24,12 +23,18 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       updatedAt: null,
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
-      partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
-      platforms: [
-        { platform: 'pc', hours: 28 },
-        { platform: 'ps5', hours: 12 },
-      ],
     },
+    games: [
+      {
+        appId: 1,
+        name: 'Elden Ring',
+        kind: 'rpg',
+        totalHours: 42,
+        monthHours: 18,
+        previousMonthHours: 12,
+      },
+    ],
+    previousIsEstimate: false,
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -101,38 +106,33 @@ describe('HomeStore', () => {
     expect(store.status()).toBe('loading');
     expect(store.card()).toBeNull();
     expect(store.progress()).toBeNull();
-    expect(store.firstAccess()).toBe(false);
-    expect(store.platforms()).toEqual([]);
+    expect(store.hasGames()).toBe(false);
+    expect(store.previousHours()).toBe(0);
     expect(store.opportunities()).toEqual([]);
     expect(store.menuSquads()).toBeNull();
   });
 
-  it('carrega e calcula patente, plataformas, oportunidades e squads do menu', async () => {
+  it('carrega e calcula patente, jogos, oportunidades e squads do menu', async () => {
     const store = setup({});
     await store.load();
     expect(store.status()).toBe('ready');
     expect(store.card()?.name).toBe('Ana Souza');
     expect(store.progress()?.current.name).toBe('Veterano de lobby');
-    expect(store.platforms().map((p) => p.percent)).toEqual([70, 30]);
+    expect(store.hasGames()).toBe(true);
+    expect(store.previousHours()).toBe(12);
     expect(store.opportunities()[0].game).toBe('Fortnite');
     expect(store.menuSquads()).toEqual([{ id: 'sexta', name: 'Squad da Sexta', playing: 2 }]);
-    expect(store.firstAccess()).toBe(false);
   });
 
-  it('marca o primeiro acesso', async () => {
-    const empty = homeData();
-    empty.card = {
-      ...empty.card,
-      stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
-      monthHours: 0,
-      estimate: false,
-      steamName: null,
-      updatedAt: null,
-      games: 0,
-    };
-    const store = setup({ load: () => Promise.resolve(empty) });
+  it('sem jogos, mostra o checklist e o radar vazio (spec 004, CA18)', async () => {
+    const store = setup(
+      { load: () => Promise.resolve(homeData({ games: [] })) },
+      { account: () => Promise.resolve(steamAccount({ visibility: 'public' })) },
+    );
     await store.load();
-    expect(store.firstAccess()).toBe(true);
+    expect(store.hasGames()).toBe(false);
+    expect(store.showStrengthen()).toBe(true);
+    expect(store.showRadar()).toBe(true);
   });
 
   it('erro na carga vira o estado de erro, e "Tentar de novo" carrega (CA15)', async () => {
@@ -197,7 +197,7 @@ describe('HomeStore', () => {
   });
 
   describe('pergunta de parceria (CA11)', () => {
-    it('Joguei: a pergunta some e a parceria deixa de ser provável', async () => {
+    it('Joguei: a pergunta some', async () => {
       const answerPartnership = vi.fn(() => Promise.resolve());
       const store = setup({ answerPartnership });
       await store.load();
@@ -206,34 +206,13 @@ describe('HomeStore', () => {
       expect(await answer).toBe(true);
       expect(answerPartnership).toHaveBeenCalledWith('q1', true);
       expect(store.data()?.question).toBeNull();
-      expect(store.card()?.partner?.probable).toBe(false);
       expect(store.answering()).toBe(false);
     });
 
-    it('Não joguei: a pergunta some e a parceria continua provável', async () => {
+    it('Não joguei: a pergunta some', async () => {
       const store = setup({});
       await store.load();
       expect(await store.answerPartnership(false)).toBe(true);
-      expect(store.data()?.question).toBeNull();
-      expect(store.card()?.partner?.probable).toBe(true);
-    });
-
-    it('Joguei com outro amigo, mesmo com o mesmo nome, não mexe no parceiro do mês', async () => {
-      const data = homeData();
-      data.question = { ...data.question!, friendId: 'outro-rafa' };
-      const store = setup({ load: () => Promise.resolve(data) });
-      await store.load();
-      await store.answerPartnership(true);
-      expect(store.card()?.partner?.probable).toBe(true);
-    });
-
-    it('Joguei sem parceiro do mês mantém o card sem parceiro', async () => {
-      const data = homeData();
-      data.card = { ...data.card, partner: null };
-      const store = setup({ load: () => Promise.resolve(data) });
-      await store.load();
-      await store.answerPartnership(true);
-      expect(store.card()?.partner).toBeNull();
       expect(store.data()?.question).toBeNull();
     });
 
@@ -273,9 +252,9 @@ describe('HomeStore', () => {
       );
       await store.load();
       expect(store.steamStep()).toBe('reading');
-      expect(store.firstAccess()).toBe(false);
       expect(store.showStrengthen()).toBe(true);
       expect(store.showSteamNotice()).toBe(false);
+      expect(store.showRadar()).toBe(false);
     });
 
     it('conectada e privada: mostra o aviso (CA6)', async () => {
@@ -284,6 +263,8 @@ describe('HomeStore', () => {
       expect(store.steamStep()).toBe('private');
       expect(store.showSteamNotice()).toBe(true);
       expect(store.showStrengthen()).toBe(false);
+      expect(store.showRadar()).toBe(false);
+      expect(store.canShare()).toBe(false);
     });
 
     it('se a conta Steam não puder ser lida, a home abre sem passo nem aviso da Steam', async () => {
@@ -375,7 +356,6 @@ describe('HomeStore', () => {
       finish();
       expect(await answer).toBe(true);
       expect(store.data()?.question?.id).toBe('q2');
-      expect(store.card()?.partner?.probable).toBe(true);
     });
   });
 

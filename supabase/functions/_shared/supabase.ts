@@ -7,6 +7,12 @@ import { hasBearer } from './http.ts';
 import { Fetch, Visibility, readPresence, readSteam, withTimeout } from './steam-api.ts';
 import { ReadingPatch, SteamAccount, SyncDeps } from './steam-link.ts';
 import { PresenceDeps } from './steam-presence.ts';
+import {
+  MAX_STORE_LOOKUPS,
+  categoryFromGenres,
+  gamesToClassify,
+  readStoreGenres,
+} from './steam-store.ts';
 
 function env(name: string): string {
   const value = Deno.env.get(name);
@@ -184,8 +190,46 @@ export function syncDeps(
   fetch: Fetch = withTimeout(globalThis.fetch),
 ): SyncDeps {
   const key = env('STEAM_WEB_API_KEY');
+  // Consultas à loja nesta execução: a leitura agendada passa por todas as contas, e o limite
+  // informal da loja vale para o conjunto (spec 004).
+  let storeLookups = MAX_STORE_LOOKUPS;
   return {
     readSteam: (steamId) => readSteam(fetch, key, steamId),
+    classifyGames: async (games) => {
+      const played = games.filter((game) => game.minutesTotal > 0).map((game) => game.appId);
+      if (played.length === 0 || storeLookups === 0) {
+        return;
+      }
+      const { data, error } = await admin
+        .from('game_categories')
+        .select('app_id')
+        .in('app_id', played);
+      if (error) {
+        throw error;
+      }
+      const known = new Set((data ?? []).map((row) => row.app_id as number));
+      const picked = gamesToClassify(games, known, storeLookups);
+      storeLookups -= picked.length;
+      const rows = await Promise.all(
+        picked.map(async (game) => {
+          const genres = await readStoreGenres(fetch, game.appId);
+          // Loja fora do ar: não grava, para a próxima leitura tentar de novo (CA8).
+          return genres === null
+            ? null
+            : { app_id: game.appId, category: categoryFromGenres(genres), source: 'loja' };
+        }),
+      );
+      const found = rows.filter((row) => row !== null);
+      if (found.length > 0) {
+        // Nunca troca o que já está na lista, curada ou não.
+        const { error: saveError } = await admin
+          .from('game_categories')
+          .upsert(found, { onConflict: 'app_id', ignoreDuplicates: true });
+        if (saveError) {
+          throw saveError;
+        }
+      }
+    },
     latestTotals: async (userId) => {
       const { data, error } = await admin.rpc('latest_playtime', { p_user_id: userId });
       if (error) {

@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.month__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  line-height: var(--line-height-xs);
+}
+.month__hours {
+  margin: var(--spacing-xs) 0 var(--spacing-xxs);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+}
+.month__text {
+  margin: 0;
+  color: var(--pr-text-muted);
+}
+.month__note {
+  margin: var(--spacing-xxs) 0 0;
+  color: var(--pr-text-muted);
+  font-size: var(--font-size-xs);
+}

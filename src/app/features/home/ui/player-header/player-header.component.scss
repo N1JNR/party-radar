@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+.player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+// O anel de radar aparece só quando a pessoa está jogando (DESIGN.md).
+.player__avatar {
+  flex: none;
+  padding: var(--spacing-xxs);
+  border: var(--border-width-md) solid transparent;
+  border-radius: 50%;
+}
+.player__avatar--playing {
+  border-color: var(--pr-presence-playing);
+}
+.player__who {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.player__name {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+  overflow-wrap: anywhere;
+}
+.player__line,
+.player__status {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+.player__line {
+  color: var(--pr-text-muted);
+}
+.player__status {
+  color: var(--pr-presence-playing);
+  font-weight: 600;
+}
+@media (min-width: 768px) {
+  .player__name {
+    font-size: var(--font-size-xl);
+  }
+}

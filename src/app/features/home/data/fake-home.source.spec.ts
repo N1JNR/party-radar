@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 
 import { AUTH_GATEWAY, AuthUser } from '../../../core/auth/auth.gateway';
 import { AuthStore } from '../../../core/auth/auth.store';
-import { isFirstAccess } from '../domain/player-card';
 import { squadOpportunities } from '../domain/squad-opportunity';
 import {
   FAKE_HOME_OPTIONS,
@@ -79,13 +78,21 @@ describe('FakeHomeSource', () => {
       username: 'ana',
       avatarUrl: user.avatarUrl,
       playingNow: 'Elden Ring',
-      title: 'Sofredor de Souls',
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
-      partner: { name: 'Rafa', probable: true },
     });
-    expect(isFirstAccess(data.card)).toBe(false);
     expect(data.inviteLink).toMatch(/\/convite\/ana$/);
+  });
+
+  it('cheio: traz jogos de vários tipos, para o radar (spec 004)', async () => {
+    const data = await (await setup('full')).load();
+    expect(data.games.length).toBeGreaterThan(1);
+    expect(new Set(data.games.map((game) => game.kind)).size).toBeGreaterThan(1);
+    expect(data.previousIsEstimate).toBe(false);
+  });
+
+  it('primeiro acesso: sem jogos (spec 004, CA19)', async () => {
+    expect((await (await setup('first-access')).load()).games).toEqual([]);
   });
 
   it('cheio: tem oportunidade de squad e pergunta de parceria de ontem (CA11, CA12)', async () => {
@@ -103,9 +110,8 @@ describe('FakeHomeSource', () => {
 
   it('primeiro acesso: card vazio, Steam privada e sem amigos (CA7)', async () => {
     const data = await (await setup('first-access')).load();
-    expect(isFirstAccess(data.card)).toBe(true);
-    expect(data.card.title).toBeNull();
-    expect(data.card.partner).toBeNull();
+    expect(data.card.monthHours).toBe(0);
+    expect(data.card.games).toBe(0);
     expect(data.friendsCount).toBe(0);
     expect(data.friendsPlaying).toEqual([]);
     expect(data.squads).toEqual([]);
@@ -114,7 +120,7 @@ describe('FakeHomeSource', () => {
 
   it('Steam privada: card cheio com a Steam privada (CA8)', async () => {
     const data = await (await setup('steam-private')).load();
-    expect(isFirstAccess(data.card)).toBe(false);
+    expect(data.card.monthHours).toBeGreaterThan(0);
   });
 
   it('sem amigos jogando (CA9)', async () => {
