@@ -113,7 +113,6 @@ export class FakeHomeSource implements HomeDataSource {
       card: {
         ...this.identity(),
         playingNow: null,
-        title: null,
         stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
         monthHours: 0,
         estimate: false,
@@ -121,8 +120,6 @@ export class FakeHomeSource implements HomeDataSource {
         updatedAt: null,
         games: 0,
         gameOfMonth: null,
-        partner: null,
-        platforms: [],
       },
       games: [],
       previousIsEstimate: false,
@@ -174,7 +171,6 @@ export class FakeHomeSource implements HomeDataSource {
       card: {
         ...this.identity(),
         playingNow: 'Elden Ring',
-        title: 'Sofredor de Souls',
         stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
         monthHours: 42,
         estimate: false,
@@ -182,11 +178,6 @@ export class FakeHomeSource implements HomeDataSource {
         updatedAt: null,
         games: 7,
         gameOfMonth: { name: 'Elden Ring', hours: 18 },
-        partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
-        platforms: [
-          { platform: 'pc', hours: 28 },
-          { platform: 'ps5', hours: 12 },
-        ],
       },
       games: [
         {

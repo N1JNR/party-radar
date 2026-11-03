@@ -62,6 +62,8 @@ export class HomeStore {
     const step = this.steamStep();
     return step !== 'private' && step !== 'reading';
   });
+  /** Só compartilha o que está na tela: com jogos e com o radar à vista (spec 004, CA18, CA20). */
+  readonly canShare = computed(() => this.hasGames() && this.showRadar());
   /** Aviso da Steam privada (spec 003, CA6). */
   readonly showSteamNotice = computed(() => this.steamStep() === 'private');
 
@@ -126,8 +128,8 @@ export class HomeStore {
   }
 
   /**
-   * Responde a pergunta de parceria (CA11): a pergunta some e, se jogou, a parceria deixa de ser
-   * "provável". Devolve `false` se a resposta não foi salva; a pergunta continua na tela.
+   * Responde a pergunta de parceria (CA11): a pergunta some. Devolve `false` se a resposta não foi
+   * salva; a pergunta continua na tela.
    */
   async answerPartnership(played: boolean): Promise<boolean> {
     const question = this.data()?.question;
@@ -138,12 +140,7 @@ export class HomeStore {
     const loadId = this.loadId;
     try {
       await this.source.answerPartnership(question.id, played);
-      this.update(loadId, (data) => {
-        const partner = data.card.partner;
-        const confirmed =
-          played && partner?.id === question.friendId ? { ...partner, probable: false } : partner;
-        return { ...data, question: null, card: { ...data.card, partner: confirmed } };
-      });
+      this.update(loadId, (data) => ({ ...data, question: null }));
       return true;
     } catch {
       return false;

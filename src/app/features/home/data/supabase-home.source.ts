@@ -45,7 +45,7 @@ const toKind = (category: string): GameKind =>
 /**
  * Home de verdade (spec 003, Parte 3b): nome e foto do Discord (perfil) e os números da Steam,
  * calculados no banco por `my_card_stats()`. Amigos, squads e a pergunta de parceria ficam vazios
- * até a spec de amigos (CA13); o título do mês fica escondido.
+ * até a spec de amigos (CA13).
  */
 @Injectable()
 export class SupabaseHomeSource implements HomeDataSource {
@@ -69,15 +69,13 @@ export class SupabaseHomeSource implements HomeDataSource {
     const gameRows = (gamesResult.data ?? []) as unknown as GameRow[];
     const user = this.auth.user();
     const username = user?.username ?? 'jogador';
-    const monthHours = toHours(stats?.month_minutes);
     const card: PlayerCard = {
       name: user?.name ?? 'Jogador',
       username,
       avatarUrl: user?.avatarUrl ?? null,
       playingNow: stats?.current_game ?? null,
-      title: null,
       stats: { hours: toHours(stats?.total_minutes), hoursWithFriends: 0, distinctFriends: 0 },
-      monthHours,
+      monthHours: toHours(stats?.month_minutes),
       estimate: stats?.estimate ?? false,
       steamName: stats?.steam_name ?? null,
       updatedAt: stats?.last_synced_at ?? null,
@@ -85,9 +83,6 @@ export class SupabaseHomeSource implements HomeDataSource {
       gameOfMonth: stats?.game_of_month
         ? { name: stats.game_of_month, hours: toHours(stats.game_of_month_minutes) }
         : null,
-      partner: null,
-      // A Steam é a única fonte por enquanto: PC com 100% (CA11).
-      platforms: monthHours > 0 ? [{ platform: 'pc', hours: monthHours }] : [],
     };
     return {
       card,

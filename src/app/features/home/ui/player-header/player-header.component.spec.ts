@@ -8,7 +8,6 @@ const card: PlayerCard = {
   username: 'palmajnr_',
   avatarUrl: null,
   playingNow: null,
-  title: null,
   stats: { hours: 61, hoursWithFriends: 0, distinctFriends: 0 },
   monthHours: 15,
   estimate: false,
@@ -16,8 +15,6 @@ const card: PlayerCard = {
   updatedAt: null,
   games: 1,
   gameOfMonth: null,
-  partner: null,
-  platforms: [],
 };
 
 describe('PlayerHeaderComponent', () => {

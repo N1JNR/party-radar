@@ -25,7 +25,7 @@
           <app-player-header
             [card]="data.card"
             [now]="now()"
-            [canShare]="store.hasGames()"
+            [canShare]="store.canShare()"
             [sharing]="sharing()"
             (share)="shareRadar(data)"
           />

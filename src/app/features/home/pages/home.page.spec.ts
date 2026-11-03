@@ -29,7 +29,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       username: 'ana',
       avatarUrl: null,
       playingNow: 'Elden Ring',
-      title: 'Sofredor de Souls',
       stats: { hours: 42, hoursWithFriends: 11, distinctFriends: 3 },
       monthHours: 42,
       estimate: false,
@@ -37,8 +36,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       updatedAt: null,
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
-      partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
-      platforms: [{ platform: 'pc', hours: 28 }],
     },
     games: [
       {
@@ -89,7 +86,6 @@ const firstAccess = (): HomeData =>
     card: {
       ...homeData().card,
       playingNow: null,
-      title: null,
       stats: { hours: 0, hoursWithFriends: 0, distinctFriends: 0 },
       monthHours: 0,
       estimate: false,
@@ -97,8 +93,6 @@ const firstAccess = (): HomeData =>
       updatedAt: null,
       games: 0,
       gameOfMonth: null,
-      partner: null,
-      platforms: [],
     },
     games: [],
     previousIsEstimate: false,
@@ -242,6 +236,7 @@ describe('HomePage', () => {
     await render({}, true, { account: () => Promise.resolve(steamAccount('private')) });
     expect(element.querySelector('app-steam-notice')).not.toBeNull();
     expect(element.querySelector('app-player-radar')).toBeNull();
+    expect(button('Compartilhar meu radar')).toBeUndefined();
   });
 
   it('compara o mês com o anterior, marcando a estimativa (spec 004, CA11)', async () => {

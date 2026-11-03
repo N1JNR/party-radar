@@ -8,7 +8,6 @@ const card: PlayerCard = {
   username: 'ana',
   avatarUrl: null,
   playingNow: null,
-  title: null,
   stats: { hours: 61, hoursWithFriends: 0, distinctFriends: 0 },
   monthHours: 15.6,
   estimate: false,
@@ -16,8 +15,6 @@ const card: PlayerCard = {
   updatedAt: null,
   games: 1,
   gameOfMonth: { name: 'ARC Raiders', hours: 15.6 },
-  partner: null,
-  platforms: [],
 };
 
 function render(fields: Partial<PlayerCard> = {}, previousHours = 0, previousIsEstimate = false) {

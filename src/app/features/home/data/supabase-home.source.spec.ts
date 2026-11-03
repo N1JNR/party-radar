@@ -5,7 +5,6 @@ import { AuthUser } from '../../../core/auth/auth.gateway';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import { SUPABASE } from '../../../core/supabase/supabase.client';
-import { isFirstAccess } from '../domain/player-card';
 import { SupabaseHomeSource } from './supabase-home.source';
 
 const user: AuthUser = { name: 'palmajnr_', username: 'palmajnr_', avatarUrl: 'https://cdn/a.png' };
@@ -62,7 +61,6 @@ describe('SupabaseHomeSource', () => {
       username: 'palmajnr_',
       avatarUrl: 'https://cdn/a.png',
       playingNow: 'ELDEN RING',
-      title: null,
       stats: { hours: 820 / 60, hoursWithFriends: 0, distinctFriends: 0 },
       monthHours: 9,
       estimate: false,
@@ -70,8 +68,6 @@ describe('SupabaseHomeSource', () => {
       updatedAt: '2026-10-26T02:55:00Z',
       games: 2,
       gameOfMonth: { name: 'ELDEN RING', hours: 5 },
-      partner: null,
-      platforms: [{ platform: 'pc', hours: 9 }],
     });
   });
 
@@ -105,9 +101,7 @@ describe('SupabaseHomeSource', () => {
     });
     const { card } = await source.load();
     expect(card.monthHours).toBe(0);
-    expect(card.platforms).toEqual([]);
     expect(card.gameOfMonth).toBeNull();
-    expect(isFirstAccess(card)).toBe(true);
     expect(card.stats.hours).toBeCloseTo(820 / 60);
   });
 
