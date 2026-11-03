@@ -3,16 +3,19 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(9);
+select plan(10);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-0000000000a1', 'ana.jogos@exemplo.test', '{"full_name": "Ana"}'),
-  ('00000000-0000-0000-0000-0000000000b2', 'bia.jogos@exemplo.test', '{"full_name": "Bia"}');
+  ('00000000-0000-0000-0000-0000000000b2', 'bia.jogos@exemplo.test', '{"full_name": "Bia"}'),
+  ('00000000-0000-0000-0000-0000000000c3', 'caio.jogos@exemplo.test', '{"full_name": "Caio"}');
 
 -- Ana conectou em setembro; Bia, em outubro (o mês anterior dela é estimativa).
 insert into public.steam_accounts (user_id, steam_id, visibility, baseline_minutes, connected_at) values
   ('00000000-0000-0000-0000-0000000000a1', '76561198000000021', 'public', 300, '2026-09-20 15:00-03'),
-  ('00000000-0000-0000-0000-0000000000b2', '76561198000000022', 'public', 90, '2026-10-05 15:00-03');
+  ('00000000-0000-0000-0000-0000000000b2', '76561198000000022', 'public', 90, '2026-10-05 15:00-03'),
+  -- Caio conectou no fim de setembro, mas a primeira leitura só veio em outubro.
+  ('00000000-0000-0000-0000-0000000000c3', '76561198000000023', 'public', 90, '2026-09-30 23:50-03');
 
 insert into public.steam_playtime_snapshots
   (user_id, app_id, game_name, taken_on, minutes_total, minutes_2weeks)
@@ -26,6 +29,9 @@ values
   ('00000000-0000-0000-0000-0000000000a1', 99999903, 'Jogo Novo', '2026-10-10', 50, 50),
   -- Ana, nunca jogado: não entra (CA9).
   ('00000000-0000-0000-0000-0000000000a1', 99999904, 'Nunca Abri', '2026-09-20', 0, 0),
+  -- Caio: primeira foto em outubro, um dia depois da conexão.
+  ('00000000-0000-0000-0000-0000000000c3', 730, 'Counter-Strike 2', '2026-10-01', 500, 90),
+  ('00000000-0000-0000-0000-0000000000c3', 730, 'Counter-Strike 2', '2026-10-31', 560, 60),
   -- Bia: primeira foto em outubro.
   ('00000000-0000-0000-0000-0000000000b2', 730, 'Counter-Strike 2', '2026-10-05', 500, 90),
   ('00000000-0000-0000-0000-0000000000b2', 730, 'Counter-Strike 2', '2026-10-30', 560, 20);
@@ -82,6 +88,15 @@ select results_eq(
   $$ select previous_month_minutes, previous_is_estimate from public.my_games('2026-11-03 15:00Z') $$,
   $$ values (150, true) $$,
   'mês anterior da conexão: soma as 2 semanas e avisa que é estimativa (CA11)'
+);
+
+-- Caio: conectou em setembro, mas outubro também parte das 2 semanas.
+select set_config('request.jwt.claims', '{"sub": "00000000-0000-0000-0000-0000000000c3", "role": "authenticated"}', true);
+
+select results_eq(
+  $$ select previous_month_minutes, previous_is_estimate from public.my_games('2026-11-03 15:00Z') $$,
+  $$ values (150, true) $$,
+  'primeira leitura no mês anterior é estimativa, mesmo com a conexão antes dele (CA11)'
 );
 
 reset role;
