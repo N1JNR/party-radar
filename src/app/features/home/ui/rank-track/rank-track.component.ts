@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  afterNextRender,
+  computed,
+  input,
+  viewChild,
+} from '@angular/core';
 
 import { PATENTES, PatenteProgress, remainingLabel } from '../../domain/patentes';
 import { formatHours } from '../../domain/player-card';
@@ -20,6 +28,8 @@ export class RankTrackComponent {
   /** Horas que contam para a patente. */
   readonly hours = input.required<number>();
 
+  private readonly scroller = viewChild.required<ElementRef<HTMLElement>>('scroller');
+
   protected readonly hoursLabel = computed(() => formatHours(this.hours()));
   protected readonly remaining = computed(() => remainingLabel(this.progress()));
   protected readonly ranks = computed(() => {
@@ -39,4 +49,17 @@ export class RankTrackComponent {
       };
     });
   });
+
+  constructor() {
+    // No celular a trilha rola no próprio espaço: abre com a patente atual no meio (CA12).
+    afterNextRender(() => this.showCurrent());
+  }
+
+  private showCurrent(): void {
+    const scroller = this.scroller().nativeElement;
+    const current = scroller.querySelector<HTMLElement>('.track__item--current');
+    if (current) {
+      scroller.scrollLeft = current.offsetLeft - (scroller.clientWidth - current.offsetWidth) / 2;
+    }
+  }
 }

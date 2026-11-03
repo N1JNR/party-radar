@@ -66,6 +66,16 @@ describe('RankTrackComponent', () => {
     expect(text).toContain('Falta 1h para Recruta da fila.');
   });
 
+  it('no celular, abre com a patente atual no meio (CA12)', () => {
+    vi.spyOn(HTMLElement.prototype, 'offsetLeft', 'get').mockReturnValue(500);
+    vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(100);
+    vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(300);
+    const element = render(61);
+    TestBed.tick();
+    expect(element.querySelector('.track__scroll')?.scrollLeft).toBe(400);
+    vi.restoreAllMocks();
+  });
+
   it('a trilha rola pelo teclado no celular (CA22, CA23)', () => {
     const scroll = render(0).querySelector('.track__scroll');
     expect(scroll?.getAttribute('tabindex')).toBe('0');

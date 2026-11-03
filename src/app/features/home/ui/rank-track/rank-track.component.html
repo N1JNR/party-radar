@@ -12,7 +12,7 @@
       Você chegou à última patente.
     }
   </p>
-  <div class="track__scroll" tabindex="0" role="group" aria-label="Trilha das patentes">
+  <div #scroller class="track__scroll" tabindex="0" role="group" aria-label="Trilha das patentes">
     <ol class="track__list">
       @for (rank of ranks(); track rank.id) {
         <li class="track__item" [class]="'track__item--' + rank.state">
