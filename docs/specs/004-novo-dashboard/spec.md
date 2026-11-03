@@ -72,7 +72,8 @@ blocos e na lista, mas não vira eixo do radar.
 - **CA3** — Dado o radar na tela, quando troco entre "Desde sempre" e "Este mês", então o radar, as
   porcentagens, as horas, os blocos e o título passam a ser os do período escolhido.
 - **CA4** — Dado a lista de tipos, quando toco num tipo, então o eixo dele acende no radar, os blocos
-  dos jogos daquele tipo ficam em destaque e os outros ficam apagados.
+  dos jogos daquele tipo ficam em destaque e os outros ficam apagados. Se algum jogo do tipo estiver
+  no bloco somado, esse bloco acende também.
 - **CA5** — Dado que nenhum tipo chega a 40% das horas do período, então o título é "Jogador
   versátil"; com um tipo em 40% ou mais, é o título da tabela. Empate: vale o tipo que vem primeiro
   na tabela.
@@ -92,13 +93,15 @@ blocos e na lista, mas não vira eixo do radar.
 - **CA10** — Dado os meus jogos, então os blocos mostram nome e horas dos 7 mais jogados do período,
   com área proporcional às horas, e os demais somados em "Outros N jogos".
 - **CA11** — Dado o Meu card, então vejo as horas do mês atual e as do mês anterior; se o mês anterior
-  foi o da conexão, ele vem marcado como estimativa; sem dados do mês anterior, só o mês atual.
+  foi o da primeira leitura da conta, ele vem marcado como estimativa; sem dados do mês anterior, só
+  o mês atual.
 
 **Patente e corrida**
 
 - **CA12** — Dado a minha patente, então a trilha mostra as 6 patentes em ordem, destaca a atual, mostra
   o progresso até a próxima e diz o que falta em texto, não só na cor. O texto deixa claro de onde
-  vêm as horas: a soma de todos os jogos na Steam desde que a pessoa conectou a conta.
+  vêm as horas: a soma de todos os jogos na Steam desde que a pessoa conectou a conta. No celular, a
+  trilha abre com a patente atual à vista.
 - **CA13 (vazio)** — Dado que ainda não existe a spec de amigos, então a "Corrida do squad" explica
   o que virá e mostra "Copiar convite", sem nenhum nome ou número de exemplo.
 
@@ -121,7 +124,7 @@ blocos e na lista, mas não vira eixo do radar.
 - **CA19 (vazio)** — Dado que conectei a Steam, ela foi lida e não joguei nada no período, então o
   radar aparece vazio com uma frase do primeiro acesso e "Este mês" continua disponível.
 - **CA20** — Dado que a minha Steam está privada ou ainda em leitura, então continuo vendo o aviso e o
-  "Tentar de novo" da spec 003, no lugar do radar.
+  "Tentar de novo" da spec 003, no lugar do radar, e sem "Compartilhar meu radar".
 - **CA21 (erro)** — Dado que os dados não puderam ser carregados, então vejo o erro da home com
   "Tentar de novo".
 
@@ -130,7 +133,7 @@ blocos e na lista, mas não vira eixo do radar.
 - **CA22** — Dado a tela em 390, 768 e 1280 px, então nada transborda na horizontal (a trilha pode
   rolar dentro do próprio espaço) e o radar continua legível.
 - **CA23 (acessibilidade)** — Dado um leitor de tela ou só o teclado, então tudo funciona: o radar
-  tem descrição em texto com as porcentagens, período e tipos são botões com o estado anunciado e o
+  tem descrição em texto com as porcentagens, inclusive as abaixo de 1%, período e tipos são botões com o estado anunciado e o
   foco é visível; nenhum dado depende só de cor.
 - **CA24 (movimento)** — Dado `prefers-reduced-motion`, então o radar aparece direto no estado final,
   sem varredura.

@@ -25,4 +25,11 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T12a — Ajustes da conferência: a imagem mostra as mesmas horas da tela; tipo com horas e abaixo de 1% mostra "<1%" (CA2, CA14)
 - [x] T12b — A trilha diz de onde vêm as horas, pedido do Jorge na conferência (CA12)
 - [x] T12 — Conferência com a conta do Jorge em 390, 768 e 1280 px, com prints (CA1–CA24)
+- [x] T13a — Achados da revisão: tipo no bloco somado acende esse bloco (CA4)
+- [x] T13b — Achados da revisão: a trilha abre com a patente atual à vista no celular (CA12)
+- [x] T13c — Achados da revisão: a estimativa do mês anterior segue a primeira leitura da conta (CA11)
+- [x] T13d — Achados da revisão: sem radar na tela, sem "Compartilhar meu radar" (CA20)
+- [x] T13e — Achados da revisão: leitor de tela anuncia os tipos abaixo de 1% (CA23)
+- [x] T13f — Achados da revisão: a imagem carrega todas as fontes que usa (CA14)
+- [x] T13g — Achados da revisão: sai o código sem uso depois do player-card
 - [ ] T13 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
