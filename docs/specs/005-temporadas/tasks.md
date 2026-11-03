@@ -20,7 +20,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T10 — Componente dos troféus (CA12, CA18)
 - [x] T11 — Página com a trilha, os troféus e os estados (CA1, CA12, CA15, CA16)
 - [x] T12 — Imagem da temporada e do troféu, com compartilhar (CA13)
-- [ ] T13 — `DESIGN.md` e `docs/plano.md` atualizados
+- [x] T13 — `DESIGN.md` e `docs/plano.md` atualizados
 
 **Fechamento**
 

@@ -15,8 +15,8 @@ documento "Party Radar + Gamer Wrapped — Plano" e as telas no canvas "Party Ra
 5. **Perfil** simples com as contas conectadas.
 
 **Entrou antes do previsto:** a home "Meu card", com patentes, radar do jogador e imagem de
-compartilhar (specs 002 e 004), e as temporadas (spec 005), para dar o que mostrar antes de haver
-amigos no app.
+compartilhar (specs 002 e 004), e as temporadas de 60 dias com troféus (spec 005), para dar o que
+mostrar antes de haver amigos no app.
 
 **Fora do MVP:** Wrapped (versão 2), troféus PSN, Xbox, app nas lojas (Capacitor).
 As leituras da Steam são gravadas desde a conexão para o Wrapped nascer com dados.

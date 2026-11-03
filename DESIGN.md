@@ -220,12 +220,16 @@ lateral (`po-menu`) fica fixo acima de 1200 px e vira gaveta até 1200 px. Prefi
 - **Botão de login do Discord:** conforme a seção 1.
 - **Radar do jogador:** SVG com sete eixos (Tiro, Esporte, Corrida, Simulação, Arcade, RPG e
   Aventura), sempre com o texto equivalente em `aria-label` e os tipos em botões com a porcentagem.
-- **Trilha da patente:** as patentes em linha, com a atual em destaque; no celular, rola dentro do
-  próprio espaço, sem transbordar a página.
+- **Trilha da patente:** as patentes em linha, com a atual em destaque, e a meta e o ritmo de cada
+  uma; o texto acima diz a temporada, os dias que faltam e de onde vêm as horas. No celular, rola
+  dentro do próprio espaço e abre com a patente atual à vista.
+- **Troféus:** lista simples com a temporada, a patente final, as horas e o jogo principal; a patente
+  usa a cor de destaque, sem ícone nem brilho, para o radar continuar sendo a peça principal.
 - **Blocos de jogos:** o tamanho do bloco segue as horas, o maior em cima; tocar num tipo acende os
   jogos dele.
-- **Imagem de compartilhar:** PNG de 1080 × 1350 desenhado em `<canvas>`, só com o @usuário e dados
-  de jogo. O canvas não lê variáveis de CSS: as cores repetem as do tema em `data/radar-image.ts`.
+- **Imagens de compartilhar (radar, temporada e troféu):** PNG de 1080 × 1350 desenhado em
+  `<canvas>`, só com o @usuário e dados de jogo. O canvas não lê variáveis de CSS: as cores repetem as
+  do tema em `data/canvas-image.ts`.
 - **Card do amigo no Radar:** avatar, nome, estado e jogo atual, ação "Chamar".
 - **Card "Chamado ativo":** quem chamou, jogo, horário e respostas.
 - **Card do Wrapped:** precisa renderizar no servidor (SSR) **sem PO UI**, para a prévia do link.
