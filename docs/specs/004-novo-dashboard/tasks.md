@@ -5,7 +5,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 **Banco e servidor**
 
-- [ ] T1 — Migration `game_categories` com RLS, lista inicial de jogos, pgTAP e tipos (CA6, CA8, CA25)
+- [x] T1 — Migration `game_categories` com RLS, lista inicial de jogos, pgTAP e tipos (CA6, CA8, CA25)
 - [ ] T2 — Função `my_games()`: jogos com tipo, total, mês e mês anterior, com pgTAP (CA9, CA11, CA25)
 - [ ] T3 — Leitura classifica jogos sem tipo pela loja da Steam, no máximo 20 por vez, testada sem rede (CA7, CA8)
 
