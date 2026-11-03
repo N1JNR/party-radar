@@ -3,7 +3,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(10);
+select plan(14);
 
 update public.season_config set first_day = '2026-09-01';
 
@@ -47,6 +47,28 @@ select is(
 );
 
 select is(private.close_seasons('2026-11-01 15:00Z'), 0, 'rodar de novo não duplica');
+
+-- Temporadas: 1 até 30/10, 2 até 29/12, 3 até 27/02, e a 4 em andamento em março.
+delete from public.season_trophies;
+
+-- O fechamento lê todas as contas: confere só a de Ana, que não depende do que há no banco.
+select lives_ok($$ select private.close_seasons('2027-03-10 15:00Z') $$, 'fecha em março');
+
+select is(
+  (select count(*)::integer from public.season_trophies
+   where user_id = '00000000-0000-0000-0000-0000000006a1'),
+  0,
+  'só as duas últimas temporadas terminadas são recalculadas'
+);
+
+select lives_ok($$ select private.close_seasons('2026-12-30 15:00Z') $$, 'fecha em dezembro');
+
+select is(
+  (select count(*)::integer from public.season_trophies
+   where user_id = '00000000-0000-0000-0000-0000000006a1'),
+  1,
+  'um agendamento que falhou se recupera na temporada seguinte (CA10)'
+);
 
 select is(
   (select count(*)::integer from cron.job where jobname = 'season-close-diario'),
