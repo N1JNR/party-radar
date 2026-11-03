@@ -1,0 +1,97 @@
+<section class="radar" aria-label="Radar do jogador">
+  <div class="radar__figure">
+    <svg class="radar__svg" viewBox="0 0 560 560" role="img" [attr.aria-label]="description()">
+      @for (ring of rings; track ring) {
+        <circle
+          class="radar__ring"
+          [class.radar__ring--outer]="$last"
+          [attr.cx]="center"
+          [attr.cy]="center"
+          [attr.r]="ring"
+        />
+      }
+      @for (axis of axes(); track axis.kind) {
+        <line
+          class="radar__axis"
+          [attr.x1]="center"
+          [attr.y1]="center"
+          [attr.x2]="axis.x"
+          [attr.y2]="axis.y"
+        />
+      }
+      @if (!isEmpty()) {
+        <polygon class="radar__shape" [attr.points]="polygon()" />
+        @for (axis of axes(); track axis.kind) {
+          <circle
+            class="radar__dot"
+            [class.radar__dot--selected]="axis.kind === selectedKind()"
+            [attr.cx]="axis.px"
+            [attr.cy]="axis.py"
+            [attr.r]="axis.kind === selectedKind() ? 8 : 5"
+          />
+        }
+      }
+      @for (axis of axes(); track axis.kind) {
+        <text
+          class="radar__label"
+          [class.radar__label--selected]="axis.kind === selectedKind()"
+          [attr.x]="axis.lx"
+          [attr.y]="axis.ly"
+        >
+          {{ axis.label }}
+        </text>
+      }
+      <g class="radar__sweep">
+        <line class="radar__beam" x1="280" y1="280" x2="280" y2="80" />
+        <path class="radar__cone" d="M280 280 L280 80 A200 200 0 0 0 225 88 Z" />
+      </g>
+    </svg>
+  </div>
+
+  <div class="radar__side">
+    @if (title(); as playerTitle) {
+      <h2 class="radar__title">{{ playerTitle }}</h2>
+    } @else {
+      <h2 class="radar__title">Seu radar</h2>
+    }
+
+    <div class="radar__periods" role="group" aria-label="Período">
+      <button
+        type="button"
+        class="radar__period"
+        [attr.aria-pressed]="period() === 'all'"
+        (click)="setPeriod('all')"
+      >
+        Desde sempre
+      </button>
+      <button
+        type="button"
+        class="radar__period"
+        [attr.aria-pressed]="period() === 'month'"
+        (click)="setPeriod('month')"
+      >
+        Este mês
+      </button>
+    </div>
+
+    @if (isEmpty()) {
+      <p class="radar__empty">{{ emptyPhrase() }}</p>
+    } @else {
+      <p class="radar__caption">{{ caption() }}</p>
+      <div class="radar__kinds" role="group" aria-label="Tipo de jogo">
+        @for (share of visibleShares(); track share.kind) {
+          <button
+            type="button"
+            class="radar__kind"
+            [attr.aria-pressed]="share.kind === selectedKind()"
+            (click)="pick(share.kind)"
+          >
+            {{ share.label }} {{ share.percent }}%
+          </button>
+        }
+      </div>
+    }
+
+    <ng-content />
+  </div>
+</section>

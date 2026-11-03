@@ -1,0 +1,147 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.radar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+  align-items: flex-start;
+}
+.radar__figure {
+  flex: 1 1 320px;
+  min-width: 0;
+  max-width: 480px;
+  margin-inline: auto;
+}
+.radar__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.radar__ring,
+.radar__axis {
+  fill: none;
+  stroke: var(--color-neutral-light-30);
+}
+.radar__ring--outer {
+  fill: var(--color-neutral-light-05);
+}
+.radar__shape {
+  fill: var(--color-brand-01-base);
+  fill-opacity: 0.4;
+  stroke: var(--color-brand-01-light);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  transition: fill-opacity 180ms ease-out;
+}
+.radar__dot {
+  fill: var(--color-brand-01-light);
+}
+.radar__dot--selected {
+  fill: var(--pr-presence-playing);
+}
+.radar__label {
+  fill: var(--pr-text-muted);
+  font-size: 20px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+.radar__label--selected {
+  fill: var(--pr-text);
+}
+.radar__beam {
+  stroke: var(--pr-presence-playing);
+  stroke-width: 2;
+}
+.radar__cone {
+  fill: var(--pr-presence-playing);
+  fill-opacity: 0.18;
+}
+// A varredura passa uma vez ao abrir e some (DESIGN.md, seção 2, Movimento).
+.radar__sweep {
+  transform-origin: 280px 280px;
+  animation: radar-sweep 2800ms cubic-bezier(0.3, 0.1, 0.3, 1) 1 both;
+}
+@keyframes radar-sweep {
+  from {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  85% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .radar__sweep {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+.radar__side {
+  flex: 999 1 360px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+.radar__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+}
+.radar__periods,
+.radar__kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+.radar__period,
+.radar__kind {
+  min-height: 44px;
+  padding: 0 var(--spacing-sm);
+  border: var(--border-width-sm) solid var(--color-neutral-light-30);
+  background: transparent;
+  color: var(--pr-text);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
+}
+.radar__period {
+  border-radius: var(--border-radius-pill);
+}
+.radar__kind {
+  border-radius: var(--border-radius-md);
+}
+.radar__period:hover,
+.radar__kind:hover {
+  background: var(--color-neutral-light-20);
+}
+.radar__period[aria-pressed='true'],
+.radar__kind[aria-pressed='true'] {
+  border-color: var(--color-brand-01-light);
+  background: var(--color-neutral-light-20);
+  font-weight: 700;
+}
+.radar__period:focus-visible,
+.radar__kind:focus-visible {
+  outline: var(--border-width-md) solid var(--color-action-focus);
+  outline-offset: var(--border-width-md);
+}
+.radar__caption,
+.radar__empty {
+  margin: 0;
+  color: var(--pr-text-muted);
+}
+.radar__empty {
+  font-style: italic;
+}
