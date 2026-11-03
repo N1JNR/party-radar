@@ -72,7 +72,7 @@ describe('GameBlocksComponent', () => {
     expect(texts(element, '.block .pr-sr-only')).toEqual([
       'Tipo: Tiro',
       'Tipo: Tiro',
-      'Tipo: Esporte, em destaque',
+      'Tipo: Esporte. Em destaque',
       'Tipos: RPG, Outros',
     ]);
   });
