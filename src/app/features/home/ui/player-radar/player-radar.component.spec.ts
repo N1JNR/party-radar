@@ -59,7 +59,7 @@ describe('PlayerRadarComponent', () => {
   it('descreve o radar para leitor de tela (CA23)', () => {
     render(library);
     expect(element.querySelector('svg')?.getAttribute('aria-label')).toBe(
-      'Radar do jogador: 82% Tiro, 14% Esporte, 3% Aventura, 1% RPG.',
+      'Radar do jogador: 82% Tiro, 14% Esporte, 3% Aventura, 1% RPG, <1% Outros.',
     );
     expect(element.querySelector('svg')?.getAttribute('role')).toBe('img');
   });

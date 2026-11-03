@@ -194,9 +194,9 @@ export function radarPolygon(axes: readonly RadarAxis[]): string {
 /** Descrição do radar para leitor de tela (CA23). */
 export function radarDescription(shares: readonly KindShare[]): string {
   const parts = shares
-    .filter((share) => share.percent > 0)
-    .sort((a, b) => b.percent - a.percent)
-    .map((share) => `${share.percent}% ${share.label}`);
+    .filter((share) => share.hours > 0)
+    .sort((a, b) => b.hours - a.hours)
+    .map((share) => `${percentLabel(share)} ${share.label}`);
   return parts.length > 0
     ? `Radar do jogador: ${parts.join(', ')}.`
     : 'Radar do jogador sem horas.';
@@ -207,8 +207,8 @@ export interface GameBlock {
   id: string;
   name: string;
   hours: number;
-  /** Tipo do jogo; o bloco somado não tem tipo e nunca acende. */
-  kind: GameKind | null;
+  /** Tipos dos jogos do bloco: um só, ou vários no bloco somado (CA4). */
+  kinds: readonly GameKind[];
 }
 
 /** Jogos com bloco próprio (CA10). */
@@ -221,7 +221,7 @@ export function gameBlocks(games: readonly PlayedGame[], period: RadarPeriod): G
     id: String(game.appId),
     name: game.name,
     hours: hoursIn(game, period),
-    kind: game.kind,
+    kinds: [game.kind],
   }));
   const rest = played.slice(MAX_BLOCKS);
   if (rest.length > 0) {
@@ -229,7 +229,7 @@ export function gameBlocks(games: readonly PlayedGame[], period: RadarPeriod): G
       id: 'outros',
       name: rest.length === 1 ? 'Outro jogo' : `Outros ${rest.length} jogos`,
       hours: rest.reduce((sum, game) => sum + hoursIn(game, period), 0),
-      kind: null,
+      kinds: [...new Set(rest.map((game) => game.kind))],
     });
   }
   return blocks;

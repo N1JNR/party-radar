@@ -4,10 +4,10 @@ import { GameBlock, GameKind } from '../../domain/player-radar';
 import { GameBlocksComponent } from './game-blocks.component';
 
 const blocks: GameBlock[] = [
-  { id: '1', name: 'ARC Raiders', hours: 313, kind: 'tiro' },
-  { id: '2', name: 'Call of Duty', hours: 304, kind: 'tiro' },
-  { id: '3', name: 'EA SPORTS FC 26', hours: 109, kind: 'esporte' },
-  { id: 'outros', name: 'Outros 4 jogos', hours: 13, kind: null },
+  { id: '1', name: 'ARC Raiders', hours: 313, kinds: ['tiro'] },
+  { id: '2', name: 'Call of Duty', hours: 304, kinds: ['tiro'] },
+  { id: '3', name: 'EA SPORTS FC 26', hours: 109, kinds: ['esporte'] },
+  { id: 'outros', name: 'Outros 4 jogos', hours: 13, kinds: ['rpg', 'outros'] },
 ];
 
 function render(list: GameBlock[], selected: GameKind | null = null) {
@@ -57,14 +57,19 @@ describe('GameBlocksComponent', () => {
     expect(texts(element, '.block--tiro .block__name')).toEqual(['ARC Raiders', 'Call of Duty']);
   });
 
-  it('o bloco somado nunca acende', () => {
+  it('o bloco somado acende quando tem um jogo do tipo (CA4)', () => {
     const element = render(blocks, 'outros');
-    expect(element.querySelector('.block--outros')).toBeNull();
+    expect(texts(element, '.block--outros .block__name')).toEqual(['Outros 4 jogos']);
+  });
+
+  it('o bloco somado fica apagado sem jogo do tipo (CA4)', () => {
+    const element = render(blocks, 'corrida');
+    expect(element.querySelector('.block--lit')).toBeNull();
   });
 
   it('nome longo cabe no bloco e aparece completo na dica', () => {
     const name = 'SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated';
-    const element = render([{ id: '1', name, hours: 8, kind: 'aventura' }]);
+    const element = render([{ id: '1', name, hours: 8, kinds: ['aventura'] }]);
     expect(element.querySelector('.block')?.getAttribute('title')).toBe(name);
   });
 

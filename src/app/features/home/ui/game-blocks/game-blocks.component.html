@@ -5,7 +5,7 @@
         class="block"
         [class.block--big]="first"
         [class.block--lit]="block.lit"
-        [class]="block.lit ? 'block--' + block.kind : ''"
+        [class]="block.lit ? 'block--' + selected() : ''"
         [style.flex-grow]="block.hours"
         [title]="block.name"
       >

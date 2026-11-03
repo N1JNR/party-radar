@@ -18,12 +18,17 @@ export class GameBlocksComponent {
   /** Tipo aceso; com `null`, nenhum. */
   readonly selected = input<GameKind | null>(null);
 
+  private isLit(block: GameBlock): boolean {
+    const selected = this.selected();
+    return selected !== null && block.kinds.includes(selected);
+  }
+
   protected readonly rows = computed(() =>
     blockRows(this.blocks()).map((row) =>
       row.map((block) => ({
         ...block,
         label: formatHours(block.hours),
-        lit: block.kind !== null && block.kind === this.selected(),
+        lit: this.isLit(block),
       })),
     ),
   );

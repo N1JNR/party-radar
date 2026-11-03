@@ -242,7 +242,14 @@ describe('radarAxes e radarPolygon', () => {
 describe('radarDescription', () => {
   it('descreve as porcentagens para o leitor de tela (CA23)', () => {
     expect(radarDescription(kindShares(library, 'all'))).toBe(
-      'Radar do jogador: 82% Tiro, 14% Esporte, 3% Aventura, 1% RPG.',
+      'Radar do jogador: 82% Tiro, 14% Esporte, 3% Aventura, 1% RPG, <1% Outros.',
+    );
+  });
+
+  it('anuncia os tipos abaixo de 1%, como a tela (CA23)', () => {
+    const games = [game(1, 'tiro', 500), game(2, 'outros', 1)];
+    expect(radarDescription(kindShares(games, 'all'))).toBe(
+      'Radar do jogador: 100% Tiro, <1% Outros.',
     );
   });
 
@@ -255,8 +262,13 @@ describe('gameBlocks e blockRows', () => {
   it('os 7 mais jogados e o resto somado (CA10)', () => {
     const blocks = gameBlocks(library, 'all');
     expect(blocks).toHaveLength(MAX_BLOCKS + 1);
-    expect(blocks[0]).toEqual({ id: '1', name: 'Jogo 1', hours: 313, kind: 'tiro' });
-    expect(blocks.at(-1)).toEqual({ id: 'outros', name: 'Outros 4 jogos', hours: 13, kind: null });
+    expect(blocks[0]).toEqual({ id: '1', name: 'Jogo 1', hours: 313, kinds: ['tiro'] });
+    expect(blocks.at(-1)).toEqual({
+      id: 'outros',
+      name: 'Outros 4 jogos',
+      hours: 13,
+      kinds: ['tiro', 'outros'],
+    });
   });
 
   it('um jogo a mais fica como "Outro jogo"', () => {
@@ -266,7 +278,7 @@ describe('gameBlocks e blockRows', () => {
 
   it('até 7 jogos, sem bloco somado', () => {
     expect(gameBlocks(library, 'month')).toEqual([
-      { id: '1', name: 'Jogo 1', hours: 15, kind: 'tiro' },
+      { id: '1', name: 'Jogo 1', hours: 15, kinds: ['tiro'] },
     ]);
   });
 
