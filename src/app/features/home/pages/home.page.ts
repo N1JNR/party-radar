@@ -10,8 +10,12 @@ import { PoButtonModule, PoNotificationService } from '@po-ui/ng-components';
 
 import { ClipboardService } from '../../../core/platform/clipboard.service';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
+import { ShareService } from '../../../core/platform/share.service';
 import { STILL_PRIVATE_MESSAGE, steamLoginUrl } from '../../steam/domain/steam-connect';
+import { HomeData } from '../data/home.source';
 import { HomeStore } from '../data/home.store';
+import { RadarImageService } from '../data/radar-image';
+import { radarSummary } from '../domain/player-radar';
 import { MonthSummaryComponent } from '../ui/month-summary/month-summary.component';
 import { PartnershipQuestionComponent } from '../ui/partnership-question/partnership-question.component';
 import { PlayerHeaderComponent } from '../ui/player-header/player-header.component';
@@ -51,7 +55,10 @@ export class HomePage {
   private readonly clipboard = inject(ClipboardService);
   private readonly navigation = inject(ExternalNavigation);
   private readonly notification = inject(PoNotificationService);
+  private readonly radarImage = inject(RadarImageService);
+  private readonly sharer = inject(ShareService);
   protected readonly now = signal(new Date());
+  protected readonly sharing = signal(false);
 
   constructor() {
     void this.store.load();
@@ -72,6 +79,26 @@ export class HomePage {
   protected reload(): void {
     this.now.set(new Date());
     void this.store.load();
+  }
+
+  /** "Compartilhar meu radar": gera a imagem e entrega ao aparelho ou baixa (spec 004, CA14, CA16). */
+  protected async shareRadar(data: HomeData): Promise<void> {
+    this.sharing.set(true);
+    try {
+      const image = await this.radarImage.create(radarSummary(data.card.username, data.games));
+      const result = await this.sharer.shareImage(
+        image,
+        'meu-radar-party-radar.png',
+        'Meu radar no Party Radar',
+      );
+      if (result === 'downloaded') {
+        this.notification.success('Imagem baixada.');
+      }
+    } catch {
+      this.notification.error('Não foi possível gerar a imagem. Tente de novo.');
+    } finally {
+      this.sharing.set(false);
+    }
   }
 
   /** Telas que são entregas próprias (CA13). */

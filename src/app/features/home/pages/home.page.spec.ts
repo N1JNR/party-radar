@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PoNotificationService } from '@po-ui/ng-components';
 
 import { ClipboardService } from '../../../core/platform/clipboard.service';
+import { ShareService } from '../../../core/platform/share.service';
+import { RadarImageService } from '../data/radar-image';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import {
   NOT_CONNECTED,
@@ -115,6 +117,8 @@ describe('HomePage', () => {
   let copy: ReturnType<typeof vi.fn>;
 
   let go: ReturnType<typeof vi.fn>;
+  let createImage: ReturnType<typeof vi.fn>;
+  let shareImage: ReturnType<typeof vi.fn>;
 
   async function render(
     source: Partial<HomeDataSource> = {},
@@ -126,10 +130,14 @@ describe('HomePage', () => {
     error = vi.fn();
     go = vi.fn();
     copy = vi.fn(() => Promise.resolve(copied));
+    createImage = vi.fn(() => Promise.resolve(new Blob(['png'], { type: 'image/png' })));
+    shareImage = vi.fn(() => Promise.resolve('shared'));
     TestBed.configureTestingModule({
       providers: [
         { provide: PoNotificationService, useValue: { information, success, error } },
         { provide: ClipboardService, useValue: { copy } },
+        { provide: RadarImageService, useValue: { create: createImage } },
+        { provide: ShareService, useValue: { shareImage } },
         {
           provide: ExternalNavigation,
           useValue: { origin: () => 'http://localhost:4200', go },
@@ -241,8 +249,49 @@ describe('HomePage', () => {
     expect(element.querySelector('app-month-summary')?.textContent).toContain('estimativa');
   });
 
-  it('com jogos, "Compartilhar meu radar" aparece (spec 004, CA14)', async () => {
+  it('"Compartilhar meu radar" gera a imagem e entrega ao aparelho (spec 004, CA14, CA15)', async () => {
     await render();
+    button('Compartilhar meu radar')?.click();
+    await settle();
+    expect(createImage).toHaveBeenCalledTimes(1);
+    expect(createImage.mock.calls[0][0]).toMatchObject({
+      username: 'ana',
+      title: 'Viciado em side quest',
+      top: { name: 'Elden Ring' },
+    });
+    expect(shareImage).toHaveBeenCalledWith(
+      expect.any(Blob),
+      'meu-radar-party-radar.png',
+      'Meu radar no Party Radar',
+    );
+    expect(success).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it('avisa quando a imagem foi baixada (spec 004, CA14)', async () => {
+    await render();
+    shareImage.mockResolvedValue('downloaded');
+    button('Compartilhar meu radar')?.click();
+    await settle();
+    expect(success).toHaveBeenCalledWith('Imagem baixada.');
+  });
+
+  it('se a pessoa desistir, não avisa nada', async () => {
+    await render();
+    shareImage.mockResolvedValue('cancelled');
+    button('Compartilhar meu radar')?.click();
+    await settle();
+    expect(success).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it('se a imagem não puder ser gerada, avisa e continua na tela (spec 004, CA16)', async () => {
+    await render();
+    createImage.mockRejectedValue(new Error('canvas'));
+    button('Compartilhar meu radar')?.click();
+    await settle();
+    expect(error).toHaveBeenCalledWith('Não foi possível gerar a imagem. Tente de novo.');
+    expect(shareImage).not.toHaveBeenCalled();
     expect(button('Compartilhar meu radar')).toBeDefined();
   });
 

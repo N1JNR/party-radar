@@ -18,6 +18,7 @@ import {
   radarAxes,
   radarDescription,
   radarPolygon,
+  radarSummary,
   topGame,
   totalHours,
 } from './player-radar';
@@ -49,6 +50,36 @@ const library: PlayedGame[] = [
 
 const percentOf = (shares: readonly KindShare[], kind: GameKind) =>
   shares.find((share) => share.kind === kind)?.percent;
+
+describe('radarSummary', () => {
+  const base: PlayedGame = {
+    appId: 1,
+    name: 'ARC Raiders',
+    kind: 'tiro',
+    totalHours: 300,
+    monthHours: 10,
+    previousMonthHours: 20,
+  };
+
+  it('resume o título, as horas, os jogos e o jogo principal (CA14)', () => {
+    const summary = radarSummary('ana', [
+      { ...base, appId: 2, name: 'EA FC', kind: 'esporte', totalHours: 100 },
+      base,
+    ]);
+    expect(summary).toMatchObject({
+      username: 'ana',
+      title: 'Atirador nato',
+      hours: 400,
+      games: 2,
+      top: { name: 'ARC Raiders' },
+    });
+    expect(summary.axes).toHaveLength(RADAR_AXES.length);
+  });
+
+  it('sem jogos, sem título nem jogo principal', () => {
+    expect(radarSummary('ana', [])).toMatchObject({ title: null, hours: 0, games: 0, top: null });
+  });
+});
 
 describe('gamesIn, totalHours e gameCount', () => {
   it('só os jogos com tempo no período, do mais jogado ao menos (CA9)', () => {

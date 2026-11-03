@@ -26,7 +26,8 @@
             [card]="data.card"
             [now]="now()"
             [canShare]="store.hasGames()"
-            (share)="soon('Compartilhar meu radar')"
+            [sharing]="sharing()"
+            (share)="shareRadar(data)"
           />
 
           @if (store.showStrengthen()) {

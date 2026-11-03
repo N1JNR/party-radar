@@ -260,3 +260,25 @@ export function monthLabel(date: Date, offset = 0): string {
 export function topGame(games: readonly PlayedGame[]): PlayedGame | null {
   return gamesIn(games, 'all')[0] ?? null;
 }
+
+/** O que vai na imagem de compartilhar (CA14, CA15): só o @usuário e os dados de jogo. */
+export interface RadarSummary {
+  username: string;
+  title: string | null;
+  hours: number;
+  games: number;
+  top: PlayedGame | null;
+  axes: RadarAxis[];
+}
+
+export function radarSummary(username: string, games: readonly PlayedGame[]): RadarSummary {
+  const shares = kindShares(games, 'all');
+  return {
+    username,
+    title: playerTitle(shares),
+    hours: totalHours(games, 'all'),
+    games: gameCount(games, 'all'),
+    top: topGame(games),
+    axes: radarAxes(shares),
+  };
+}
