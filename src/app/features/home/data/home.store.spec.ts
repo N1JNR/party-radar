@@ -404,6 +404,23 @@ describe('HomeStore', () => {
   });
 
   describe('refreshCard (spec 003, CA7, CA10, CA19)', () => {
+    it('atualiza a temporada e os troféus, sem recarregar a página (spec 005, CA4, CA12)', async () => {
+      const load = vi.fn(() => Promise.resolve(homeData()));
+      const store = setup({ load });
+      await store.load();
+      expect(store.progress()?.current.id).toBe('veterano');
+      load.mockResolvedValue(
+        homeData({
+          season: { number: 2, daysLeft: 3, hours: 120, topGame: 'CS2' },
+          trophies: [{ season: 1, rankId: 'recruta', hours: 6, topGame: null }],
+        }),
+      );
+      await store.refreshCard();
+      expect(store.season()?.number).toBe(2);
+      expect(store.progress()?.current.id).toBe('lenda');
+      expect(store.trophies().map((trophy) => trophy.season)).toEqual([1]);
+    });
+
     it('relê só o card, sem o esqueleto de carregando', async () => {
       const load = vi
         .fn<HomeDataSource['load']>()
