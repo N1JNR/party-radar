@@ -11,7 +11,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 **Front**
 
-- [ ] T4 — Domínio do radar: porcentagens, pontos, título e blocos, 100% testado (CA2, CA3, CA5, CA9, CA10)
+- [x] T4 — Domínio do radar: porcentagens, pontos, título e blocos, 100% testado (CA2, CA3, CA5, CA9, CA10)
 - [ ] T5 — Fontes da home trazem jogos e mês anterior (CA9, CA11)
 - [ ] T6 — Componente da trilha da patente (CA12, CA23)
 - [ ] T7 — Componente do radar: SVG, varredura, período e tipos (CA1, CA3, CA4, CA23, CA24)
