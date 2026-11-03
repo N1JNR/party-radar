@@ -25,7 +25,12 @@ const COLORS = {
 
 const HEADING = '"Chakra Petch", sans-serif';
 const BODY = 'Manrope, sans-serif';
-const FONTS = ['700 112px "Chakra Petch"', '600 40px "Chakra Petch"', '600 32px Manrope'];
+const FONTS = [
+  '700 112px "Chakra Petch"',
+  '600 40px "Chakra Petch"',
+  '600 32px Manrope',
+  '500 28px Manrope',
+];
 
 const NO_TITLE = 'Seu radar';
 const MIN_TITLE_SIZE = 56;

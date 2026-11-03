@@ -76,7 +76,14 @@ describe('RadarImageService', () => {
     await expect(service.create(summary)).resolves.toBe(png);
 
     expect([canvas.width, canvas.height]).toEqual([1080, 1350]);
-    expect(load).toHaveBeenCalled();
+    for (const font of [
+      '700 112px "Chakra Petch"',
+      '600 40px "Chakra Petch"',
+      '600 32px Manrope',
+      '500 28px Manrope',
+    ]) {
+      expect(load).toHaveBeenCalledWith(font);
+    }
     expect(texts.map((entry) => entry.text)).toEqual([
       '@ana no Party Radar',
       'Atirador nato',
