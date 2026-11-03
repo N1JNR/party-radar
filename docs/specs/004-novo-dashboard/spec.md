@@ -134,7 +134,8 @@ blocos e na lista, mas não vira eixo do radar.
   rolar dentro do próprio espaço) e o radar continua legível.
 - **CA23 (acessibilidade)** — Dado um leitor de tela ou só o teclado, então tudo funciona: o radar
   tem descrição em texto com as porcentagens, inclusive as abaixo de 1%, período e tipos são botões com o estado anunciado e o
-  foco é visível; nenhum dado depende só de cor.
+  foco é visível; nenhum dado depende só de cor: cada bloco diz em texto o tipo do jogo e se está em
+  destaque.
 - **CA24 (movimento)** — Dado `prefers-reduced-motion`, então o radar aparece direto no estado final,
   sem varredura.
 - **CA25 (segurança)** — Dado dois usuários, então nenhum lê os jogos e horas do outro por este

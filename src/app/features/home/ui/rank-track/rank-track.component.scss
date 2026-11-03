@@ -24,6 +24,10 @@
   overflow-x: auto;
   padding-bottom: var(--spacing-xs);
 }
+.track__scroll:focus-visible {
+  outline: var(--border-width-md) solid var(--color-action-focus);
+  outline-offset: var(--border-width-md);
+}
 .track__list {
   display: grid;
   grid-template-columns: repeat(6, minmax(112px, 1fr));

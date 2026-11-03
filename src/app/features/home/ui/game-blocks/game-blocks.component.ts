@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 import { formatHours } from '../../domain/player-card';
-import { GameBlock, GameKind, blockRows } from '../../domain/player-radar';
+import { GameBlock, GameKind, blockKindsLabel, blockRows } from '../../domain/player-radar';
 
 /**
  * Blocos de jogos (spec 004, CA4 e CA10): cada bloco tem o tamanho das horas do jogo, e os do tipo
@@ -29,6 +29,7 @@ export class GameBlocksComponent {
         ...block,
         label: formatHours(block.hours),
         lit: this.isLit(block),
+        kindsLabel: blockKindsLabel(block),
       })),
     ),
   );

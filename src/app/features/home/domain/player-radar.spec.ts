@@ -7,6 +7,7 @@ import {
   RADAR_CENTER,
   RADAR_RADIUS,
   VERSATILE_TITLE,
+  blockKindsLabel,
   blockRows,
   gameBlocks,
   gameCount,
@@ -255,6 +256,20 @@ describe('radarDescription', () => {
 
   it('sem horas', () => {
     expect(radarDescription(kindShares([], 'all'))).toBe('Radar do jogador sem horas.');
+  });
+});
+
+describe('blockKindsLabel', () => {
+  it('diz o tipo do jogo em texto (CA23)', () => {
+    expect(blockKindsLabel({ id: '1', name: 'Jogo', hours: 1, kinds: ['simulacao'] })).toBe(
+      'Tipo: Simulação',
+    );
+  });
+
+  it('no bloco somado, diz todos os tipos (CA23)', () => {
+    expect(
+      blockKindsLabel({ id: 'outros', name: 'Outros', hours: 1, kinds: ['rpg', 'outros'] }),
+    ).toBe('Tipos: RPG, Outros');
   });
 });
 

@@ -33,3 +33,16 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T13f — Achados da revisão: a imagem carrega todas as fontes que usa (CA14)
 - [x] T13g — Achados da revisão: sai o código sem uso depois do player-card
 - [x] T13 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
+
+**Conferência do CA23 e do CA24, depois do merge**
+
+- [x] T14 — Cada bloco diz em texto o tipo do jogo e se está em destaque (CA23)
+- [x] T15 — A trilha usa o anel de foco do tema (CA23)
+
+Resultado da conferência, com a conta do Jorge:
+
+- Teclado: Tab segue a ordem da leitura, sem armadilha de foco; Enter e Espaço acionam tipos, período
+  e "Compartilhar meu radar"; as setas rolam a trilha em 390 px.
+- Leitor de tela: conferida a árvore de acessibilidade do navegador. Nenhum leitor real foi usado.
+- Movimento reduzido: ligando a regra do CSS no navegador, a varredura some e a forma do radar fica.
+  A preferência real do sistema não foi ligada.

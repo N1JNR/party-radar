@@ -67,6 +67,16 @@ describe('GameBlocksComponent', () => {
     expect(element.querySelector('.block--lit')).toBeNull();
   });
 
+  it('diz em texto o tipo e o destaque, sem depender da cor (CA23)', () => {
+    const element = render(blocks, 'esporte');
+    expect(texts(element, '.block .pr-sr-only')).toEqual([
+      'Tipo: Tiro',
+      'Tipo: Tiro',
+      'Tipo: Esporte, em destaque',
+      'Tipos: RPG, Outros',
+    ]);
+  });
+
   it('nome longo cabe no bloco e aparece completo na dica', () => {
     const name = 'SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated';
     const element = render([{ id: '1', name, hours: 8, kinds: ['aventura'] }]);

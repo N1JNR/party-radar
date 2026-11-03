@@ -235,6 +235,12 @@ export function gameBlocks(games: readonly PlayedGame[], period: RadarPeriod): G
   return blocks;
 }
 
+/** Tipo do bloco em texto, para não depender da cor (CA23): "Tipo: Tiro", "Tipos: Tiro, Outros". */
+export function blockKindsLabel(block: GameBlock): string {
+  const labels = block.kinds.map((kind) => KIND_LABELS[kind]).join(', ');
+  return `${block.kinds.length === 1 ? 'Tipo' : 'Tipos'}: ${labels}`;
+}
+
 /** Blocos em duas linhas: os 2 maiores em cima e o resto embaixo (CA10). */
 export function blockRows(blocks: readonly GameBlock[]): GameBlock[][] {
   return [blocks.slice(0, 2), blocks.slice(2)].filter((row) => row.length > 0);
