@@ -18,7 +18,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T8 — Componente dos blocos de jogos (CA4, CA10)
 - [x] T9 — Página no layout novo, com mês, corrida do squad e todos os estados; sai o player-card (CA11, CA13, CA17–CA21)
 - [x] T10 — Compartilhar: imagem no canvas e serviço de compartilhar (CA14–CA16)
-- [ ] T11 — `DESIGN.md` e `docs/plano.md` atualizados
+- [x] T11 — `DESIGN.md` e `docs/plano.md` atualizados
 
 **Fechamento**
 

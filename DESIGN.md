@@ -27,7 +27,9 @@ loja gamer cheia de neon.
 
 **O elemento memorável é o anel de radar**: um anel em volta do avatar, na cor do estado
 de presença, que emite **uma onda** (como o eco de um radar) quando um amigo começa a jogar.
-Toda a ousadia visual fica nele; o resto da interface é calmo e disciplinado.
+Na home, o elemento memorável é o **radar do jogador**: a forma que mostra o tipo de jogo de cada
+um, que também vira a imagem de compartilhar. Toda a ousadia visual fica nessas duas peças; o resto
+da interface é calmo e disciplinado.
 
 Não use o ponto colorido no canto do avatar: ele é a marca registrada do Discord, e as
 [diretrizes do Discord](https://discord.com/branding) proíbem copiar seus ícones de presença.
@@ -189,10 +191,11 @@ lateral (`po-menu`) fica fixo acima de 1200 px e vira gaveta até 1200 px. Prefi
 ### Movimento
 
 - Duração curta (150–250 ms) e só como resposta a uma ação: abrir, expandir, confirmar.
-- Movimento espontâneo existe em dois momentos, ambos de uma vez só: a **varredura** do radar da
-  tela de login (uma volta ao abrir, acendendo os amigos quando passa por eles) e a **onda
-  única** do anel de radar quando um amigo passa a jogar. Nada de animações de entrada em cada card.
-- Com `prefers-reduced-motion: reduce`, os dois mostram direto o estado final, sem animação.
+- Movimento espontâneo existe em três momentos, todos de uma vez só: a **varredura** do radar da
+  tela de login (uma volta ao abrir, acendendo os amigos quando passa por eles), a **varredura** do
+  radar do jogador (uma volta ao abrir a home) e a **onda única** do anel de radar quando um amigo
+  passa a jogar. Nada de animações de entrada em cada card.
+- Com `prefers-reduced-motion: reduce`, os três mostram direto o estado final, sem animação.
 
 ## 3. Componentes de interface
 
@@ -215,6 +218,14 @@ lateral (`po-menu`) fica fixo acima de 1200 px e vira gaveta até 1200 px. Prefi
 - **Anel de radar:** anel de 2–3 px em volta do avatar, na cor do estado, sempre com o texto
   do estado ao lado ("Jogando Valorant"). Offline = sem anel.
 - **Botão de login do Discord:** conforme a seção 1.
+- **Radar do jogador:** SVG com sete eixos (Tiro, Esporte, Corrida, Simulação, Arcade, RPG e
+  Aventura), sempre com o texto equivalente em `aria-label` e os tipos em botões com a porcentagem.
+- **Trilha da patente:** as patentes em linha, com a atual em destaque; no celular, rola dentro do
+  próprio espaço, sem transbordar a página.
+- **Blocos de jogos:** o tamanho do bloco segue as horas, o maior em cima; tocar num tipo acende os
+  jogos dele.
+- **Imagem de compartilhar:** PNG de 1080 × 1350 desenhado em `<canvas>`, só com o @usuário e dados
+  de jogo. O canvas não lê variáveis de CSS: as cores repetem as do tema em `data/radar-image.ts`.
 - **Card do amigo no Radar:** avatar, nome, estado e jogo atual, ação "Chamar".
 - **Card "Chamado ativo":** quem chamou, jogo, horário e respostas.
 - **Card do Wrapped:** precisa renderizar no servidor (SSR) **sem PO UI**, para a prévia do link.
