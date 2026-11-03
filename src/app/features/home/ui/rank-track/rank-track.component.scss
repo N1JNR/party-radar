@@ -18,6 +18,10 @@
 .track__line {
   display: block;
 }
+.track__share {
+  display: block;
+  margin-bottom: var(--spacing-md);
+}
 // A trilha rola no próprio espaço no celular; a página nunca rola na horizontal (CA22).
 .track__scroll {
   position: relative;

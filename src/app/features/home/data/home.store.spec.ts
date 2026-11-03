@@ -130,6 +130,38 @@ describe('HomeStore', () => {
     expect(store.menuSquads()).toEqual([{ id: 'sexta', name: 'Squad da Sexta', playing: 2 }]);
   });
 
+  it('compartilha a temporada só com horas nela (spec 005, CA13)', async () => {
+    const store = setup(
+      {
+        load: () =>
+          Promise.resolve(
+            homeData({ season: { number: 1, daysLeft: 9, hours: 0, topGame: null } }),
+          ),
+      },
+      { account: () => Promise.resolve(steamAccount({ visibility: 'public' })) },
+    );
+    await store.load();
+    expect(store.canShareSeason()).toBe(false);
+  });
+
+  it('com horas e a Steam lida, compartilha a temporada (spec 005, CA13)', async () => {
+    const store = setup(
+      {},
+      { account: () => Promise.resolve(steamAccount({ visibility: 'public' })) },
+    );
+    await store.load();
+    expect(store.canShareSeason()).toBe(true);
+  });
+
+  it('com a Steam privada, não compartilha a temporada (spec 005, CA13)', async () => {
+    const store = setup(
+      {},
+      { account: () => Promise.resolve(steamAccount({ visibility: 'private' })) },
+    );
+    await store.load();
+    expect(store.canShareSeason()).toBe(false);
+  });
+
   it('sem temporada, a patente é NPC (spec 005, CA16)', async () => {
     const store = setup({ load: () => Promise.resolve(homeData({ season: null })) });
     await store.load();

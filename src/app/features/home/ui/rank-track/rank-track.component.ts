@@ -5,8 +5,10 @@ import {
   afterNextRender,
   computed,
   input,
+  output,
   viewChild,
 } from '@angular/core';
+import { PoButtonModule } from '@po-ui/ng-components';
 
 import { PATENTES, PatenteProgress, remainingLabel } from '../../domain/patentes';
 import { SeasonProgress, careerLabel, seasonHoursLabel, seasonLabel } from '../../domain/season';
@@ -30,6 +32,7 @@ function stateLabel(state: RankState, distance: number): string {
  */
 @Component({
   selector: 'app-rank-track',
+  imports: [PoButtonModule],
   templateUrl: './rank-track.component.html',
   styleUrl: './rank-track.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +43,10 @@ export class RankTrackComponent {
   readonly season = input<SeasonProgress | null>(null);
   /** Horas totais na Steam, que não zeram com a temporada (spec 005, CA14). */
   readonly careerHours = input(0);
+  /** Só com horas na temporada e com a Steam lida (spec 005, CA13). */
+  readonly canShare = input(false);
+  readonly sharing = input(false);
+  readonly share = output<void>();
 
   private readonly scroller = viewChild.required<ElementRef<HTMLElement>>('scroller');
 

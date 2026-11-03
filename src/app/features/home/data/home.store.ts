@@ -72,6 +72,8 @@ export class HomeStore {
   readonly trophies = computed(() => this.data()?.trophies ?? []);
   /** A patente vale para a temporada: sem ela, NPC (spec 005, CA2 e CA16). */
   readonly progress = computed(() => (this.data() ? progressFor(this.season()?.hours ?? 0) : null));
+  /** Só compartilha a temporada com horas nela e com a Steam lida (spec 005, CA13). */
+  readonly canShareSeason = computed(() => (this.season()?.hours ?? 0) > 0 && this.showRadar());
   /** Horas totais na Steam (spec 005, CA14). */
   readonly careerHours = computed(() => totalHours(this.data()?.games ?? [], 'all'));
   readonly opportunities = computed(() => {

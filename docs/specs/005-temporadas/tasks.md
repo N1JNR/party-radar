@@ -17,9 +17,9 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T7 — Patentes com as metas e os textos novos, sem amigos (CA4)
 - [x] T8 — Domínio da temporada e fontes da home com temporada e troféus (CA1, CA12, CA14, CA15, CA16)
 - [x] T9 — Trilha com os textos novos, a temporada e a carreira (CA1, CA4, CA14, CA18)
-- [ ] T10 — Componente dos troféus (CA12, CA18)
-- [ ] T11 — Página com a trilha, os troféus e os estados (CA1, CA12, CA15, CA16)
-- [ ] T12 — Imagem da temporada e do troféu, com compartilhar (CA13)
+- [x] T10 — Componente dos troféus (CA12, CA18)
+- [x] T11 — Página com a trilha, os troféus e os estados (CA1, CA12, CA15, CA16)
+- [x] T12 — Imagem da temporada e do troféu, com compartilhar (CA13)
 - [ ] T13 — `DESIGN.md` e `docs/plano.md` atualizados
 
 **Fechamento**

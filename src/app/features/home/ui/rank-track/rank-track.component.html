@@ -18,6 +18,16 @@
       <span class="track__line">{{ text }}</span>
     }
   </p>
+  @if (canShare()) {
+    <po-button
+      class="track__share"
+      p-kind="secondary"
+      p-icon="an an-share-network"
+      p-label="Compartilhar temporada"
+      [p-loading]="sharing()"
+      (p-click)="share.emit()"
+    />
+  }
   <div #scroller class="track__scroll" tabindex="0" role="group" aria-label="Trilha das patentes">
     <ol class="track__list">
       @for (rank of ranks(); track rank.id) {

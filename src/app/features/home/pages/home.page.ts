@@ -15,13 +15,16 @@ import { STILL_PRIVATE_MESSAGE, steamLoginUrl } from '../../steam/domain/steam-c
 import { HomeData } from '../data/home.source';
 import { HomeStore } from '../data/home.store';
 import { RadarImageService } from '../data/radar-image';
+import { SeasonImageService } from '../data/season-image';
 import { radarSummary } from '../domain/player-radar';
+import { SeasonImage, SeasonTrophy, seasonImage, trophyImage } from '../domain/season';
 import { MonthSummaryComponent } from '../ui/month-summary/month-summary.component';
 import { PartnershipQuestionComponent } from '../ui/partnership-question/partnership-question.component';
 import { PlayerHeaderComponent } from '../ui/player-header/player-header.component';
 import { PlayerRadarComponent } from '../ui/player-radar/player-radar.component';
 import { PlayingNowComponent } from '../ui/playing-now/playing-now.component';
 import { RankTrackComponent } from '../ui/rank-track/rank-track.component';
+import { SeasonTrophiesComponent } from '../ui/season-trophies/season-trophies.component';
 import { SquadOpportunityComponent } from '../ui/squad-opportunity/squad-opportunity.component';
 import { SquadRaceComponent } from '../ui/squad-race/squad-race.component';
 import { SteamNoticeComponent } from '../ui/steam-notice/steam-notice.component';
@@ -37,6 +40,7 @@ export const REFRESH_EVERY_MS = 60_000;
     PoButtonModule,
     PlayerHeaderComponent,
     RankTrackComponent,
+    SeasonTrophiesComponent,
     PlayerRadarComponent,
     MonthSummaryComponent,
     SquadRaceComponent,
@@ -56,6 +60,7 @@ export class HomePage {
   private readonly navigation = inject(ExternalNavigation);
   private readonly notification = inject(PoNotificationService);
   private readonly radarImage = inject(RadarImageService);
+  private readonly seasonImage = inject(SeasonImageService);
   private readonly sharer = inject(ShareService);
   protected readonly now = signal(new Date());
   protected readonly sharing = signal(false);
@@ -81,16 +86,45 @@ export class HomePage {
     void this.store.load();
   }
 
-  /** "Compartilhar meu radar": gera a imagem e entrega ao aparelho ou baixa (spec 004, CA14, CA16). */
-  protected async shareRadar(data: HomeData): Promise<void> {
+  /** "Compartilhar meu radar" (spec 004, CA14). */
+  protected shareRadar(data: HomeData): Promise<void> {
+    return this.shareImage(
+      () => this.radarImage.create(radarSummary(data.card.username, data.games)),
+      'meu-radar-party-radar.png',
+      'Meu radar no Party Radar',
+    );
+  }
+
+  /** "Compartilhar temporada" (spec 005, CA13). */
+  protected shareSeason(data: HomeData): Promise<void> {
+    const season = data.season;
+    return season
+      ? this.shareSeasonImage(seasonImage(data.card.username, season))
+      : Promise.resolve();
+  }
+
+  /** O compartilhar de um troféu (spec 005, CA13). */
+  protected shareTrophy(data: HomeData, trophy: SeasonTrophy): Promise<void> {
+    return this.shareSeasonImage(trophyImage(data.card.username, trophy));
+  }
+
+  private shareSeasonImage(image: SeasonImage): Promise<void> {
+    return this.shareImage(
+      () => this.seasonImage.create(image),
+      `temporada-${image.season}-party-radar.png`,
+      `Temporada ${image.season} no Party Radar`,
+    );
+  }
+
+  /** Gera a imagem e entrega ao aparelho ou baixa (spec 004, CA14 e CA16). */
+  private async shareImage(
+    create: () => Promise<Blob>,
+    fileName: string,
+    title: string,
+  ): Promise<void> {
     this.sharing.set(true);
     try {
-      const image = await this.radarImage.create(radarSummary(data.card.username, data.games));
-      const result = await this.sharer.shareImage(
-        image,
-        'meu-radar-party-radar.png',
-        'Meu radar no Party Radar',
-      );
+      const result = await this.sharer.shareImage(await create(), fileName, title);
       if (result === 'downloaded') {
         this.notification.success('Imagem baixada.');
       }

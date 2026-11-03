@@ -108,6 +108,24 @@ describe('RankTrackComponent', () => {
     expect(textOf(element)).not.toContain('Temporada 1');
   });
 
+  it('só mostra compartilhar quando pode, e avisa o toque (CA13)', () => {
+    const fixture = TestBed.createComponent(RankTrackComponent);
+    fixture.componentRef.setInput('progress', progressFor(42));
+    fixture.componentRef.setInput('season', seasonWith(42));
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('button')).toBeNull();
+
+    fixture.componentRef.setInput('canShare', true);
+    fixture.detectChanges();
+    let shared = 0;
+    fixture.componentInstance.share.subscribe(() => (shared += 1));
+    const button = element.querySelector('button');
+    expect(button?.textContent).toContain('Compartilhar temporada');
+    button?.click();
+    expect(shared).toBe(1);
+  });
+
   it('no celular, abre com a patente atual no meio (spec 004, CA12)', () => {
     vi.spyOn(HTMLElement.prototype, 'offsetLeft', 'get').mockReturnValue(500);
     vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(100);
