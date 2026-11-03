@@ -192,7 +192,12 @@ export class HomeStore {
       return;
     }
     if (home) {
-      this.update(loadId, (data) => ({ ...data, card: home.card }));
+      this.update(loadId, (data) => ({
+        ...data,
+        card: home.card,
+        games: home.games,
+        previousIsEstimate: home.previousIsEstimate,
+      }));
     }
     if (steam) {
       this.steam.set(steam);

@@ -38,6 +38,8 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
       partner: { id: 'rafa', name: 'Rafa', avatarUrl: null, matches: 18, probable: true },
       platforms: [{ platform: 'pc', hours: 28 }],
     },
+    games: [],
+    previousIsEstimate: false,
     friendsCount: 6,
     friendsPlaying: [
       {
@@ -87,6 +89,8 @@ const firstAccess = (): HomeData =>
       partner: null,
       platforms: [],
     },
+    games: [],
+    previousIsEstimate: false,
     friendsCount: 0,
     friendsPlaying: [],
     squads: [],

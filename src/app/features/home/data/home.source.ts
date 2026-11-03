@@ -3,11 +3,16 @@ import { InjectionToken } from '@angular/core';
 import { FriendPresence } from '../domain/friend-presence';
 import { PartnershipQuestion } from '../domain/partnership';
 import { PlayerCard } from '../domain/player-card';
+import { PlayedGame } from '../domain/player-radar';
 import { Squad } from '../domain/squad-opportunity';
 
 /** Tudo o que a home mostra (spec 002). */
 export interface HomeData {
   card: PlayerCard;
+  /** Jogos com tempo jogado, para o radar e os blocos (spec 004). */
+  games: PlayedGame[];
+  /** O mês anterior foi o da conexão com a Steam: as horas dele são estimativa (spec 004, CA11). */
+  previousIsEstimate: boolean;
   /** Amigos adicionados no Party Radar. */
   friendsCount: number;
   friendsPlaying: FriendPresence[];

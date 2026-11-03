@@ -88,6 +88,17 @@ describe('FakeHomeSource', () => {
     expect(data.inviteLink).toMatch(/\/convite\/ana$/);
   });
 
+  it('cheio: traz jogos de vários tipos, para o radar (spec 004)', async () => {
+    const data = await (await setup('full')).load();
+    expect(data.games.length).toBeGreaterThan(1);
+    expect(new Set(data.games.map((game) => game.kind)).size).toBeGreaterThan(1);
+    expect(data.previousIsEstimate).toBe(false);
+  });
+
+  it('primeiro acesso: sem jogos (spec 004, CA19)', async () => {
+    expect((await (await setup('first-access')).load()).games).toEqual([]);
+  });
+
   it('cheio: tem oportunidade de squad e pergunta de parceria de ontem (CA11, CA12)', async () => {
     const data = await (await setup('full')).load();
     const [first] = squadOpportunities(data.squads, data.friendsPlaying);

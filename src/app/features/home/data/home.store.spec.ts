@@ -30,6 +30,8 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
         { platform: 'ps5', hours: 12 },
       ],
     },
+    games: [],
+    previousIsEstimate: false,
     friendsCount: 6,
     friendsPlaying: [
       {

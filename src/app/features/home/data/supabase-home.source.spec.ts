@@ -23,8 +23,24 @@ const statsRow = {
   estimate: false,
 };
 
-function setup(result: { data: unknown; error: unknown }, current: AuthUser | null = user) {
-  const rpc = vi.fn(() => Promise.resolve(result));
+const gameRow = {
+  app_id: 1808500,
+  game_name: 'ARC Raiders',
+  category: 'tiro',
+  total_minutes: 18780,
+  month_minutes: 900,
+  previous_month_minutes: 2610,
+  previous_is_estimate: true,
+};
+
+const noGames = { data: [], error: null };
+
+function setup(
+  result: { data: unknown; error: unknown },
+  current: AuthUser | null = user,
+  games: { data: unknown; error: unknown } = noGames,
+) {
+  const rpc = vi.fn((name: string) => Promise.resolve(name === 'my_games' ? games : result));
   TestBed.configureTestingModule({
     providers: [
       SupabaseHomeSource,
@@ -124,6 +140,53 @@ describe('SupabaseHomeSource', () => {
   it('erro do banco sobe, para a home mostrar o erro com "Tentar de novo"', async () => {
     const { source } = setup({ data: null, error: new Error('rede') });
     await expect(source.load()).rejects.toThrow('rede');
+  });
+
+  it('traz os jogos com tipo e horas, em horas (spec 004, CA9, CA11)', async () => {
+    const { source, rpc } = setup({ data: [statsRow], error: null }, user, {
+      data: [gameRow],
+      error: null,
+    });
+    const data = await source.load();
+    expect(rpc).toHaveBeenCalledWith('my_games');
+    expect(data.games).toEqual([
+      {
+        appId: 1808500,
+        name: 'ARC Raiders',
+        kind: 'tiro',
+        totalHours: 313,
+        monthHours: 15,
+        previousMonthHours: 43.5,
+      },
+    ]);
+    expect(data.previousIsEstimate).toBe(true);
+  });
+
+  it('tipo desconhecido conta em "Outros" (spec 004, CA8)', async () => {
+    const { source } = setup({ data: [statsRow], error: null }, user, {
+      data: [
+        { ...gameRow, category: 'novo-tipo' },
+        { ...gameRow, app_id: 2, category: 'outros' },
+      ],
+      error: null,
+    });
+    const { games } = await source.load();
+    expect(games.map((game) => game.kind)).toEqual(['outros', 'outros']);
+  });
+
+  it('sem jogos: lista vazia e mês anterior sem estimativa', async () => {
+    const { source } = setup({ data: [statsRow], error: null }, user, { data: null, error: null });
+    const data = await source.load();
+    expect(data.games).toEqual([]);
+    expect(data.previousIsEstimate).toBe(false);
+  });
+
+  it('erro ao ler os jogos sobe, para a home mostrar o erro (spec 004, CA21)', async () => {
+    const { source } = setup({ data: [statsRow], error: null }, user, {
+      data: null,
+      error: new Error('jogos'),
+    });
+    await expect(source.load()).rejects.toThrow('jogos');
   });
 
   it('não há pergunta de parceria para responder', async () => {
