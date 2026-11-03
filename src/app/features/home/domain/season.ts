@@ -1,4 +1,4 @@
-import { patenteById } from './patentes';
+import { patenteById, patenteFor } from './patentes';
 import { formatHours } from './player-card';
 
 /** A temporada em andamento de quem está logado (spec 005, CA1). */
@@ -53,6 +53,52 @@ export function trophyLabel(trophy: SeasonTrophy): string {
 export function trophyDetail(trophy: SeasonTrophy): string {
   const hours = formatHours(trophy.hours);
   return trophy.topGame ? `${hours}, mais em ${trophy.topGame}` : hours;
+}
+
+/** O que vai na imagem da temporada ou do troféu (CA13): só o @usuário e os dados de jogo. */
+export interface SeasonImage {
+  username: string;
+  season: number;
+  rankId: string;
+  hours: number;
+  topGame: string | null;
+  /** `null` em temporada terminada. */
+  daysLeft: number | null;
+}
+
+/** Imagem da temporada em andamento. */
+export function seasonImage(username: string, season: SeasonProgress): SeasonImage {
+  return {
+    username,
+    season: season.number,
+    rankId: patenteFor(season.hours).id,
+    hours: season.hours,
+    topGame: season.topGame,
+    daysLeft: Math.max(0, season.daysLeft),
+  };
+}
+
+/** Imagem de um troféu: a patente é a gravada, mesmo que as metas mudem depois. */
+export function trophyImage(username: string, trophy: SeasonTrophy): SeasonImage {
+  return {
+    username,
+    season: trophy.season,
+    rankId: trophy.rankId,
+    hours: trophy.hours,
+    topGame: trophy.topGame,
+    daysLeft: null,
+  };
+}
+
+/** "Faltam 52 dias", "Falta 1 dia", "Último dia" ou "Temporada encerrada". */
+export function seasonImageStatus(image: SeasonImage): string {
+  if (image.daysLeft === null) {
+    return 'Temporada encerrada';
+  }
+  if (image.daysLeft === 0) {
+    return 'Último dia';
+  }
+  return image.daysLeft === 1 ? 'Falta 1 dia' : `Faltam ${image.daysLeft} dias`;
 }
 
 /** Troféus da temporada mais recente para a mais antiga (CA12). */

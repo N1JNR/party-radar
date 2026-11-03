@@ -3,9 +3,12 @@ import {
   SeasonTrophy,
   careerLabel,
   seasonHoursLabel,
+  seasonImage,
+  seasonImageStatus,
   seasonLabel,
   sortTrophies,
   trophyDetail,
+  trophyImage,
   trophyLabel,
 } from './season';
 
@@ -69,6 +72,58 @@ describe('trophyLabel e trophyDetail (CA10, CA12)', () => {
 
   it('sem jogo conhecido, só as horas', () => {
     expect(trophyDetail(trophy({ topGame: null }))).toBe('46h');
+  });
+});
+
+describe('seasonImage e trophyImage (CA13)', () => {
+  it('a temporada em andamento leva a patente pelas horas', () => {
+    expect(seasonImage('ana', season(52))).toEqual({
+      username: 'ana',
+      season: 1,
+      rankId: 'veterano',
+      hours: 42,
+      topGame: 'ARC Raiders',
+      daysLeft: 52,
+    });
+  });
+
+  it('dias negativos contam como último dia', () => {
+    expect(seasonImage('ana', season(-1)).daysLeft).toBe(0);
+  });
+
+  it('o troféu leva a patente gravada, sem dias restantes', () => {
+    expect(trophyImage('ana', trophy({ rankId: 'lenda', hours: 46 }))).toEqual({
+      username: 'ana',
+      season: 1,
+      rankId: 'lenda',
+      hours: 46,
+      topGame: 'Elden Ring',
+      daysLeft: null,
+    });
+  });
+
+  it('traz só o @usuário e os dados de jogo', () => {
+    expect(Object.keys(seasonImage('ana', season(1))).sort()).toEqual([
+      'daysLeft',
+      'hours',
+      'rankId',
+      'season',
+      'topGame',
+      'username',
+    ]);
+  });
+});
+
+describe('seasonImageStatus (CA13)', () => {
+  const image = (daysLeft: number | null) => ({ ...seasonImage('ana', season(1)), daysLeft });
+
+  it.each([
+    [52, 'Faltam 52 dias'],
+    [1, 'Falta 1 dia'],
+    [0, 'Último dia'],
+    [null, 'Temporada encerrada'],
+  ])('%s dias: %s', (days, text) => {
+    expect(seasonImageStatus(image(days))).toBe(text);
   });
 });
 
