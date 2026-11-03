@@ -39,6 +39,8 @@ export interface SyncDeps {
   latestTotals(userId: string): Promise<Map<number, number>>;
   /** Grava a foto do dia (`AAAA-MM-DD`) do tempo de cada jogo; a do mesmo dia é atualizada. */
   saveSnapshots(userId: string, day: string, games: readonly SteamGame[]): Promise<void>;
+  /** Registra o dia da leitura, para o limite diário da temporada (spec 005, CA7). */
+  markReadingDay(userId: string, day: string): Promise<void>;
   now(): Date;
 }
 
@@ -131,6 +133,8 @@ export async function syncAccount(deps: SyncDeps, account: SteamAccount): Promis
     if (changed.length > 0) {
       await deps.saveSnapshots(account.userId, cardDay(now), changed);
     }
+    // Depois das fotos, e mesmo sem jogo novo: um dia sem jogar também é um dia com leitura.
+    await deps.markReadingDay(account.userId, cardDay(now));
   }
   await deps.saveReading(account.userId, patch);
   // Depois de a leitura estar salva: sem tipo, o jogo só conta em "Outros" até a próxima (CA8).

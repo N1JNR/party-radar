@@ -238,6 +238,14 @@ export function syncDeps(
       const rows = (data ?? []) as { app_id: number; minutes_total: number }[];
       return new Map(rows.map((row) => [row.app_id, row.minutes_total]));
     },
+    markReadingDay: async (userId, day) => {
+      const { error } = await admin
+        .from('steam_reading_days')
+        .upsert({ user_id: userId, day }, { onConflict: 'user_id,day', ignoreDuplicates: true });
+      if (error) {
+        throw error;
+      }
+    },
     saveSnapshots: async (userId, day, games) => {
       const { error } = await admin.from('steam_playtime_snapshots').upsert(
         games.map((game) => ({
