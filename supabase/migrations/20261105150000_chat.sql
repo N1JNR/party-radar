@@ -333,14 +333,16 @@ returns table (
   client_id uuid,
   body text,
   created_at timestamptz,
-  deleted boolean
+  deleted boolean,
+  mine boolean
 )
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select m.id, m.sender_id, p.display_name, p.avatar_url, m.client_id, m.body, m.created_at, m.deleted_at is not null
+  select m.id, m.sender_id, p.display_name, p.avatar_url, m.client_id, m.body, m.created_at, m.deleted_at is not null,
+    m.sender_id is not distinct from auth.uid()
   from public.messages m
   left join public.profiles p on p.id = m.sender_id
   where m.conversation_id = p_conversation

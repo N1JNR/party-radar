@@ -151,10 +151,10 @@ select pg_temp.as_user('00000000-0000-0000-0000-0000000008b2');
 select is(public.delete_message((select id from ids where name = 'bia_msg')), true, 'apaga a própria mensagem (CA5)');
 
 select results_eq(
-  $$ select deleted, body from public.conversation_messages((select id from ids where name = 'direct'))
+  $$ select deleted, body, mine from public.conversation_messages((select id from ids where name = 'direct'))
      where message_id = (select id from ids where name = 'bia_msg') $$,
-  $$ values (true, null::text) $$,
-  'o texto apagado sai do banco (CA5)'
+  $$ values (true, null::text, true) $$,
+  'o texto apagado sai do banco, e a mensagem continua marcada como minha (CA5)'
 );
 
 -- Quem não participa.

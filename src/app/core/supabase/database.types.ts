@@ -388,6 +388,7 @@ export type Database = {
           created_at: string;
           deleted: boolean;
           message_id: string;
+          mine: boolean;
           sender_avatar_url: string;
           sender_id: string;
           sender_name: string;
