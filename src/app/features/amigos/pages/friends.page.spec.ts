@@ -169,7 +169,7 @@ describe('FriendsPage', () => {
     button('Desbloquear Edu')?.click();
     await settle();
     expect(source.unblock).toHaveBeenCalledWith('edu_bad');
-    expect(information).toHaveBeenCalledWith('Edu foi desbloqueado.');
+    expect(information).toHaveBeenCalledWith('Você desbloqueou Edu.');
   });
 
   it('remover só acontece depois de confirmar (CA15)', async () => {
@@ -181,7 +181,7 @@ describe('FriendsPage', () => {
     button('Confirmar')?.click();
     await settle();
     expect(source.remove).toHaveBeenCalledWith('bia_souls');
-    expect(information).toHaveBeenCalledWith('Bia foi removido.');
+    expect(information).toHaveBeenCalledWith('Você removeu Bia.');
   });
 
   it('cancelar a confirmação não remove (CA15)', async () => {
@@ -202,7 +202,7 @@ describe('FriendsPage', () => {
     button('Confirmar')?.click();
     await settle();
     expect(source.block).toHaveBeenCalledWith('bia_souls');
-    expect(information).toHaveBeenCalledWith('Bia foi bloqueado.');
+    expect(information).toHaveBeenCalledWith('Você bloqueou Bia.');
   });
 
   it.each([

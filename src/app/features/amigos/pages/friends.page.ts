@@ -122,7 +122,7 @@ export class FriendsPage {
 
   protected async unblock(person: Player): Promise<void> {
     if (await this.store.unblock(person.id)) {
-      this.notification.information(`${person.name} foi desbloqueado.`);
+      this.notification.information(`Você desbloqueou ${person.name}.`);
     } else {
       this.notification.error(FAILURE);
     }
@@ -145,7 +145,7 @@ export class FriendsPage {
       kind === 'remove' ? await this.store.remove(person.id) : await this.store.block(person.id);
     if (done) {
       this.notification.information(
-        kind === 'remove' ? `${person.name} foi removido.` : `${person.name} foi bloqueado.`,
+        kind === 'remove' ? `Você removeu ${person.name}.` : `Você bloqueou ${person.name}.`,
       );
     } else {
       this.notification.error(FAILURE);
