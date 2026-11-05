@@ -75,6 +75,18 @@ describe('SquadFormComponent', () => {
     expect(element.querySelector('.form__error')?.textContent).toBe('Escolha pelo menos um amigo.');
   });
 
+  it('o aviso some ao corrigir o nome ou escolher um amigo', async () => {
+    await render();
+    await submit();
+    expect(element.querySelector('.form__error')).not.toBeNull();
+    await typeName('Squad');
+    expect(element.querySelector('.form__error')).toBeNull();
+    await submit();
+    expect(element.querySelector('.form__error')).not.toBeNull();
+    await choose(0);
+    expect(element.querySelector('.form__error')).toBeNull();
+  });
+
   it('mostra a recusa do servidor', async () => {
     await render();
     fixture.componentRef.setInput('failure', 'Um squad pode ter até 50 pessoas.');

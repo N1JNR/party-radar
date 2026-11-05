@@ -10,7 +10,7 @@
         p-label="Nome do squad"
         p-placeholder="Squad da Sexta"
         [ngModel]="name()"
-        (ngModelChange)="name.set($event ?? '')"
+        (ngModelChange)="editName($event ?? '')"
       />
       <fieldset class="form__friends">
         <legend class="form__legend">Quem entra</legend>

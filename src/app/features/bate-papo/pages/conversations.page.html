@@ -39,13 +39,28 @@
   <section class="chat__pane" aria-label="Conversa aberta">
     @switch (pane()) {
       @case ('create') {
-        <app-squad-form
-          [friends]="friendList()"
-          [busy]="busy()"
-          [failure]="createFailure()"
-          (create)="create($event)"
-          (cancelled)="closePane()"
-        />
+        @switch (friends.status()) {
+          @case ('loading') {
+            <div class="skeleton" aria-hidden="true"></div>
+            <p class="pr-sr-only" role="status">Carregando seus amigos…</p>
+          }
+          @case ('error') {
+            <div class="chat__state" role="alert">
+              <p class="chat__strong">Não foi possível carregar seus amigos.</p>
+              <po-button p-kind="secondary" p-label="Tentar de novo" (p-click)="friends.load()" />
+              <po-button p-kind="tertiary" p-label="Voltar" (p-click)="closePane()" />
+            </div>
+          }
+          @default {
+            <app-squad-form
+              [friends]="friendList()"
+              [busy]="busy()"
+              [failure]="createFailure()"
+              (create)="create($event)"
+              (cancelled)="closePane()"
+            />
+          }
+        }
       }
       @case ('details') {
         @if (current(); as open) {

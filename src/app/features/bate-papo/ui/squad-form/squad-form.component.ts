@@ -36,7 +36,14 @@ export class SquadFormComponent {
     return this.chosen().includes(id);
   }
 
+  /** O aviso some quando a pessoa começa a corrigir. */
+  protected editName(name: string): void {
+    this.name.set(name);
+    this.problem.set(null);
+  }
+
   protected toggle(id: string, on: boolean): void {
+    this.problem.set(null);
     this.chosen.update((current) =>
       on ? [...current, id] : current.filter((other) => other !== id),
     );

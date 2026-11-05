@@ -73,7 +73,7 @@ export class ConversationsPage {
   private readonly notification = inject(PoNotificationService);
   private readonly modal = viewChild.required(PoModalComponent);
 
-  /** Da rota `/conversas/:id`. */
+  /** Do endereço: `/conversas?id=`. */
   readonly id = input<string>();
 
   /** A lista de conversas sobe a versão a cada minuto: "Hoje" e "Ontem" acompanham o relógio. */
@@ -182,7 +182,7 @@ export class ConversationsPage {
       }
       await this.chat.refresh();
       this.pane.set('conversation');
-      await this.router.navigate(['/conversas', id]);
+      await this.router.navigate(['/conversas'], { queryParams: { id } });
     } catch {
       this.createFailure.set(FAILURE);
     } finally {

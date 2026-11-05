@@ -52,6 +52,12 @@ describe('ConversationsPage', () => {
   let error: ReturnType<typeof vi.fn>;
   let information: ReturnType<typeof vi.fn>;
   let router: Router;
+  /** Quando definido, é a resposta da lista de amigos. */
+  let friendsLoad: Promise<unknown> | undefined;
+
+  beforeEach(() => {
+    friendsLoad = undefined;
+  });
 
   async function settle(): Promise<void> {
     for (let i = 0; i < 3; i++) {
@@ -91,6 +97,7 @@ describe('ConversationsPage', () => {
           provide: FRIENDS_SOURCE,
           useValue: {
             load: () =>
+              friendsLoad ??
               Promise.resolve({
                 friends: [
                   { id: 'bia', name: 'Bia', username: 'bia', avatarUrl: null, playing: null },
@@ -296,6 +303,24 @@ describe('ConversationsPage', () => {
       expect(source.deleteMessage).toHaveBeenCalledWith('m1');
     });
 
+    it('depois de apagar, o foco vai para as mensagens (CA24)', async () => {
+      let deleted = false;
+      await render('c1', {
+        messages: vi.fn(() => Promise.resolve([message('m1', { deleted, body: null })])),
+        deleteMessage: vi.fn(() => {
+          deleted = true;
+          return Promise.resolve(true);
+        }),
+      });
+      document.body.appendChild(element);
+      button('Apagar esta mensagem')?.click();
+      await settle();
+      modalButton('Apagar')?.click();
+      await settle();
+      expect(document.activeElement).toBe(element.querySelector('.messages'));
+      element.remove();
+    });
+
     it('cancelar a confirmação não apaga (CA5)', async () => {
       await render('c1');
       button('Apagar esta mensagem')?.click();
@@ -340,6 +365,34 @@ describe('ConversationsPage', () => {
       await settle();
     }
 
+    it('enquanto os amigos carregam, não afirma que não há amigos (CA22)', async () => {
+      friendsLoad = new Promise(() => undefined);
+      await openForm();
+      expect(element.querySelector('app-squad-form')).toBeNull();
+      expect(element.querySelector('.chat__pane .skeleton')).not.toBeNull();
+    });
+
+    it('se os amigos não carregarem, avisa e deixa tentar de novo ou voltar (CA22)', async () => {
+      friendsLoad = Promise.reject(new Error('rede'));
+      await openForm();
+      expect(element.querySelector('app-squad-form')).toBeNull();
+      expect(element.querySelector('.chat__pane [role="alert"]')?.textContent).toContain(
+        'Não foi possível carregar seus amigos.',
+      );
+      friendsLoad = undefined;
+      button('Tentar de novo')?.click();
+      await settle();
+      expect(element.querySelector('app-squad-form')).not.toBeNull();
+    });
+
+    it('com erro nos amigos, Voltar fecha o painel', async () => {
+      friendsLoad = Promise.reject(new Error('rede'));
+      await openForm();
+      button('Voltar')?.click();
+      await settle();
+      expect(element.querySelector('.chat__pane [role="alert"]')).toBeNull();
+    });
+
     it('abre o formulário com os amigos (CA11)', async () => {
       await openForm();
       expect(element.querySelector('.chat--pane-open')).not.toBeNull();
@@ -350,7 +403,9 @@ describe('ConversationsPage', () => {
       await openForm();
       await fill();
       expect(source.createSquad).toHaveBeenCalledWith('Squad da Sexta', ['bia']);
-      expect(router.navigate).toHaveBeenCalledWith(['/conversas', 's1']);
+      expect(router.navigate).toHaveBeenCalledWith(['/conversas'], {
+        queryParams: { id: 's1' },
+      });
     });
 
     it('recusa do servidor aparece no formulário (CA14)', async () => {

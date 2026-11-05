@@ -36,6 +36,19 @@ describe('MessageListComponent', () => {
     expect(log?.getAttribute('aria-live')).toBe('polite');
   });
 
+  it('sem mensagens, convida a mandar a primeira', () => {
+    expect(render([]).element.querySelector('.messages__empty')?.textContent).toContain(
+      'Mande a primeira.',
+    );
+    expect(render([message('a')]).element.querySelector('.messages__empty')).toBeNull();
+    expect(
+      render(
+        [],
+        [{ clientId: 'k', body: 'oi', status: 'sending', reason: null }],
+      ).element.querySelector('.messages__empty'),
+    ).toBeNull();
+  });
+
   it('mostra autor, texto, hora e o dia (CA3)', () => {
     const { element } = render([message('a')]);
     expect(element.querySelector('.message__author')?.textContent).toBe('Bia');
@@ -63,6 +76,34 @@ describe('MessageListComponent', () => {
     expect(button.getAttribute('aria-label')).toBe('Apagar esta mensagem');
     button.click();
     expect(removed).toEqual([mine]);
+  });
+
+  it('ao apagar, o botão some e o foco vai para as mensagens (CA24)', async () => {
+    const mine = message('a', { mine: true });
+    const { fixture, element } = render([mine, message('b', { mine: true })]);
+    document.body.appendChild(element);
+    (element.querySelector('.message__action') as HTMLButtonElement).click();
+    fixture.componentRef.setInput('messages', [
+      { ...mine, body: null, deleted: true },
+      message('b', { mine: true }),
+    ]);
+    fixture.detectChanges();
+    TestBed.tick();
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(element.querySelector('.messages'));
+    element.remove();
+  });
+
+  it('sem pedido de apagar, uma mensagem apagada não mexe no foco (CA24)', async () => {
+    const other = message('a');
+    const { fixture, element } = render([other]);
+    document.body.appendChild(element);
+    fixture.componentRef.setInput('messages', [{ ...other, body: null, deleted: true }]);
+    fixture.detectChanges();
+    TestBed.tick();
+    await fixture.whenStable();
+    expect(document.activeElement).not.toBe(element.querySelector('.messages'));
+    element.remove();
   });
 
   it('não dá para apagar a mensagem de outra pessoa (CA5)', () => {
@@ -161,6 +202,23 @@ describe('MessageListComponent', () => {
       TestBed.tick();
       await fixture.whenStable();
       expect(scroller.scrollTop).toBe(1200);
+    });
+
+    it('no fim, continua no fim quando a tela encolhe (CA25)', () => {
+      const { element } = render([message('a')]);
+      const scroller = layout(element, { top: 600, height: 1000, client: 400 });
+      scroller.dispatchEvent(new Event('scroll'));
+      Object.defineProperty(scroller, 'clientHeight', { configurable: true, value: 200 });
+      window.dispatchEvent(new Event('resize'));
+      expect(scroller.scrollTop).toBe(1000);
+    });
+
+    it('lendo mensagens antigas, a tela encolher não puxa para o fim', () => {
+      const { element } = render([message('a')]);
+      const scroller = layout(element, { top: 300, height: 1000, client: 400 });
+      scroller.dispatchEvent(new Event('scroll'));
+      window.dispatchEvent(new Event('resize'));
+      expect(scroller.scrollTop).toBe(300);
     });
 
     it('lendo mensagens antigas, não é puxada para o fim', async () => {

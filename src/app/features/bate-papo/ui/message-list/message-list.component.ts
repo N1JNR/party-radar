@@ -34,6 +34,10 @@ const NEAR_EDGE_PX = 80;
   templateUrl: './message-list.component.html',
   styleUrl: './message-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    // O teclado do celular encolhe a tela: quem estava no fim continua vendo a última mensagem.
+    '(window:resize)': 'keepPosition()',
+  },
 })
 export class MessageListComponent {
   readonly messages = input.required<readonly ChatMessage[]>();
@@ -49,6 +53,8 @@ export class MessageListComponent {
   private atBottom = true;
   /** Altura antes de pedir as anteriores, para manter a posição quando chegarem (CA6). */
   private heightBeforeOlder: number | null = null;
+  /** A mensagem com o pedido de apagar: ao sumir o botão, o foco não pode se perder (CA24). */
+  private removingId: string | null = null;
 
   // Por `computed`: na suíte inteira, a constante ainda não existe quando os campos são criados.
   protected readonly deletedText = computed(() => DELETED_TEXT);
@@ -60,8 +66,19 @@ export class MessageListComponent {
     effect(() => {
       this.messages();
       this.pending();
-      afterNextRender(() => this.keepPosition(), { injector });
+      afterNextRender(
+        () => {
+          this.keepPosition();
+          this.keepFocusAfterRemoving();
+        },
+        { injector },
+      );
     });
+  }
+
+  protected askRemove(message: ChatMessage): void {
+    this.removingId = message.id;
+    this.remove.emit(message);
   }
 
   protected onScroll(): void {
@@ -79,7 +96,15 @@ export class MessageListComponent {
     }
   }
 
-  private keepPosition(): void {
+  private keepFocusAfterRemoving(): void {
+    const removed = this.messages().some((item) => item.id === this.removingId && item.deleted);
+    if (removed) {
+      this.removingId = null;
+      this.scroller().nativeElement.focus();
+    }
+  }
+
+  protected keepPosition(): void {
     const element = this.scroller().nativeElement;
     if (this.heightBeforeOlder !== null) {
       element.scrollTop += element.scrollHeight - this.heightBeforeOlder;

@@ -17,6 +17,9 @@
       />
     </div>
   }
+  @if (messages().length === 0 && pending().length === 0) {
+    <p class="messages__empty">Nenhuma mensagem ainda. Mande a primeira.</p>
+  }
   @for (group of days(); track group.day) {
     <p class="messages__day">{{ group.day }}</p>
     @for (message of group.messages; track message.id) {
@@ -36,7 +39,7 @@
               type="button"
               class="message__action"
               aria-label="Apagar esta mensagem"
-              (click)="remove.emit(message)"
+              (click)="askRemove(message)"
             >
               Apagar
             </button>
