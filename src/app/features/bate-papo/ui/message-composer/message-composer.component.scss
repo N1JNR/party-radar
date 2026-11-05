@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+.composer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  border-top: var(--border-width-sm) solid var(--color-neutral-light-30);
+}
+.composer__field {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.composer__error {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--color-feedback-negative-dark);
+  font-size: var(--font-size-sm);
+}

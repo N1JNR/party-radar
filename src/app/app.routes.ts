@@ -44,6 +44,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/amigos/pages/friends.page').then((m) => m.FriendsPage),
       },
+      {
+        path: 'conversas',
+        title: 'Conversas | Party Radar',
+        loadComponent: () =>
+          import('./features/bate-papo/pages/conversations.page').then((m) => m.ConversationsPage),
+      },
+      {
+        path: 'conversas/:id',
+        title: 'Conversas | Party Radar',
+        loadComponent: () =>
+          import('./features/bate-papo/pages/conversations.page').then((m) => m.ConversationsPage),
+      },
       // Sem login, o guard leva ao Discord e o `?next=` traz a pessoa de volta (spec 006, CA2).
       {
         path: 'convite/:username',

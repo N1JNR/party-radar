@@ -14,6 +14,7 @@ import { provideAuthGateway } from './core/auth/auth-gateway.provider';
 import { provideSteamSource } from './features/steam/data/steam-source.provider';
 import { initTheme } from './core/theme/theme.initializer';
 import { provideFriendsSource } from './features/amigos/data/friends-source.provider';
+import { provideChatSource } from './features/bate-papo/data/chat-source.provider';
 import { provideHomeSource } from './features/home/data/home-source.provider';
 
 export const appConfig: ApplicationConfig = {
@@ -33,5 +34,6 @@ export const appConfig: ApplicationConfig = {
     // Home real pelo Supabase (spec 003); a simulada só em desenvolvimento, com ?simular=.
     ...provideHomeSource(),
     ...provideFriendsSource(),
+    ...provideChatSource(),
   ],
 };
