@@ -1,6 +1,6 @@
 # 007 — Bate-papo
 
-**Status:** aguardando aprovação
+**Status:** aprovada em 2026-11-05
 **Relacionada a:** `006-amigos` (vem antes: só amigos conversam) · `002-home` (o menu e os squads)
 
 ## Problema
@@ -101,14 +101,14 @@ usuários de lê-las, mas quem administra o banco consegue. A tela de conversas 
 
 ## Decisões a aprovar
 
-- [ ] **Sem chamadas de nenhum tipo:** nem voz, nem vídeo, nem "Chamar pra jogar". Sai também o bot do Discord para
+- [x] **Sem chamadas de nenhum tipo:** nem voz, nem vídeo, nem "Chamar pra jogar". Sai também o bot do Discord para
       chamados.
-- [ ] **O grupo se chama "squad":** a palavra que o app já usa. A tela "Conversas" reúne tudo, e saem "Squads" e
+- [x] **O grupo se chama "squad":** a palavra que o app já usa. A tela "Conversas" reúne tudo, e saem "Squads" e
       "Seus squads" do menu.
-- [ ] O botão "Chamar o squad" da home vira "Abrir conversa".
-- [ ] Amigo escolhido já entra no squad, sem convite para aceitar.
-- [ ] Só o dono adiciona e remove pessoas; o limite é de 50 por squad.
-- [ ] Quem entra depois vê as mensagens antigas do squad.
-- [ ] Só texto, com apagar e sem editar.
-- [ ] Mensagens sem prazo para sumir, sem criptografia de ponta a ponta, com o aviso na tela.
-- [ ] Sem denúncia nesta entrega, com o app restrito a grupos de amigos até ela existir.
+- [x] O botão "Chamar o squad" da home vira "Abrir conversa".
+- [x] Amigo escolhido já entra no squad, sem convite para aceitar.
+- [x] Só o dono adiciona e remove pessoas; o limite é de 50 por squad.
+- [x] Quem entra depois vê as mensagens antigas do squad.
+- [x] Só texto, com apagar e sem editar.
+- [x] Mensagens sem prazo para sumir, sem criptografia de ponta a ponta, com o aviso na tela.
+- [x] Sem denúncia nesta entrega, com o app restrito a grupos de amigos até ela existir.

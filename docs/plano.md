@@ -44,7 +44,7 @@ Feitas, em andamento ou já aprovadas (a pasta de cada uma está em `docs/specs/
 
 Próximas, nesta ordem (o número sai quando a spec for criada):
 
-- `006-amigos` — pedidos, aceite, remoção, bloqueio e o jogo aberto dos amigos (aguardando aprovação)
-- `007-bate-papo` — conversas entre amigos e squads, só por texto (aguardando aprovação)
+- `006-amigos` — pedidos, aceite, remoção, bloqueio e o jogo aberto dos amigos (aprovada)
+- `007-bate-papo` — conversas entre amigos e squads, só por texto (aprovada)
 - Corrida do squad — amigos na mesma trilha, com dados reais
 - Perfil

@@ -1,6 +1,6 @@
 # 006 — Amigos
 
-**Status:** aguardando aprovação
+**Status:** aprovada em 2026-11-05
 **Relacionada a:** `007-bate-papo` (só amigos conversam) · `002-home` (a seção "Jogando agora" e o menu) ·
 `003-steam` (o jogo aberto) · `001-login` (o perfil e o @usuário)
 
@@ -92,7 +92,7 @@ privados. Mostrar isso é da corrida do squad, em outra spec.
 
 ## Decisões a aprovar
 
-- [ ] Adicionar só pelo link ou pelo @usuário exato, sem busca por parte do nome.
-- [ ] Recusar não avisa quem pediu.
-- [ ] Amigos veem só nome, @usuário, foto e jogo aberto; horas e patente ficam privadas.
-- [ ] Sugestão pela Steam sai desta entrega.
+- [x] Adicionar só pelo link ou pelo @usuário exato, sem busca por parte do nome.
+- [x] Recusar não avisa quem pediu.
+- [x] Amigos veem só nome, @usuário, foto e jogo aberto; horas e patente ficam privadas.
+- [x] Sugestão pela Steam sai desta entrega.
