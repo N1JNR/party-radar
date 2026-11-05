@@ -71,6 +71,10 @@ describe('FriendsPage', () => {
     [...element.querySelectorAll('button')].find(
       (b) => b.getAttribute('aria-label') === label || b.textContent?.trim() === label,
     );
+  const modalButton = (label: string) =>
+    [...element.querySelectorAll<HTMLButtonElement>('po-modal button')].find(
+      (b) => b.textContent?.trim() === label,
+    );
   const names = (section: string) =>
     [...element.querySelectorAll(`section[aria-labelledby="${section}"] .person__name`)].map(
       (node) => node.textContent,
@@ -186,7 +190,7 @@ describe('FriendsPage', () => {
     await settle();
     expect(source.remove).not.toHaveBeenCalled();
     expect(document.body.textContent + (element.textContent ?? '')).toContain('Remover Bia?');
-    button('Confirmar')?.click();
+    modalButton('Remover')?.click();
     await settle();
     expect(source.remove).toHaveBeenCalledWith('bia_souls');
     expect(information).toHaveBeenCalledWith('Você removeu Bia.');
@@ -207,7 +211,7 @@ describe('FriendsPage', () => {
     await settle();
     expect(element.textContent).toContain('Bloquear Bia?');
     expect(element.textContent).toContain('Ela não será avisada.');
-    button('Confirmar')?.click();
+    modalButton('Bloquear')?.click();
     await settle();
     expect(source.block).toHaveBeenCalledWith('bia_souls');
     expect(information).toHaveBeenCalledWith('Você bloqueou Bia.');
@@ -229,7 +233,7 @@ describe('FriendsPage', () => {
     await render({ remove: () => Promise.reject(new Error('rede')) });
     button('Remover Bia')?.click();
     await settle();
-    button('Confirmar')?.click();
+    modalButton('Remover')?.click();
     await settle();
     expect(error).toHaveBeenCalledWith('Não foi possível concluir. Tente de novo.');
   });

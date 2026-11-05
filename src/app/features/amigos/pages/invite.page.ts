@@ -3,10 +3,15 @@ import { RouterLink } from '@angular/router';
 import { PoButtonModule, PoNotificationService } from '@po-ui/ng-components';
 
 import { FriendsStore } from '../data/friends.store';
-import { FoundPlayer, NOT_FOUND_MESSAGE, relationLabel, sendMessage } from '../domain/friends';
+import {
+  FAILURE_MESSAGE,
+  FoundPlayer,
+  NOT_FOUND_MESSAGE,
+  REQUEST_GONE_MESSAGE,
+  relationLabel,
+  sendMessage,
+} from '../domain/friends';
 import { PersonRowComponent } from '../ui/person-row/person-row.component';
-
-const FAILURE = 'Não foi possível concluir. Tente de novo.';
 
 /**
  * Link de convite (spec 006, CA1): mostra quem convidou e a ação certa. Sem login, o guard leva ao
@@ -49,7 +54,7 @@ export class InvitePage {
   protected async send(player: FoundPlayer): Promise<void> {
     const result = await this.store.send(player);
     if (result === null) {
-      this.notification.error(FAILURE);
+      this.notification.error(FAILURE_MESSAGE);
       return;
     }
     const { success, text } = sendMessage(result, player.name);
@@ -63,13 +68,13 @@ export class InvitePage {
   protected async accept(player: FoundPlayer): Promise<void> {
     const result = await this.store.answer(player.id, true);
     if (result === 'failed') {
-      this.notification.error(FAILURE);
+      this.notification.error(FAILURE_MESSAGE);
       return;
     }
     if (result === 'done') {
       this.notification.success(`Agora você e ${player.name} são amigos.`);
     } else {
-      this.notification.information('Esse pedido não está mais aberto.');
+      this.notification.information(REQUEST_GONE_MESSAGE);
     }
     await this.store.find(player.username);
   }

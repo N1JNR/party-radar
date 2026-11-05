@@ -72,6 +72,41 @@ describe('FriendsStore', () => {
     expect(store.friends()).toHaveLength(2);
   });
 
+  it('uma releitura antiga não sobrescreve a mais recente', async () => {
+    const resolvers: ((value: FriendsData) => void)[] = [];
+    const { store } = setup();
+    await store.load();
+    (TestBed.inject(FRIENDS_SOURCE).load as ReturnType<typeof vi.fn>).mockImplementation(
+      () => new Promise((resolve) => resolvers.push(resolve)),
+    );
+    const older = store.refresh();
+    const newer = store.refresh();
+    resolvers[1]({ ...data(), friends: [] });
+    await newer;
+    resolvers[0](data());
+    await older;
+    expect(store.friends()).toEqual([]);
+  });
+
+  it('uma carga antiga não troca o estado da mais recente', async () => {
+    const resolvers: ((value: FriendsData) => void)[] = [];
+    const rejects: ((reason: Error) => void)[] = [];
+    const { store } = setup({
+      load: () =>
+        new Promise((resolve, reject) => {
+          resolvers.push(resolve);
+          rejects.push(reject);
+        }),
+    });
+    const first = store.load();
+    const second = store.load();
+    resolvers[1](data());
+    await second;
+    rejects[0](new Error('rede'));
+    await first;
+    expect(store.status()).toBe('ready');
+  });
+
   it('não relê antes de carregar', async () => {
     const { store, source } = setup();
     await store.refresh();

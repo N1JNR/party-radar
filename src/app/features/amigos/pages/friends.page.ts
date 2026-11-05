@@ -21,15 +21,18 @@ import { ClipboardService } from '../../../core/platform/clipboard.service';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import { playingLabel } from '../../home/domain/player-card';
 import { FriendsStore } from '../data/friends.store';
-import { FoundPlayer, Player, sendMessage } from '../domain/friends';
+import {
+  FAILURE_MESSAGE,
+  FoundPlayer,
+  Player,
+  REQUEST_GONE_MESSAGE,
+  sendMessage,
+} from '../domain/friends';
 import { AddFriendComponent } from '../ui/add-friend/add-friend.component';
 import { PersonRowComponent } from '../ui/person-row/person-row.component';
 
 /** De quanto em quanto tempo a tela relê os amigos; o servidor lê a Steam a cada 5 minutos (CA13). */
 export const REFRESH_EVERY_MS = 60_000;
-
-const FAILURE = 'Não foi possível concluir. Tente de novo.';
-const REQUEST_GONE = 'Esse pedido não está mais aberto.';
 
 interface Confirmation {
   kind: 'remove' | 'block';
@@ -67,11 +70,12 @@ export class FriendsPage {
       ? 'A amizade e os pedidos entre vocês acabam, e essa pessoa não consegue mais encontrar você. Ela não será avisada.'
       : 'A amizade acaba para os dois, e vocês param de ver o jogo aberto um do outro. Essa pessoa não será avisada.',
   );
-  protected readonly confirmAction: PoModalAction = {
-    label: 'Confirmar',
+  /** O botão diz o que acontece (DESIGN.md). */
+  protected readonly confirmAction = computed<PoModalAction>(() => ({
+    label: this.confirmation()?.kind === 'block' ? 'Bloquear' : 'Remover',
     danger: true,
     action: () => void this.confirm(),
-  };
+  }));
   protected readonly cancelAction: PoModalAction = {
     label: 'Cancelar',
     action: () => this.modal().close(),
@@ -89,7 +93,7 @@ export class FriendsPage {
   protected async send(player: FoundPlayer): Promise<void> {
     const result = await this.store.send(player);
     if (result === null) {
-      this.notification.error(FAILURE);
+      this.notification.error(FAILURE_MESSAGE);
       return;
     }
     const { success, text } = sendMessage(result, player.name);
@@ -103,9 +107,9 @@ export class FriendsPage {
   protected async answer(person: Player, accept: boolean): Promise<void> {
     const result = await this.store.answer(person.id, accept);
     if (result === 'failed') {
-      this.notification.error(FAILURE);
+      this.notification.error(FAILURE_MESSAGE);
     } else if (result === 'gone') {
-      this.notification.information(REQUEST_GONE);
+      this.notification.information(REQUEST_GONE_MESSAGE);
     } else if (accept) {
       this.notification.success(`Agora você e ${person.name} são amigos.`);
     } else {
@@ -115,7 +119,7 @@ export class FriendsPage {
 
   protected async cancel(person: Player): Promise<void> {
     if (!(await this.store.cancel(person.id))) {
-      this.notification.error(FAILURE);
+      this.notification.error(FAILURE_MESSAGE);
     }
   }
 
@@ -123,7 +127,7 @@ export class FriendsPage {
     if (await this.store.unblock(person.id)) {
       this.notification.information(`Você desbloqueou ${person.name}.`);
     } else {
-      this.notification.error(FAILURE);
+      this.notification.error(FAILURE_MESSAGE);
     }
   }
 
@@ -147,7 +151,7 @@ export class FriendsPage {
         kind === 'remove' ? `Você removeu ${person.name}.` : `Você bloqueou ${person.name}.`,
       );
     } else {
-      this.notification.error(FAILURE);
+      this.notification.error(FAILURE_MESSAGE);
     }
   }
 

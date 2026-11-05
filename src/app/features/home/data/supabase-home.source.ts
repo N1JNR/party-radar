@@ -151,20 +151,22 @@ export class SupabaseHomeSource implements HomeDataSource {
       ),
       friendsCount: friendRows.length,
       // A Steam é a única fonte do jogo aberto, e ela não diz desde quando se joga (spec 006, CA14).
-      friendsPlaying: friendRows.flatMap((row) =>
-        row.current_game
-          ? [
-              {
-                id: row.user_id,
-                name: row.display_name,
-                avatarUrl: row.avatar_url,
-                game: row.current_game,
-                platform: 'pc' as const,
-                startedAt: null,
-              },
-            ]
-          : [],
-      ),
+      friendsPlaying: [...friendRows]
+        .sort((a, b) => a.display_name.localeCompare(b.display_name, 'pt-BR'))
+        .flatMap((row) =>
+          row.current_game
+            ? [
+                {
+                  id: row.user_id,
+                  name: row.display_name,
+                  avatarUrl: row.avatar_url,
+                  game: row.current_game,
+                  platform: 'pc' as const,
+                  startedAt: null,
+                },
+              ]
+            : [],
+        ),
       squads: [],
       question: null,
       inviteLink: `${this.navigation.origin()}/convite/${username}`,

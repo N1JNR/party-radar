@@ -40,6 +40,12 @@ export type SendResult =
 /** A mesma frase para quem não existe e para quem me bloqueou (CA4). */
 export const NOT_FOUND_MESSAGE = 'Não encontramos esse @usuário.';
 
+/** Uma ação não foi concluída (CA19). */
+export const FAILURE_MESSAGE = 'Não foi possível concluir. Tente de novo.';
+
+/** A outra pessoa cancelou o pedido antes da resposta (CA8, CA10). */
+export const REQUEST_GONE_MESSAGE = 'Esse pedido não está mais aberto.';
+
 /** Amigos jogando primeiro e, dentro de cada grupo, em ordem de nome (CA12). */
 export function sortFriends(friends: readonly Friend[]): Friend[] {
   return [...friends].sort(

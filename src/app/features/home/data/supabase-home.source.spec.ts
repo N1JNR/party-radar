@@ -134,6 +134,22 @@ describe('SupabaseHomeSource', () => {
     ]);
   });
 
+  it('quem joga aparece em ordem de nome, para a lista não mudar de lugar (spec 006)', async () => {
+    const friend = (id: string) => ({
+      user_id: id,
+      display_name: id,
+      username: id,
+      avatar_url: null,
+      current_game: 'CS2',
+    });
+    const { source } = setup({ data: [], error: null }, user, noGames, noGames, noGames, {
+      data: [friend('Caio'), friend('Bia')],
+      error: null,
+    });
+    const { friendsPlaying } = await source.load();
+    expect(friendsPlaying.map((row) => row.name)).toEqual(['Bia', 'Caio']);
+  });
+
   it('resposta nula dos amigos conta como nenhum (spec 006)', async () => {
     const empty = { data: null, error: null };
     const { source } = setup({ data: [], error: null }, user, noGames, noGames, noGames, empty);

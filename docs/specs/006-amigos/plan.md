@@ -108,5 +108,7 @@ Nenhuma nova. O jogo aberto continua vindo da leitura da Steam, a cada 5 minutos
 - **Custo por minuto:** a home ganha mais uma consulta na releitura de cada minuto, somada ao achado já em aberto das
   specs 004 e 005.
 - **Corrida do squad:** continua só explicando o que virá, mesmo com amigos reais.
+- **Jogo aberto antigo:** se a tarefa de presença parar, o amigo segue como "Jogando" até ela voltar, porque a hora da
+  presença não é gravada. Resolver isso exige uma coluna nova, em outra entrega.
 - **Quem desconfia do bloqueio:** com uma segunda conta, dá para comparar as respostas e perceber que foi bloqueado.
   Sem uma lista pública, não há como evitar isso por completo.

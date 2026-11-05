@@ -28,6 +28,7 @@ export type Lookup =
 export class FriendsStore {
   private readonly source = inject(FRIENDS_SOURCE);
   private lookupId = 0;
+  private readId = 0;
 
   readonly status = signal<FriendsStatus>('loading');
   readonly data = signal<FriendsData | null>(null);
@@ -37,12 +38,18 @@ export class FriendsStore {
   readonly friends = computed(() => sortFriends(this.data()?.friends ?? []));
 
   async load(): Promise<void> {
+    const id = ++this.readId;
     this.status.set('loading');
     try {
-      this.data.set(await this.source.load());
-      this.status.set('ready');
+      const data = await this.source.load();
+      if (id === this.readId) {
+        this.data.set(data);
+        this.status.set('ready');
+      }
     } catch {
-      this.status.set('error');
+      if (id === this.readId) {
+        this.status.set('error');
+      }
     }
   }
 
@@ -51,8 +58,10 @@ export class FriendsStore {
     if (this.status() !== 'ready') {
       return;
     }
+    // Só vale a leitura mais recente: uma antiga traria de volta a lista de antes de uma ação.
+    const id = ++this.readId;
     const data = await this.source.load().catch(() => null);
-    if (data) {
+    if (data && id === this.readId) {
       this.data.set(data);
     }
   }
