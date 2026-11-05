@@ -10,10 +10,10 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 **Front**
 
-- [ ] T3 — Domínio de amigos: ordem, @usuário e mensagens (CA4, CA12)
-- [ ] T4 — Fontes real e simulada e a loja de amigos (CA8 a CA11, CA15 a CA17, CA19)
-- [ ] T5 — Tela de Amigos: lista, pedidos, adicionar, remover e bloquear (CA3 a CA6, CA8 a CA13, CA15 a CA19, CA21)
-- [ ] T6 — Tela de convite e rotas (CA1, CA2, CA5, CA6)
+- [x] T3 — Domínio de amigos: ordem, @usuário e mensagens (CA4, CA12)
+- [x] T4 — Fontes real e simulada e a loja de amigos (CA8 a CA11, CA15 a CA17, CA19)
+- [x] T5 — Tela de Amigos: lista, pedidos, adicionar, remover e bloquear (CA3 a CA6, CA8 a CA13, CA15 a CA19, CA21)
+- [x] T6 — Tela de convite e rotas (CA1, CA2, CA5, CA6)
 - [ ] T7 — Home com amigos reais: "Jogando agora" e "Convidar amigos" (CA14)
 - [ ] T8 — `DESIGN.md`, `docs/plano.md` e `AGENTS.md` atualizados
 

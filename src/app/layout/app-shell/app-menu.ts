@@ -50,7 +50,7 @@ export function buildAppMenu(
       label: 'Amigos',
       shortLabel: 'Amigos',
       icon: 'an an-users',
-      action: () => actions.soon('Amigos'),
+      link: '/amigos',
     },
     {
       label: 'Squads',

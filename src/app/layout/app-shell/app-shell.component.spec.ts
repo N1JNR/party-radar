@@ -144,8 +144,8 @@ describe('AppShellComponent', () => {
 
   it('destinos que ainda não existem mostram "Em breve" (CA13)', async () => {
     await render();
-    menu().menus[1].action?.();
-    expect(information).toHaveBeenCalledWith('Em breve: Amigos.');
+    menu().menus[2].action?.();
+    expect(information).toHaveBeenCalledWith('Em breve: Squads.');
   });
 
   it('Sair encerra a sessão e volta para o login sem deixar a tela no histórico (CA3)', async () => {

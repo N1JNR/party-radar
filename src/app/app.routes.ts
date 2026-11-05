@@ -38,6 +38,19 @@ export const routes: Routes = [
         title: 'Meu card | Party Radar',
         loadComponent: () => import('./features/home/pages/home.page').then((m) => m.HomePage),
       },
+      {
+        path: 'amigos',
+        title: 'Amigos | Party Radar',
+        loadComponent: () =>
+          import('./features/amigos/pages/friends.page').then((m) => m.FriendsPage),
+      },
+      // Sem login, o guard leva ao Discord e o `?next=` traz a pessoa de volta (spec 006, CA2).
+      {
+        path: 'convite/:username',
+        title: 'Convite | Party Radar',
+        loadComponent: () =>
+          import('./features/amigos/pages/invite.page').then((m) => m.InvitePage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },
