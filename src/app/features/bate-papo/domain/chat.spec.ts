@@ -14,6 +14,7 @@ import {
   listTimeLabel,
   menuLabel,
   mergeMessages,
+  newClientId,
   messageError,
   sendFailureText,
   squadNameError,
@@ -51,6 +52,14 @@ const conversation = (fields: Partial<Conversation> = {}): Conversation => ({
 });
 
 const now = new Date('2026-11-05T15:00:00Z');
+
+describe('newClientId', () => {
+  it('gera um UUID v4 diferente a cada vez (CA9)', () => {
+    const first = newClientId();
+    expect(first).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    expect(newClientId()).not.toBe(first);
+  });
+});
 
 describe('mergeMessages (CA6, CA8)', () => {
   it('junta sem repetir e ordena da mais antiga para a mais nova', () => {

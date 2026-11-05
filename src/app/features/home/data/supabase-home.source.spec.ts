@@ -110,13 +110,19 @@ describe('SupabaseHomeSource', () => {
       noGames,
       noGames,
       {
-        data: [{ conversation_id: 's1', name: 'Squad da Sexta', member_ids: ['ana', 'bia'] }],
+        data: [
+          { conversation_id: 's1', name: 'Squad da Sexta', member_ids: ['ana', 'bia'] },
+          { conversation_id: 's2', name: 'Almas', member_ids: ['caio'] },
+        ],
         error: null,
       },
     );
     const data = await source.load();
     expect(rpc).toHaveBeenCalledWith('my_squads');
-    expect(data.squads).toEqual([{ id: 's1', name: 'Squad da Sexta', memberIds: ['ana', 'bia'] }]);
+    expect(data.squads).toEqual([
+      { id: 's2', name: 'Almas', memberIds: ['caio'] },
+      { id: 's1', name: 'Squad da Sexta', memberIds: ['ana', 'bia'] },
+    ]);
   });
 
   it('erro nos squads sobe, para a home mostrar o erro', async () => {

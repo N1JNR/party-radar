@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DOCUMENT,
   computed,
   effect,
   inject,
@@ -60,6 +61,10 @@ interface Confirmation {
     SquadFormComponent,
   ],
   providers: [ConversationStore, FriendsStore],
+  host: {
+    // Ao voltar para a aba, o que chegou conta como lido.
+    '(document:visibilitychange)': 'onVisibilityChange()',
+  },
   templateUrl: './conversations.page.html',
   styleUrl: './conversations.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -70,6 +75,7 @@ export class ConversationsPage {
   protected readonly friends = inject(FriendsStore);
   private readonly source = inject(CHAT_SOURCE);
   private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
   private readonly notification = inject(PoNotificationService);
   private readonly modal = viewChild.required(PoModalComponent);
 
@@ -129,6 +135,12 @@ export class ConversationsPage {
         }
       });
     });
+  }
+
+  protected onVisibilityChange(): void {
+    if (!this.document.hidden && this.conversation.status() === 'ready') {
+      void this.conversation.refresh().then(() => this.chat.refresh());
+    }
   }
 
   protected retryList(): void {

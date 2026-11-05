@@ -201,13 +201,15 @@ export class SupabaseChatSource implements ChatSource {
     if (error) {
       throw error;
     }
-    return ((data ?? []) as unknown as MemberRow[]).map((row) => ({
-      id: row.user_id,
-      name: row.display_name,
-      username: row.username,
-      avatarUrl: row.avatar_url,
-      isOwner: row.is_owner === true,
-    }));
+    return ((data ?? []) as unknown as MemberRow[])
+      .map((row) => ({
+        id: row.user_id,
+        name: row.display_name,
+        username: row.username,
+        avatarUrl: row.avatar_url,
+        isOwner: row.is_owner === true,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }
 
   /**

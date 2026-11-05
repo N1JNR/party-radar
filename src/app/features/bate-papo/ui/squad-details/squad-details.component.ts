@@ -43,9 +43,12 @@ export class SquadDetailsComponent {
     return this.friends().filter((friend) => !inside.has(friend.id));
   });
 
+  /** Só o texto: cada releitura traz outro objeto, e não pode apagar o que se está digitando. */
+  private readonly title = computed(() => this.conversation().title);
+
   constructor() {
     effect(() => {
-      const title = this.conversation().title;
+      const title = this.title();
       untracked(() => this.name.set(title));
     });
   }

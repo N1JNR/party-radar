@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { DOCUMENT, Injectable, inject, signal } from '@angular/core';
 
 import {
   ChatMessage,
@@ -6,6 +6,7 @@ import {
   PendingMessage,
   SendStatus,
   mergeMessages,
+  newClientId,
   sendFailureText,
   withoutDelivered,
 } from '../domain/chat';
@@ -17,8 +18,11 @@ export type ConversationStatus = 'idle' | 'loading' | 'error' | 'ready';
 @Injectable()
 export class ConversationStore {
   private readonly source = inject(CHAT_SOURCE);
+  private readonly document = inject(DOCUMENT);
   private conversationId: string | null = null;
   private openId = 0;
+  /** O que não saiu, por conversa: trocar de conversa não perde o texto (CA9). */
+  private readonly notSent = new Map<string, PendingMessage[]>();
 
   readonly status = signal<ConversationStatus>('idle');
   readonly messages = signal<ChatMessage[]>([]);
@@ -29,17 +33,18 @@ export class ConversationStore {
   /** Abre uma conversa, esquecendo a anterior. */
   async open(conversationId: string): Promise<void> {
     const id = ++this.openId;
+    this.putAwayNotSent();
     this.conversationId = conversationId;
     this.status.set('loading');
     this.messages.set([]);
-    this.pending.set([]);
+    this.pending.set(this.notSent.get(conversationId) ?? []);
     this.hasOlder.set(false);
     try {
       const page = await this.source.messages(conversationId);
       if (id !== this.openId) {
         return;
       }
-      this.messages.set(mergeMessages([], page));
+      this.absorb(page);
       this.hasOlder.set(page.length >= PAGE_SIZE);
       this.status.set('ready');
       await this.markRead();
@@ -52,6 +57,7 @@ export class ConversationStore {
 
   close(): void {
     this.openId++;
+    this.putAwayNotSent();
     this.conversationId = null;
     this.status.set('idle');
     this.messages.set([]);
@@ -67,6 +73,11 @@ export class ConversationStore {
     const id = this.openId;
     const page = await this.source.messages(conversationId).catch(() => null);
     if (page && id === this.openId) {
+      if (this.leavesGap(page)) {
+        // Ficaram mais de 50 mensagens para trás: recomeça das novas, e as outras vêm ao rolar (CA8).
+        this.messages.set([]);
+        this.hasOlder.set(true);
+      }
       this.absorb(page);
       await this.markRead();
     }
@@ -97,7 +108,7 @@ export class ConversationStore {
   /** A mensagem aparece na hora, com "Enviando…" (CA9). */
   send(body: string): Promise<void> {
     const item: PendingMessage = {
-      clientId: crypto.randomUUID(),
+      clientId: newClientId(),
       body,
       status: 'sending',
       reason: null,
@@ -118,6 +129,12 @@ export class ConversationStore {
       if (!(await this.source.deleteMessage(messageId))) {
         return false;
       }
+      // A releitura só traz as 50 mais novas, e esta pode ser mais antiga (CA5).
+      this.messages.update((current) =>
+        current.map((item) =>
+          item.id === messageId ? { ...item, body: null, deleted: true } : item,
+        ),
+      );
       await this.refresh();
       return true;
     } catch {
@@ -163,8 +180,29 @@ export class ConversationStore {
     );
   }
 
-  private async markRead(): Promise<void> {
+  /** A página cheia não encosta no que já está na tela? */
+  private leavesGap(page: readonly ChatMessage[]): boolean {
+    const shown = new Set(this.messages().map((item) => item.id));
+    return shown.size > 0 && page.length >= PAGE_SIZE && !page.some((item) => shown.has(item.id));
+  }
+
+  /** O que estava saindo ao trocar de conversa volta como falha, e some se tiver chegado (CA9). */
+  private putAwayNotSent(): void {
     if (this.conversationId) {
+      this.notSent.set(
+        this.conversationId,
+        this.pending().map((item) =>
+          item.status === 'sending'
+            ? { ...item, status: 'failed', reason: sendFailureText('failed') }
+            : item,
+        ),
+      );
+    }
+  }
+
+  /** Com a aba escondida, ninguém leu: a novidade continua no menu (CA18). */
+  private async markRead(): Promise<void> {
+    if (this.conversationId && !this.document.hidden) {
       await this.source.markRead(this.conversationId).catch(() => undefined);
     }
   }

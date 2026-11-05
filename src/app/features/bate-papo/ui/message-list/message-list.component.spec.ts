@@ -90,6 +90,7 @@ describe('MessageListComponent', () => {
     fixture.detectChanges();
     TestBed.tick();
     await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve));
     expect(document.activeElement).toBe(element.querySelector('.messages'));
     element.remove();
   });
@@ -190,6 +191,37 @@ describe('MessageListComponent', () => {
       TestBed.tick();
       await fixture.whenStable();
       expect(scroller.scrollTop).toBe(510);
+    });
+
+    it('mensagem nova durante a carga não estraga a posição (CA6)', async () => {
+      const { fixture, element } = render([message('b')], [], true);
+      const scroller = layout(element, { top: 10, height: 1000, client: 400 });
+      scroller.dispatchEvent(new Event('scroll'));
+      fixture.componentRef.setInput('loadingOlder', true);
+      Object.defineProperty(scroller, 'scrollHeight', { configurable: true, value: 1100 });
+      fixture.componentRef.setInput('messages', [message('b'), message('c')]);
+      fixture.detectChanges();
+      TestBed.tick();
+      await fixture.whenStable();
+      expect(scroller.scrollTop).toBe(10);
+      Object.defineProperty(scroller, 'scrollHeight', { configurable: true, value: 1600 });
+      fixture.componentRef.setInput('messages', [message('a'), message('b'), message('c')]);
+      fixture.detectChanges();
+      TestBed.tick();
+      await fixture.whenStable();
+      expect(scroller.scrollTop).toBe(510);
+    });
+
+    it('se a carga falhar, a próxima mensagem não desloca a tela (CA6)', async () => {
+      const { fixture, element } = render([message('b')], [], true);
+      const scroller = layout(element, { top: 10, height: 1000, client: 400 });
+      scroller.dispatchEvent(new Event('scroll'));
+      Object.defineProperty(scroller, 'scrollHeight', { configurable: true, value: 1100 });
+      fixture.componentRef.setInput('messages', [message('b'), message('c')]);
+      fixture.detectChanges();
+      TestBed.tick();
+      await fixture.whenStable();
+      expect(scroller.scrollTop).toBe(10);
     });
 
     it('no fim, acompanha a mensagem nova (CA3)', async () => {

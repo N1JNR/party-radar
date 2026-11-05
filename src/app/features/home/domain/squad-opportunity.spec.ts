@@ -1,5 +1,5 @@
 import { FriendPresence } from './friend-presence';
-import { Squad, playingCount, squadOpportunities } from './squad-opportunity';
+import { Squad, squadOpportunities } from './squad-opportunity';
 
 const friend = (id: string, game: string): FriendPresence => ({
   id,
@@ -83,14 +83,5 @@ describe('squadOpportunities', () => {
   it('sem squads ou sem ninguém jogando, não há oportunidades', () => {
     expect(squadOpportunities([], [friend('ana', 'CS2')])).toEqual([]);
     expect(squadOpportunities([sexta], [])).toEqual([]);
-  });
-});
-
-describe('playingCount', () => {
-  it('conta os membros do squad jogando qualquer jogo', () => {
-    expect(
-      playingCount(sexta, [friend('ana', 'CS2'), friend('bia', 'Fortnite'), friend('enzo', 'CS2')]),
-    ).toBe(2);
-    expect(playingCount(souls, [])).toBe(0);
   });
 });

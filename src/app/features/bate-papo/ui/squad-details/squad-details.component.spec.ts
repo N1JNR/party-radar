@@ -85,6 +85,28 @@ describe('SquadDetailsComponent', () => {
     expect(names).toEqual(['Novo']);
   });
 
+  it('uma releitura não apaga o nome que está sendo digitado', async () => {
+    await render();
+    const input = element.querySelector('input') as HTMLInputElement;
+    input.value = 'Novo';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    fixture.componentRef.setInput('conversation', { ...squad(true) });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(input.value).toBe('Novo');
+  });
+
+  it('o nome acompanha quando o squad é renomeado', async () => {
+    await render();
+    fixture.componentRef.setInput('conversation', { ...squad(true), title: 'Outro' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect((element.querySelector('input') as HTMLInputElement).value).toBe('Outro');
+  });
+
   it('nome vazio explica e não renomeia (CA11)', async () => {
     await render();
     const names: string[] = [];

@@ -317,6 +317,7 @@ describe('ConversationsPage', () => {
       await settle();
       modalButton('Apagar')?.click();
       await settle();
+      await new Promise((resolve) => setTimeout(resolve));
       expect(document.activeElement).toBe(element.querySelector('.messages'));
       element.remove();
     });
@@ -337,6 +338,32 @@ describe('ConversationsPage', () => {
       modalButton('Apagar')?.click();
       await settle();
       expect(error).toHaveBeenCalledWith('Não foi possível concluir. Tente de novo.');
+    });
+
+    it('ao voltar para a aba, marca como lida e relê a lista (CA18)', async () => {
+      await render('c1');
+      source.markRead.mockClear();
+      source.conversations.mockClear();
+      document.dispatchEvent(new Event('visibilitychange'));
+      await settle();
+      expect(source.markRead).toHaveBeenCalledWith('c1');
+      expect(source.conversations).toHaveBeenCalled();
+    });
+
+    it('com a aba escondida, ou sem conversa aberta, não relê', async () => {
+      await render(undefined);
+      source.conversations.mockClear();
+      document.dispatchEvent(new Event('visibilitychange'));
+      await settle();
+      expect(source.conversations).not.toHaveBeenCalled();
+      fixture.componentRef.setInput('id', 'c1');
+      await settle();
+      source.conversations.mockClear();
+      const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(true);
+      document.dispatchEvent(new Event('visibilitychange'));
+      await settle();
+      hidden.mockRestore();
+      expect(source.conversations).not.toHaveBeenCalled();
     });
 
     it('trocar a rota fecha a conversa', async () => {
@@ -452,6 +479,14 @@ describe('ConversationsPage', () => {
       button('Ver squad')?.click();
       await settle();
     }
+
+    it('removida com o painel aberto, avisa em vez de ficar em branco (CA15)', async () => {
+      await openDetails();
+      TestBed.inject(ChatStore).conversations.set([]);
+      await settle();
+      expect(element.querySelector('app-squad-details')).toBeNull();
+      expect(element.textContent).toContain('Este squad não está disponível.');
+    });
 
     it('conversa a dois não tem "Ver squad"', async () => {
       await render('c1');

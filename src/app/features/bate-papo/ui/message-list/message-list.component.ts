@@ -51,8 +51,8 @@ export class MessageListComponent {
 
   private readonly scroller = viewChild.required<ElementRef<HTMLElement>>('scroller');
   private atBottom = true;
-  /** Altura antes de pedir as anteriores, para manter a posição quando chegarem (CA6). */
-  private heightBeforeOlder: number | null = null;
+  /** Como estava ao pedir as anteriores, para manter a posição quando chegarem (CA6). */
+  private beforeOlder: { firstId: string | undefined; height: number } | null = null;
   /** A mensagem com o pedido de apagar: ao sumir o botão, o foco não pode se perder (CA24). */
   private removingId: string | null = null;
 
@@ -91,7 +91,10 @@ export class MessageListComponent {
 
   protected askOlder(): void {
     if (this.hasOlder() && !this.loadingOlder()) {
-      this.heightBeforeOlder = this.scroller().nativeElement.scrollHeight;
+      this.beforeOlder = {
+        firstId: this.messages().at(0)?.id,
+        height: this.scroller().nativeElement.scrollHeight,
+      };
       this.older.emit();
     }
   }
@@ -100,16 +103,24 @@ export class MessageListComponent {
     const removed = this.messages().some((item) => item.id === this.removingId && item.deleted);
     if (removed) {
       this.removingId = null;
-      this.scroller().nativeElement.focus();
+      // Fora da renderização: `focus()` dispara eventos na hora, e eles não podem cair no meio dela.
+      setTimeout(() => this.scroller().nativeElement.focus());
     }
   }
 
   protected keepPosition(): void {
     const element = this.scroller().nativeElement;
-    if (this.heightBeforeOlder !== null) {
-      element.scrollTop += element.scrollHeight - this.heightBeforeOlder;
-      this.heightBeforeOlder = null;
-    } else if (this.atBottom) {
+    const before = this.beforeOlder;
+    if (before && before.firstId !== this.messages().at(0)?.id) {
+      element.scrollTop += element.scrollHeight - before.height;
+      this.beforeOlder = null;
+      return;
+    }
+    if (before) {
+      // Mudou outra coisa, como uma mensagem nova no fim. Sem carga em andamento, ela falhou.
+      this.beforeOlder = this.loadingOlder() ? { ...before, height: element.scrollHeight } : null;
+    }
+    if (this.atBottom) {
       element.scrollTop = element.scrollHeight;
     }
   }

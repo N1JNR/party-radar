@@ -75,6 +75,11 @@
             (leave)="askLeave()"
             (closed)="closePane()"
           />
+        } @else {
+          <div class="chat__state">
+            <p class="chat__strong">Este squad não está disponível.</p>
+            <a class="chat__link" routerLink="/conversas">Ver minhas conversas</a>
+          </div>
         }
       }
       @default {

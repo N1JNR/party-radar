@@ -64,6 +64,24 @@ export const PRIVACY_TEXT =
 
 const TIME_ZONE = 'America/Sao_Paulo';
 
+/**
+ * O id que evita duplicar ao tentar de novo (CA9), um UUID v4. `crypto.randomUUID` só existe com HTTPS,
+ * e o celular na rede local usa HTTP.
+ */
+export function newClientId(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    hex.slice(12, 16),
+    hex.slice(16, 20),
+    hex.slice(20),
+  ].join('-');
+}
+
 /** Junta mensagens por `id`, sem repetir, da mais antiga para a mais nova (CA6, CA8). */
 export function mergeMessages(
   current: readonly ChatMessage[],

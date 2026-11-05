@@ -179,11 +179,13 @@ export class SupabaseHomeSource implements HomeDataSource {
               ]
             : [],
         ),
-      squads: squadRows.map((row) => ({
-        id: row.conversation_id,
-        name: row.name,
-        memberIds: row.member_ids,
-      })),
+      squads: squadRows
+        .map((row) => ({
+          id: row.conversation_id,
+          name: row.name,
+          memberIds: row.member_ids,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
       question: null,
       inviteLink: `${this.navigation.origin()}/convite/${username}`,
     };

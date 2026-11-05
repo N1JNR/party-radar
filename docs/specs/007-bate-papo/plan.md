@@ -101,6 +101,10 @@ Só o Supabase Realtime, que já faz parte do projeto. Se ele cair, as mensagens
 
 - **Conferência:** tempo real de verdade pede duas pessoas. Sem outra conta do Discord, um perfil de teste no banco
   local manda mensagens pelo SQL, criado só com a sua autorização.
+- **Conta apagada:** o app ainda não apaga contas. Quando apagar (spec de Perfil), um squad cujo dono saiu assim fica sem
+  dono, e um squad sem ninguém fica com as mensagens no banco; a função de apagar conta precisa tratar os dois casos.
+- **Apagar em mensagens antigas:** a releitura traz só as 50 mais novas. Se outra pessoa apagar uma mensagem mais antiga
+  que isso, ela segue na tela de quem já a tinha carregado, até reabrir a conversa.
 - **Sem moderação:** não há denúncia nesta entrega. Precisa existir antes de abrir o app para além dos amigos.
 - **Privacidade:** as mensagens ficam legíveis para quem administra o banco. A tela avisa.
 - **Sem aviso fora do app:** a mensagem só aparece com o app aberto.

@@ -53,6 +53,85 @@ describe('ConversationStore', () => {
     expect(store.status()).toBe('error');
   });
 
+  it('com a aba escondida, não marca como lida (CA18)', async () => {
+    const { store, source } = setup();
+    const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(true);
+    await store.open('c1');
+    expect(source.markRead).not.toHaveBeenCalled();
+    hidden.mockRestore();
+    await store.refresh();
+    expect(source.markRead).toHaveBeenCalledWith('c1');
+  });
+
+  it('apagar uma mensagem fora das 50 mais novas muda a tela (CA5)', async () => {
+    const { store, source } = setup({
+      messages: vi.fn(() => Promise.resolve([message('antiga'), message('nova', 'nova', 1)])),
+    });
+    await store.open('c1');
+    source.messages.mockResolvedValue([message('nova', 'nova', 1)]);
+    expect(await store.deleteMessage('antiga')).toBe(true);
+    expect(store.messages().find((m) => m.id === 'antiga')).toMatchObject({
+      body: null,
+      deleted: true,
+    });
+  });
+
+  it('depois de mais de 50 perdidas, recomeça das novas, sem buraco (CA8)', async () => {
+    const { store, source } = setup({ messages: vi.fn(() => Promise.resolve([message('a')])) });
+    await store.open('c1');
+    source.messages.mockResolvedValue(fullPage());
+    await store.refresh();
+    expect(store.messages().some((m) => m.id === 'a')).toBe(false);
+    expect(store.messages()).toHaveLength(50);
+    expect(store.hasOlder()).toBe(true);
+  });
+
+  it('página cheia que encosta no que já está na tela só junta (CA8)', async () => {
+    const page = fullPage();
+    const { store, source } = setup({ messages: vi.fn(() => Promise.resolve([page[0]])) });
+    await store.open('c1');
+    source.messages.mockResolvedValue(page);
+    await store.refresh();
+    expect(store.hasOlder()).toBe(false);
+    expect(store.messages()).toHaveLength(50);
+  });
+
+  it('a mensagem que falhou volta quando se volta à conversa (CA9)', async () => {
+    const { store } = setup({ send: () => Promise.resolve('rate_limited' as const) });
+    await store.open('c1');
+    await store.send('oi');
+    await store.open('c2');
+    expect(store.pending()).toEqual([]);
+    await store.open('c1');
+    expect(store.pending().map((item) => [item.body, item.status])).toEqual([['oi', 'failed']]);
+  });
+
+  it('fechar a tela da conversa também guarda o que falhou (CA9)', async () => {
+    const { store } = setup({ send: () => Promise.resolve('rate_limited' as const) });
+    await store.open('c1');
+    await store.send('oi');
+    store.close();
+    expect(store.pending()).toEqual([]);
+    await store.open('c1');
+    expect(store.pending()).toHaveLength(1);
+  });
+
+  it('o que estava saindo ao trocar volta como falha, e some se já chegou (CA9)', async () => {
+    const send = vi.fn(() => new Promise<'sent'>(() => undefined));
+    const { store, source } = setup({ send });
+    await store.open('c1');
+    void store.send('oi');
+    const clientId = store.pending()[0].clientId;
+    await store.open('c2');
+    source.messages.mockResolvedValueOnce([message('a')]);
+    await store.open('c1');
+    expect(store.pending()[0].status).toBe('failed');
+    await store.open('c2');
+    source.messages.mockResolvedValueOnce([message('x', clientId)]);
+    await store.open('c1');
+    expect(store.pending()).toEqual([]);
+  });
+
   it('falha ao marcar como lida não atrapalha', async () => {
     const { store } = setup({ markRead: () => Promise.reject(new Error('rede')) });
     await store.open('c1');

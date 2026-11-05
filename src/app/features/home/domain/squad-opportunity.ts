@@ -47,8 +47,3 @@ export function squadOpportunities(
       b.members.length - a.members.length || a.squad.name.localeCompare(b.squad.name, 'pt-BR'),
   );
 }
-
-/** Quantos membros do squad estão jogando agora, em qualquer jogo (badge do menu). */
-export function playingCount(squad: Squad, playing: readonly FriendPresence[]): number {
-  return playing.filter((friend) => squad.memberIds.includes(friend.id)).length;
-}
