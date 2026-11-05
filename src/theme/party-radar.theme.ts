@@ -14,7 +14,9 @@ export const partyRadarTheme: PoTheme = {
       color: {
         brand: {
           '01': {
-            lightest: '#F0ECFF',
+            // O PO UI usa `lightest` como fundo ao passar o mouse e ao selecionar, sob o texto do tema:
+            // claro, ele apagava o que se digita nos campos (spec 007, 1,1:1).
+            lightest: '#1B1638',
             lighter: '#D5CBFF',
             light: '#A996FF',
             base: '#6E4BFF',
