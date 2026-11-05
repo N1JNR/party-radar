@@ -14,13 +14,16 @@ export const partyRadarTheme: PoTheme = {
       color: {
         brand: {
           '01': {
-            lightest: '#F0ECFF',
-            lighter: '#D5CBFF',
-            light: '#A996FF',
+            // Escala invertida para o modo escuro, como a dos avisos: o PO UI usa `lightest` e `lighter`
+            // como fundo de passar o mouse e selecionar, e `darker` e `darkest` como texto. Na ordem
+            // do modo claro, o que se digita sumia nos campos e o nome do checkbox não se lia (spec 007).
+            lightest: '#1B1638',
+            lighter: '#2A2160',
+            light: '#3F25B0',
             base: '#6E4BFF',
-            dark: '#5636E0',
-            darker: '#3F25B0',
-            darkest: '#24168A',
+            dark: '#A996FF',
+            darker: '#D5CBFF',
+            darkest: '#F0ECFF',
           },
           '02': { base: '#22D3EE' },
           '03': { base: '#FBBF24' },

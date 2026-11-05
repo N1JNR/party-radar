@@ -50,6 +50,24 @@ describe('partyRadarTheme', () => {
     });
   });
 
+  // Regressão da spec 007: com o mouse sobre um campo, o texto digitado sumia no fundo claro.
+  it('o fundo de passar o mouse deixa ler o texto e as ações', () => {
+    const hover = dark?.color?.brand?.['01']?.lightest ?? '';
+    expect(contrast(dark?.color?.neutral?.dark?.['90'] ?? '', hover)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(dark?.color?.action?.default ?? '', hover)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  // Regressão da spec 007: o nome do checkbox (`darker`, e `darkest` com o mouse) não se lia no fundo.
+  it.each(['darker', 'darkest'] as const)('o texto %s da marca se lê sobre a página', (step) => {
+    expect(contrast(dark?.color?.brand?.['01']?.[step] ?? '', page)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  // O botão usa `darkest` sobre `lighter` ao passar o mouse, e sobre `light` ao apertar.
+  it.each(['lighter', 'light'] as const)('o texto do botão se lê sobre o fundo %s', (step) => {
+    const brand = dark?.color?.brand?.['01'];
+    expect(contrast(brand?.darkest ?? '', brand?.[step] ?? '')).toBeGreaterThanOrEqual(4.5);
+  });
+
   // Regressão da T11a: o texto do botão secundário (cor de ação sobre o fundo) e o do primário
   // (fundo escuro sobre a cor de ação) davam 3,7:1 com #6E4BFF.
   it.each(['default', 'hover', 'pressed'] as const)(

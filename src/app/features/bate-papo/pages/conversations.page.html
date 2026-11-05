@@ -1,0 +1,153 @@
+<main class="chat" [class.chat--pane-open]="paneOpen()">
+  <aside class="chat__side" aria-labelledby="chat-title">
+    <div class="chat__head">
+      <h1 id="chat-title" class="chat__title">Conversas</h1>
+      <po-button p-kind="secondary" p-label="Criar squad" (p-click)="openCreate()" />
+    </div>
+    <div class="chat__scroll">
+      @switch (chat.status()) {
+        @case ('error') {
+          <div class="chat__state" role="alert">
+            <p class="chat__strong">Não foi possível carregar suas conversas.</p>
+            <po-button p-kind="secondary" p-label="Tentar de novo" (p-click)="retryList()" />
+          </div>
+        }
+        @case ('ready') {
+          @if (chat.conversations().length > 0) {
+            <app-conversation-list
+              [conversations]="chat.conversations()"
+              [selectedId]="id() ?? null"
+              [now]="now()"
+            />
+          } @else {
+            <div class="chat__state">
+              <p class="chat__strong">Nenhuma conversa ainda.</p>
+              <p class="chat__text">Fale com um amigo ou crie um squad.</p>
+              <a class="chat__link" routerLink="/amigos">Ver meus amigos</a>
+            </div>
+          }
+        }
+        @default {
+          <div class="skeleton" aria-hidden="true"></div>
+          <p class="pr-sr-only" role="status">Carregando suas conversas…</p>
+        }
+      }
+    </div>
+    <p class="chat__privacy">{{ privacyText() }}</p>
+  </aside>
+
+  <section class="chat__pane" aria-label="Conversa aberta">
+    @switch (pane()) {
+      @case ('create') {
+        @switch (friends.status()) {
+          @case ('loading') {
+            <div class="skeleton" aria-hidden="true"></div>
+            <p class="pr-sr-only" role="status">Carregando seus amigos…</p>
+          }
+          @case ('error') {
+            <div class="chat__state" role="alert">
+              <p class="chat__strong">Não foi possível carregar seus amigos.</p>
+              <po-button p-kind="secondary" p-label="Tentar de novo" (p-click)="friends.load()" />
+              <po-button p-kind="tertiary" p-label="Voltar" (p-click)="closePane()" />
+            </div>
+          }
+          @default {
+            <app-squad-form
+              [friends]="friendList()"
+              [busy]="busy()"
+              [failure]="createFailure()"
+              (create)="create($event)"
+              (cancelled)="closePane()"
+            />
+          }
+        }
+      }
+      @case ('details') {
+        @if (current(); as open) {
+          <app-squad-details
+            [conversation]="open"
+            [members]="members()"
+            [friends]="friendList()"
+            [busy]="busy()"
+            (rename)="rename($event)"
+            (add)="add($event)"
+            (remove)="askRemove($event)"
+            (leave)="askLeave()"
+            (closed)="closePane()"
+          />
+        } @else {
+          <div class="chat__state">
+            <p class="chat__strong">Este squad não está disponível.</p>
+            <a class="chat__link" routerLink="/conversas">Ver minhas conversas</a>
+          </div>
+        }
+      }
+      @default {
+        @if (id()) {
+          <header class="chat__bar">
+            <a class="chat__back" routerLink="/conversas">Voltar</a>
+            <h2 class="chat__name">{{ current()?.title ?? 'Conversa' }}</h2>
+            @if (current()?.kind === 'squad') {
+              <po-button p-kind="tertiary" p-label="Ver squad" (p-click)="openDetails()" />
+            }
+          </header>
+          @switch (conversation.status()) {
+            @case ('error') {
+              <div class="chat__state" role="alert">
+                <p class="chat__strong">Não foi possível abrir a conversa.</p>
+                <po-button
+                  p-kind="secondary"
+                  p-label="Tentar de novo"
+                  (p-click)="retryConversation()"
+                />
+              </div>
+            }
+            @case ('ready') {
+              @if (chat.status() === 'ready' && !current()) {
+                <div class="chat__state">
+                  <p class="chat__strong">Esta conversa não está disponível.</p>
+                  <a class="chat__link" routerLink="/conversas">Ver minhas conversas</a>
+                </div>
+              } @else {
+                <app-message-list
+                  [messages]="conversation.messages()"
+                  [pending]="conversation.pending()"
+                  [hasOlder]="conversation.hasOlder()"
+                  [loadingOlder]="conversation.loadingOlder()"
+                  [now]="now()"
+                  (older)="conversation.loadOlder()"
+                  (remove)="askDelete($event)"
+                  (retry)="conversation.retry($event)"
+                />
+                @if (current()?.canSend === false) {
+                  <p class="chat__readonly">{{ readOnlyText() }}</p>
+                } @else {
+                  <app-message-composer
+                    [conversationTitle]="current()?.title ?? ''"
+                    (send)="send($event)"
+                  />
+                }
+              }
+            }
+            @default {
+              <div class="skeleton skeleton--messages" aria-hidden="true"></div>
+              <p class="pr-sr-only" role="status">Abrindo a conversa…</p>
+            }
+          }
+        } @else {
+          <div class="chat__state chat__state--center">
+            <p class="chat__text">Escolha uma conversa para começar.</p>
+          </div>
+        }
+      }
+    }
+  </section>
+</main>
+
+<po-modal
+  [p-title]="modalTitle()"
+  [p-primary-action]="confirmAction()"
+  [p-secondary-action]="cancelAction"
+>
+  <p class="chat__text">{{ modalText() }}</p>
+</po-modal>

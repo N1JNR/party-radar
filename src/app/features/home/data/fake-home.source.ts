@@ -238,7 +238,11 @@ export class FakeHomeSource implements HomeDataSource {
         scenario === 'no-squads'
           ? []
           : [
-              { id: 'sexta', name: 'Squad da Sexta', memberIds: ['bia', 'caio', 'duda', 'rafa'] },
+              {
+                id: 'squad-sexta',
+                name: 'Squad da Sexta',
+                memberIds: ['bia', 'caio', 'duda', 'rafa'],
+              },
               { id: 'almas', name: 'Almas Sofridas', memberIds: ['rafa', 'enzo'] },
             ],
       question: {

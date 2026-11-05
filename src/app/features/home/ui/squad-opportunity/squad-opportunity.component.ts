@@ -4,7 +4,7 @@ import { PoButtonModule } from '@po-ui/ng-components';
 import { PLATFORM_LABELS } from '../../domain/player-card';
 import { SquadOpportunity } from '../../domain/squad-opportunity';
 
-/** Destaque "3 do Squad da Sexta no Fortnite" com "Chamar o squad" (spec 002, CA12). */
+/** Destaque "3 do Squad da Sexta no Fortnite" com "Abrir conversa" (spec 002, CA12; spec 007). */
 @Component({
   selector: 'app-squad-opportunity',
   imports: [PoButtonModule],
@@ -14,7 +14,7 @@ import { SquadOpportunity } from '../../domain/squad-opportunity';
 })
 export class SquadOpportunityComponent {
   readonly opportunity = input.required<SquadOpportunity>();
-  readonly callSquad = output<SquadOpportunity>();
+  readonly openConversation = output<SquadOpportunity>();
 
   protected readonly members = computed(() =>
     this.opportunity().members.map((member) => ({

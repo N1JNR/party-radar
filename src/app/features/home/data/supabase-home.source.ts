@@ -59,6 +59,13 @@ interface GameRow {
   previous_is_estimate: boolean;
 }
 
+/** Uma linha de `my_squads()` (spec 007). */
+interface SquadRow {
+  conversation_id: string;
+  name: string;
+  member_ids: string[];
+}
+
 const toHours = (minutes: number | null | undefined) =>
   typeof minutes === 'number' && minutes > 0 ? minutes / 60 : 0;
 
@@ -68,8 +75,8 @@ const toKind = (category: string): GameKind =>
 
 /**
  * Home de verdade (spec 003, Parte 3b; spec 005): nome e foto do Discord (perfil) e os números da
- * Steam, calculados no banco por `my_card_stats()`, `my_games()` e `my_season()`. Os amigos vêm de `my_friends()` (spec 006); squads e a
- * pergunta de parceria seguem vazios.
+ * Steam, calculados no banco por `my_card_stats()`, `my_games()` e `my_season()`. Os amigos vêm de `my_friends()` (spec 006), os squads de `my_squads()` (spec 007),
+ * e a pergunta de parceria segue vazia.
  */
 @Injectable()
 export class SupabaseHomeSource implements HomeDataSource {
@@ -78,13 +85,14 @@ export class SupabaseHomeSource implements HomeDataSource {
   private readonly navigation = inject(ExternalNavigation);
 
   async load(): Promise<HomeData> {
-    const [statsResult, gamesResult, seasonResult, trophiesResult, friendsResult] =
+    const [statsResult, gamesResult, seasonResult, trophiesResult, friendsResult, squadsResult] =
       await Promise.all([
         this.supabase.rpc('my_card_stats'),
         this.supabase.rpc('my_games'),
         this.supabase.rpc('my_season'),
         this.supabase.from('season_trophies').select('season_number, rank_id, minutes, top_game'),
         this.supabase.rpc('my_friends'),
+        this.supabase.rpc('my_squads'),
       ]);
     if (statsResult.error) {
       throw statsResult.error;
@@ -101,6 +109,9 @@ export class SupabaseHomeSource implements HomeDataSource {
     if (friendsResult.error) {
       throw friendsResult.error;
     }
+    if (squadsResult.error) {
+      throw squadsResult.error;
+    }
     // Sem Steam conectada, a função não devolve linha: o card fica zerado (primeiro acesso).
     const stats = ((statsResult.data ?? []) as unknown as CardStatsRow[]).at(0) ?? null;
     const gameRows = (gamesResult.data ?? []) as unknown as GameRow[];
@@ -108,6 +119,7 @@ export class SupabaseHomeSource implements HomeDataSource {
     const seasonRow = ((seasonResult.data ?? []) as unknown as SeasonRow[]).at(0) ?? null;
     const trophyRows = (trophiesResult.data ?? []) as TrophyRow[];
     const friendRows = (friendsResult.data ?? []) as unknown as FriendRow[];
+    const squadRows = (squadsResult.data ?? []) as unknown as SquadRow[];
     const user = this.auth.user();
     const username = user?.username ?? 'jogador';
     const card: PlayerCard = {
@@ -167,7 +179,13 @@ export class SupabaseHomeSource implements HomeDataSource {
               ]
             : [],
         ),
-      squads: [],
+      squads: squadRows
+        .map((row) => ({
+          id: row.conversation_id,
+          name: row.name,
+          memberIds: row.member_ids,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
       question: null,
       inviteLink: `${this.navigation.origin()}/convite/${username}`,
     };

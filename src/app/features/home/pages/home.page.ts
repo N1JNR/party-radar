@@ -6,6 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { PoButtonModule, PoNotificationService } from '@po-ui/ng-components';
 
 import { ClipboardService } from '../../../core/platform/clipboard.service';
@@ -59,6 +60,7 @@ export class HomePage {
   private readonly clipboard = inject(ClipboardService);
   private readonly navigation = inject(ExternalNavigation);
   private readonly notification = inject(PoNotificationService);
+  private readonly router = inject(Router);
   private readonly radarImage = inject(RadarImageService);
   private readonly seasonImage = inject(SeasonImageService);
   private readonly sharer = inject(ShareService);
@@ -136,8 +138,9 @@ export class HomePage {
   }
 
   /** Telas que são entregas próprias (CA13). */
-  protected soon(feature: string): void {
-    this.notification.information(`Em breve: ${feature}.`);
+  /** "Abrir conversa" da oportunidade de squad (spec 007). */
+  protected openConversation(squadId: string): void {
+    void this.router.navigate(['/conversas'], { queryParams: { id: squadId } });
   }
 
   protected async copyInvite(link: string): Promise<void> {

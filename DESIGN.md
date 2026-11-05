@@ -232,6 +232,10 @@ lateral (`po-menu`) fica fixo acima de 1200 px e vira gaveta até 1200 px. Prefi
   do tema em `data/canvas-image.ts`.
 - **Linha de pessoa:** foto, nome, @usuário, estado em texto ("Jogando Dota 2 agora") e as ações à direita; no
   celular, as ações descem para a linha de baixo.
+- **Conversas:** a lista e a conversa lado a lado a partir de 768 px; abaixo disso, uma tela de cada
+  vez, com "Voltar". A tela ocupa a altura toda e só as mensagens rolam: a caixa de texto fica sempre à
+  vista. A mensagem da própria pessoa fica à direita, com outro fundo, e toda a informação também está
+  em texto ("2 não lidas", "Não enviada").
 - **Card do Wrapped:** precisa renderizar no servidor (SSR) **sem PO UI**, para a prévia do link.
 
 ### Estados obrigatórios
@@ -252,8 +256,8 @@ Toda tela e todo componente que carrega dados tem quatro versões: **carregando*
 - **Web primeiro** (1280–1440 px), funcional até 390 px: conteúdo alinhado à esquerda;
   centralizado só em telas de uma ação (Entrar, vazio). No celular, uma coluna com margem
   lateral `--spacing-sm`.
-- **Navegação:** menu lateral (`po-menu`) fixo acima de 1200 px, com Meu card, Amigos, Squads, Perfil,
-  a lista dos seus squads e Sair. Até 1200 px, o menu vira gaveta aberta pelo botão de
+- **Navegação:** menu lateral (`po-menu`) fixo acima de 1200 px, com Meu card, Amigos, Conversas, Perfil
+  e Sair. Até 1200 px, o menu vira gaveta aberta pelo botão de
   menu (fecha ao escolher um destino, tocar fora ou apertar Esc, devolvendo o foco ao botão).
   O botão de abrir é nosso: o do `po-menu` é uma `div` sem teclado (exceção aceita na spec 002).
   Respeite a área segura do celular (`env(safe-area-inset-bottom)`) por causa do Capacitor.

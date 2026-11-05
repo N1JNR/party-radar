@@ -14,7 +14,8 @@
   </ul>
   <po-button
     p-kind="secondary"
-    p-label="Chamar o squad"
-    (p-click)="callSquad.emit(opportunity())"
+    p-label="Abrir conversa"
+    [p-aria-label]="'Abrir a conversa do ' + opportunity().squad.name"
+    (p-click)="openConversation.emit(opportunity())"
   />
 </section>

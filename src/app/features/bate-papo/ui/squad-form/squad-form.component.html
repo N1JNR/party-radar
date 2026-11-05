@@ -1,0 +1,40 @@
+<section class="form" aria-labelledby="squad-form-title">
+  <h2 id="squad-form-title" class="form__title">Criar squad</h2>
+  @if (friends().length === 0) {
+    <p class="form__text">Você precisa de amigos para criar um squad.</p>
+    <po-button p-kind="secondary" p-label="Voltar" (p-click)="cancelled.emit()" />
+  } @else {
+    <form class="form__fields" (ngSubmit)="submit()">
+      <po-input
+        name="name"
+        p-label="Nome do squad"
+        p-placeholder="Squad da Sexta"
+        [ngModel]="name()"
+        (ngModelChange)="editName($event ?? '')"
+      />
+      <fieldset class="form__friends">
+        <legend class="form__legend">Quem entra</legend>
+        @for (friend of friends(); track friend.id) {
+          <po-checkbox
+            [name]="'friend-' + friend.id"
+            [p-label]="friend.name"
+            [ngModel]="isChosen(friend.id)"
+            (ngModelChange)="toggle(friend.id, $event)"
+          />
+        }
+      </fieldset>
+      @if (message(); as text) {
+        <p class="form__error" role="alert">{{ text }}</p>
+      }
+      <div class="form__actions">
+        <po-button
+          p-kind="primary"
+          p-label="Criar squad"
+          [p-type]="submitType"
+          [p-loading]="busy()"
+        />
+        <po-button p-kind="tertiary" p-label="Cancelar" (p-click)="cancelled.emit()" />
+      </div>
+    </form>
+  }
+</section>

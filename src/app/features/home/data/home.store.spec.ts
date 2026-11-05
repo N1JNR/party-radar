@@ -113,10 +113,9 @@ describe('HomeStore', () => {
     expect(store.trophies()).toEqual([]);
     expect(store.careerHours()).toBe(0);
     expect(store.opportunities()).toEqual([]);
-    expect(store.menuSquads()).toBeNull();
   });
 
-  it('carrega e calcula patente, jogos, oportunidades e squads do menu', async () => {
+  it('carrega e calcula patente, jogos e oportunidades', async () => {
     const store = setup({});
     await store.load();
     expect(store.status()).toBe('ready');
@@ -127,7 +126,6 @@ describe('HomeStore', () => {
     expect(store.hasGames()).toBe(true);
     expect(store.previousHours()).toBe(12);
     expect(store.opportunities()[0].game).toBe('Fortnite');
-    expect(store.menuSquads()).toEqual([{ id: 'sexta', name: 'Squad da Sexta', playing: 2 }]);
   });
 
   it('compartilha a temporada só com horas nela (spec 005, CA13)', async () => {
@@ -187,19 +185,10 @@ describe('HomeStore', () => {
     const store = setup({ load });
     await store.load();
     expect(store.status()).toBe('error');
-    expect(store.menuSquads()).toBeNull();
     const retry = store.load();
     expect(store.status()).toBe('loading');
     await retry;
     expect(store.status()).toBe('ready');
-  });
-
-  it('menuSquads não muda de referência quando os squads não mudam', async () => {
-    const store = setup({});
-    await store.load();
-    const before = store.menuSquads();
-    store.data.update((data) => (data ? { ...data, friendsCount: data.friendsCount + 1 } : data));
-    expect(store.menuSquads()).toBe(before);
   });
 
   it('reset esquece os dados de quem saiu e ignora a carga em andamento', async () => {
@@ -214,7 +203,6 @@ describe('HomeStore', () => {
     store.reset();
     expect(store.data()).toBeNull();
     expect(store.status()).toBe('loading');
-    expect(store.menuSquads()).toBeNull();
     resolve(homeData());
     await pending;
     expect(store.data()).toBeNull();

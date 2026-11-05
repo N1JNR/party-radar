@@ -70,6 +70,13 @@
                   <li>
                     <app-person-row [person]="friend" [status]="playingLabel(friend.playing)">
                       <po-button
+                        p-kind="secondary"
+                        p-label="Conversar"
+                        [p-aria-label]="'Conversar com ' + friend.name"
+                        [p-disabled]="store.busy()"
+                        (p-click)="talk(friend)"
+                      />
+                      <po-button
                         p-kind="tertiary"
                         p-label="Remover"
                         [p-aria-label]="'Remover ' + friend.name"

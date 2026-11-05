@@ -3,16 +3,9 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { STEAM_SOURCE, SteamAccountState, SteamRecheck } from '../../steam/data/steam.source';
 import { progressFor } from '../domain/patentes';
 import { previousMonthHours, totalHours } from '../domain/player-radar';
-import { playingCount, squadOpportunities } from '../domain/squad-opportunity';
+import { squadOpportunities } from '../domain/squad-opportunity';
 import { SteamStepState } from '../domain/strengthen';
 import { HOME_DATA_SOURCE, HomeData } from './home.source';
-
-/** Um squad no menu do app, com quantos estão jogando agora. */
-export interface MenuSquad {
-  id: string;
-  name: string;
-  playing: number;
-}
 
 export type HomeStatus = 'loading' | 'error' | 'ready';
 
@@ -80,25 +73,6 @@ export class HomeStore {
     const data = this.data();
     return data ? squadOpportunities(data.squads, data.friendsPlaying) : [];
   });
-  /**
-   * Squads do menu. `null` enquanto a home não carregou (ou deu erro), para o menu não afirmar
-   * "Nenhum squad ainda" sem saber. Só muda quando os squads mudam, para não recriar o menu.
-   */
-  readonly menuSquads = computed<MenuSquad[] | null>(
-    () => {
-      const data = this.data();
-      if (this.status() !== 'ready' || !data) {
-        return null;
-      }
-      return data.squads.map((squad) => ({
-        id: squad.id,
-        name: squad.name,
-        playing: playingCount(squad, data.friendsPlaying),
-      }));
-    },
-    { equal: (a, b) => JSON.stringify(a) === JSON.stringify(b) },
-  );
-
   /** Esquece os dados ao sair, para a próxima pessoa não ver os squads de quem saiu. */
   reset(): void {
     this.loadId++;
