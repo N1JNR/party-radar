@@ -12,7 +12,9 @@
             <span class="friend__game">Jogando {{ friend.game }}</span>
           </span>
           <span class="friend__meta">
-            <span>{{ friend.since }}</span>
+            @if (friend.since; as since) {
+              <span>{{ since }}</span>
+            }
             <span>{{ friend.platformLabel }}</span>
           </span>
         </li>

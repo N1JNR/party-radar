@@ -7,8 +7,8 @@ export interface FriendPresence {
   avatarUrl: string | null;
   game: string;
   platform: Platform;
-  /** Quando começou a jogar, em ISO 8601. */
-  startedAt: string;
+  /** Quando começou a jogar, em ISO 8601; a Steam não informa, então vem `null` na conta real. */
+  startedAt: string | null;
 }
 
 /** "agora mesmo", "há 5 min", "há 2h", "há 1h20". Datas inválidas ou futuras viram "agora mesmo". */

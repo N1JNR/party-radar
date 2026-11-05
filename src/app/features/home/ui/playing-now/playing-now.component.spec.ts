@@ -24,6 +24,20 @@ const friends: FriendPresence[] = [
 ];
 
 describe('PlayingNowComponent', () => {
+  it('sem saber desde quando joga, não mostra o tempo (spec 006, CA14)', () => {
+    const fixture = TestBed.createComponent(PlayingNowComponent);
+    fixture.componentRef.setInput('friends', [
+      { id: 'bia', name: 'Bia', avatarUrl: null, game: 'Dota 2', platform: 'pc', startedAt: null },
+    ]);
+    fixture.componentRef.setInput('now', new Date('2026-11-05T12:00:00Z'));
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('.friend__game')?.textContent).toBe('Jogando Dota 2');
+    expect([...element.querySelectorAll('.friend__meta span')].map((n) => n.textContent)).toEqual([
+      'PC',
+    ]);
+  });
+
   let fixture: ComponentFixture<PlayingNowComponent>;
   let element: HTMLElement;
 

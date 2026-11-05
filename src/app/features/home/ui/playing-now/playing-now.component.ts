@@ -21,7 +21,7 @@ export class PlayingNowComponent {
   protected readonly rows = computed(() =>
     this.friends().map((friend) => ({
       ...friend,
-      since: playingForLabel(friend.startedAt, this.now()),
+      since: friend.startedAt ? playingForLabel(friend.startedAt, this.now()) : null,
       platformLabel: PLATFORM_LABELS[friend.platform],
     })),
   );

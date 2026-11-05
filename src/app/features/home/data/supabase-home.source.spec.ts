@@ -55,10 +55,14 @@ function setup(
   games: { data: unknown; error: unknown } = noGames,
   season: { data: unknown; error: unknown } = noGames,
   trophies: { data: unknown; error: unknown } = noGames,
+  friends: { data: unknown; error: unknown } = noGames,
 ) {
   const rpc = vi.fn((name: string) => {
     if (name === 'my_games') {
       return Promise.resolve(games);
+    }
+    if (name === 'my_friends') {
+      return Promise.resolve(friends);
     }
     return Promise.resolve(name === 'my_season' ? season : result);
   });
@@ -101,6 +105,45 @@ describe('SupabaseHomeSource', () => {
     expect(data.squads).toEqual([]);
     expect(data.question).toBeNull();
     expect(data.inviteLink).toBe('http://localhost:4200/convite/palmajnr_');
+  });
+
+  it('traz os amigos: conta todos e mostra só quem joga (spec 006, CA14)', async () => {
+    const friend = (id: string, game: string | null) => ({
+      user_id: id,
+      display_name: id.toUpperCase(),
+      username: id,
+      avatar_url: null,
+      current_game: game,
+    });
+    const { source, rpc } = setup(
+      { data: [statsRow], error: null },
+      user,
+      noGames,
+      noGames,
+      noGames,
+      {
+        data: [friend('bia', 'Dota 2'), friend('caio', null)],
+        error: null,
+      },
+    );
+    const data = await source.load();
+    expect(rpc).toHaveBeenCalledWith('my_friends');
+    expect(data.friendsCount).toBe(2);
+    expect(data.friendsPlaying).toEqual([
+      { id: 'bia', name: 'BIA', avatarUrl: null, game: 'Dota 2', platform: 'pc', startedAt: null },
+    ]);
+  });
+
+  it('resposta nula dos amigos conta como nenhum (spec 006)', async () => {
+    const empty = { data: null, error: null };
+    const { source } = setup({ data: [], error: null }, user, noGames, noGames, noGames, empty);
+    expect((await source.load()).friendsCount).toBe(0);
+  });
+
+  it('erro ao ler os amigos sobe, para a home mostrar o erro (spec 006)', async () => {
+    const failed = { data: null, error: new Error('rede') };
+    const { source } = setup({ data: [], error: null }, user, noGames, noGames, noGames, failed);
+    await expect(source.load()).rejects.toThrow('rede');
   });
 
   it('traz a temporada, com as horas em vez de minutos (spec 005, CA1)', async () => {
