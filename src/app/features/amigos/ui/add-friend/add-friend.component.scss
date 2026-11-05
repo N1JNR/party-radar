@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.add {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  background: var(--pr-surface-raised);
+}
+.add__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  line-height: var(--line-height-xs);
+}
+.add__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+}
+.add__field {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+.add__message {
+  margin: 0;
+  color: var(--pr-text-muted);
+}
+.add__result:empty {
+  display: none;
+}
