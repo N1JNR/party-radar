@@ -41,10 +41,10 @@ Feitas, em andamento ou já aprovadas (a pasta de cada uma está em `docs/specs/
 3. `003-steam` — conectar a Steam e trazer os dados reais
 4. `004-novo-dashboard` — radar do jogador, trilha da patente e imagem de compartilhar
 5. `005-temporadas` — patente por temporada de 60 dias
+6. `006-amigos` — pedidos, aceite, remoção, bloqueio e o jogo aberto dos amigos
+7. `007-bate-papo` — conversas entre amigos e squads, só por texto
 
 Próximas, nesta ordem (o número sai quando a spec for criada):
 
-- `006-amigos` — pedidos, aceite, remoção, bloqueio e o jogo aberto dos amigos
-- `007-bate-papo` — conversas entre amigos e squads, só por texto (pronta, falta o PR)
 - Corrida do squad — amigos na mesma trilha, com dados reais
 - Perfil

@@ -15,7 +15,7 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 
 - [x] T1 — `vercel.json`: build, pasta de saída e toda rota caindo no `index.csr.html`
 - [x] T2 — `environment.ts` com a URL e a publishable key do projeto novo
-- [ ] T3 — PR com T1 e T2
+- [x] T3 — PR com T1 e T2 (#39)
 
 **Supabase na nuvem (projeto novo, região São Paulo)**
 
@@ -49,6 +49,9 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 
 ## Riscos
 
+- **E-mail da conta na Vercel:** o principal é um Outlook a que o Jorge não tem mais acesso. O botão de implantar do painel pede
+  um código nele; o deploy pelo Git, ao chegar algo na `main`, é o caminho usado. Outras ações do painel podem pedir o mesmo
+  código. Solução: recuperar o Outlook ou falar com o suporte da Vercel.
 - **Sem moderação:** não há denúncia no bate-papo. Até existir, só convide amigos.
 - **Temporada:** ela começa quando a migration é aplicada, e todos recomeçam do zero na nuvem.
 - **Os dados locais não vão para a nuvem:** cada pessoa entra e conecta a Steam de novo.
