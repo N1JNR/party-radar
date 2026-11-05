@@ -22,7 +22,7 @@ alguém ativo. Ela soa como um amigo do grupo, não como um console técnico nem
 loja gamer cheia de neon.
 
 - **Vivo, não barulhento:** a cor vem da presença dos amigos, não da decoração.
-- **Direto:** uma ação principal por tela ("Chamar pra jogar", "Continuar com Discord").
+- **Direto:** uma ação principal por tela ("Compartilhar meu radar", "Continuar com Discord").
 - **Do grupo:** nomes, fotos e jogos dos amigos são o conteúdo; o app fica em segundo plano.
 
 **O elemento memorável é o anel de radar**: um anel em volta do avatar, na cor do estado
@@ -230,8 +230,8 @@ lateral (`po-menu`) fica fixo acima de 1200 px e vira gaveta até 1200 px. Prefi
 - **Imagens de compartilhar (radar, temporada e troféu):** PNG de 1080 × 1350 desenhado em
   `<canvas>`, só com o @usuário e dados de jogo. O canvas não lê variáveis de CSS: as cores repetem as
   do tema em `data/canvas-image.ts`.
-- **Card do amigo no Radar:** avatar, nome, estado e jogo atual, ação "Chamar".
-- **Card "Chamado ativo":** quem chamou, jogo, horário e respostas.
+- **Linha de pessoa:** foto, nome, @usuário, estado em texto ("Jogando Dota 2 agora") e as ações à direita; no
+  celular, as ações descem para a linha de baixo.
 - **Card do Wrapped:** precisa renderizar no servidor (SSR) **sem PO UI**, para a prévia do link.
 
 ### Estados obrigatórios
@@ -281,8 +281,8 @@ Toda tela e todo componente que carrega dados tem quatro versões: **carregando*
 ### Voz e textos
 
 - Português do Brasil, frases curtas, sentença com só a primeira letra maiúscula.
-- O botão diz o que acontece: "Chamar pra jogar", não "Enviar". A mesma ação mantém o nome
-  do começo ao fim ("Chamar" → toast "Chamado enviado").
+- O botão diz o que acontece: "Enviar pedido", não "Enviar". A mesma ação mantém o nome
+  do começo ao fim ("Enviar pedido" → toast "Pedido enviado para Bia.").
 - Tom de amigo, sem gírias forçadas e sem pedir desculpas em erro.
 - **Evite:** rótulos em CAIXA ALTA, seta "→" no fim de botões, textos genéricos como
   "Algo deu errado".
