@@ -41,11 +41,11 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 **Conferência**
 
 - [x] T14 — Abrir uma rota direto (`/conversas`) e recarregar, sem 404
-- [ ] T15 — Entrar com o Discord, conectar a Steam e ver o card
+- [x] T15 — Entrar com o Discord, conectar a Steam e ver o card
 - [ ] T16 — Duas contas reais: amizade, conversa em tempo real e squad, em dois aparelhos (falta da spec 007)
 - [ ] T17 — Celular de verdade: teclado aberto, com a caixa de texto à vista (CA25 da spec 007)
 - [ ] T18 — Agendamentos: `steam-presence` a cada 5 minutos, a leitura das 23h55 e os troféus, em `net._http_response`
-- [ ] T19 — Conferir que o build publicado não aceita `?simular-login=`
+- [x] T19 — Conferir que o build publicado não aceita `?simular-login=`
 
 ## Riscos
 
