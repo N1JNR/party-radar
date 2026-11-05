@@ -14,17 +14,17 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 **Repositório**
 
 - [x] T1 — `vercel.json`: build, pasta de saída e toda rota caindo no `index.csr.html`
-- [ ] T2 — `environment.ts` com a URL e a publishable key do projeto novo
+- [x] T2 — `environment.ts` com a URL e a publishable key do projeto novo
 - [ ] T3 — PR com T1 e T2
 
 **Supabase na nuvem (projeto novo, região São Paulo)**
 
-- [ ] T4 — Jorge: criar o projeto e guardar a senha do banco
-- [ ] T5 — Jorge: `npx supabase login` e `npx supabase link --project-ref <ref>`
+- [x] T4 — Jorge: criar o projeto e guardar a senha do banco (`vxwnmcsuqphwohddxrlv`, em São Paulo)
+- [ ] T5 — Jorge: `npx supabase login` e `npx supabase link --project-ref vxwnmcsuqphwohddxrlv`
 - [ ] T6 — Aplicar as migrations com `npx supabase db push`. A Temporada 1 começa aqui
 - [ ] T7 — Publicar as funções com `npx supabase functions deploy`
 - [ ] T8 — Jorge: girar o Client Secret do Discord e ligar o provedor Discord no painel com o segredo novo
-- [ ] T9 — Jorge: no Discord, acrescentar `https://<ref>.supabase.co/auth/v1/callback` em OAuth2 > Redirects
+- [ ] T9 — Jorge: no Discord, acrescentar `https://vxwnmcsuqphwohddxrlv.supabase.co/auth/v1/callback` em OAuth2 > Redirects
 - [ ] T10 — Jorge: `npx supabase secrets set` com `STEAM_WEB_API_KEY` e `APP_ORIGINS=https://<endereço-na-vercel>`
 - [ ] T11 — Jorge: no Vault, gravar `project_url` e `service_role_key`. Tem de ser a chave `service_role` (JWT), não a
       `sb_secret_…`: com ela, os agendamentos falham em silêncio (`docs/specs/003-steam/plan.md`)
