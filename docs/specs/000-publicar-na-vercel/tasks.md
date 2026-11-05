@@ -23,8 +23,8 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 - [x] T5 — Jorge: `npx supabase login` e `npx supabase link --project-ref vxwnmcsuqphwohddxrlv`
 - [x] T6 — Aplicar as migrations com `npx supabase db push`. A Temporada 1 começa aqui
 - [x] T7 — Publicar as funções com `npx supabase functions deploy`
-- [ ] T8 — Jorge: girar o Client Secret do Discord e ligar o provedor Discord no painel com o segredo novo
-- [ ] T9 — Jorge: no Discord, acrescentar `https://vxwnmcsuqphwohddxrlv.supabase.co/auth/v1/callback` em OAuth2 > Redirects
+- [x] T8 — Jorge: girar o Client Secret do Discord e ligar o provedor Discord no painel com o segredo novo
+- [x] T9 — Jorge: no Discord, acrescentar `https://vxwnmcsuqphwohddxrlv.supabase.co/auth/v1/callback` em OAuth2 > Redirects
 - [ ] T10 — Jorge: `npx supabase secrets set` com `STEAM_WEB_API_KEY` e `APP_ORIGINS=https://<endereço-na-vercel>`
 - [ ] T11 — Jorge: no Vault, gravar `project_url` e `service_role_key`. Tem de ser a chave `service_role` (JWT), não a
       `sb_secret_…`: com ela, os agendamentos falham em silêncio (`docs/specs/003-steam/plan.md`)
@@ -34,6 +34,9 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 - [ ] T12 — Jorge: entrar com o GitHub e importar `N1JNR/party-radar`
 - [ ] T13 — Jorge: no Supabase, em Authentication > URL Configuration, usar o endereço da Vercel como Site URL e
       acrescentar `https://<endereço-na-vercel>/**` nos Redirects
+
+- [ ] T20 — Jorge: no Supabase, desligar o provedor Email: o app só entra com Discord, e, ligado, qualquer um cria
+      conta por fora, sem passar pelo Discord
 
 **Conferência**
 
