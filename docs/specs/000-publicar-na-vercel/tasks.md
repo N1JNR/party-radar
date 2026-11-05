@@ -20,9 +20,9 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 **Supabase na nuvem (projeto novo, região São Paulo)**
 
 - [x] T4 — Jorge: criar o projeto e guardar a senha do banco (`vxwnmcsuqphwohddxrlv`, em São Paulo)
-- [ ] T5 — Jorge: `npx supabase login` e `npx supabase link --project-ref vxwnmcsuqphwohddxrlv`
-- [ ] T6 — Aplicar as migrations com `npx supabase db push`. A Temporada 1 começa aqui
-- [ ] T7 — Publicar as funções com `npx supabase functions deploy`
+- [x] T5 — Jorge: `npx supabase login` e `npx supabase link --project-ref vxwnmcsuqphwohddxrlv`
+- [x] T6 — Aplicar as migrations com `npx supabase db push`. A Temporada 1 começa aqui
+- [x] T7 — Publicar as funções com `npx supabase functions deploy`
 - [ ] T8 — Jorge: girar o Client Secret do Discord e ligar o provedor Discord no painel com o segredo novo
 - [ ] T9 — Jorge: no Discord, acrescentar `https://vxwnmcsuqphwohddxrlv.supabase.co/auth/v1/callback` em OAuth2 > Redirects
 - [ ] T10 — Jorge: `npx supabase secrets set` com `STEAM_WEB_API_KEY` e `APP_ORIGINS=https://<endereço-na-vercel>`
