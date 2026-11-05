@@ -5,7 +5,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 **Banco**
 
-- [ ] T1 — Conversas, membros e mensagens, com RLS, funções e tempo real (CA1, CA2, CA4, CA5, CA9 a CA17, CA20, CA23)
+- [x] T1 — Conversas, membros e mensagens, com RLS, funções e tempo real (CA1, CA2, CA4, CA5, CA9 a CA17, CA20, CA23)
 
 **Front**
 

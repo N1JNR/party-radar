@@ -23,6 +23,70 @@ export type Database = {
   };
   public: {
     Tables: {
+      conversation_members: {
+        Row: {
+          conversation_id: string;
+          joined_at: string;
+          last_read_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          conversation_id: string;
+          joined_at?: string;
+          last_read_at?: string;
+          user_id: string;
+        };
+        Update: {
+          conversation_id?: string;
+          joined_at?: string;
+          last_read_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'conversation_members_conversation_id_fkey';
+            columns: ['conversation_id'];
+            isOneToOne: false;
+            referencedRelation: 'conversations';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      conversations: {
+        Row: {
+          created_at: string;
+          direct_high: string | null;
+          direct_low: string | null;
+          id: string;
+          kind: string;
+          last_message_at: string | null;
+          name: string | null;
+          owner_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          direct_high?: string | null;
+          direct_low?: string | null;
+          id?: string;
+          kind: string;
+          last_message_at?: string | null;
+          name?: string | null;
+          owner_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          direct_high?: string | null;
+          direct_low?: string | null;
+          id?: string;
+          kind?: string;
+          last_message_at?: string | null;
+          name?: string | null;
+          owner_id?: string | null;
+        };
+        Relationships: [];
+      };
       friend_requests: {
         Row: {
           created_at: string;
@@ -82,6 +146,45 @@ export type Database = {
           source?: string;
         };
         Relationships: [];
+      };
+      messages: {
+        Row: {
+          body: string | null;
+          client_id: string;
+          conversation_id: string;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          sender_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          body?: string | null;
+          client_id: string;
+          conversation_id: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          sender_id?: string | null;
+        };
+        Update: {
+          body?: string | null;
+          client_id?: string;
+          conversation_id?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          sender_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'messages_conversation_id_fkey';
+            columns: ['conversation_id'];
+            isOneToOne: false;
+            referencedRelation: 'conversations';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       profiles: {
         Row: {
@@ -273,9 +376,31 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      add_squad_member: { Args: { p_conversation: string; p_user: string }; Returns: string };
       answer_friend_request: { Args: { p_accept: boolean; p_from: string }; Returns: boolean };
       block_user: { Args: { p_user: string }; Returns: undefined };
       cancel_friend_request: { Args: { p_to: string }; Returns: undefined };
+      conversation_messages: {
+        Args: { p_before_at?: string; p_before_id?: string; p_conversation: string };
+        Returns: {
+          body: string;
+          client_id: string;
+          created_at: string;
+          deleted: boolean;
+          message_id: string;
+          sender_avatar_url: string;
+          sender_id: string;
+          sender_name: string;
+        }[];
+      };
+      create_squad: {
+        Args: { p_members: string[]; p_name: string };
+        Returns: {
+          conversation_id: string;
+          status: string;
+        }[];
+      };
+      delete_message: { Args: { p_message: string }; Returns: boolean };
       find_player: {
         Args: { p_username: string };
         Returns: {
@@ -286,6 +411,7 @@ export type Database = {
           username: string;
         }[];
       };
+      is_conversation_member: { Args: { p_conversation: string }; Returns: boolean };
       latest_playtime: {
         Args: { p_user_id: string };
         Returns: {
@@ -293,6 +419,8 @@ export type Database = {
           minutes_total: number;
         }[];
       };
+      leave_squad: { Args: { p_conversation: string }; Returns: undefined };
+      mark_conversation_read: { Args: { p_conversation: string }; Returns: undefined };
       my_blocks: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -315,6 +443,23 @@ export type Database = {
           steam_name: string;
           total_minutes: number;
           visibility: string;
+        }[];
+      };
+      my_conversations: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          avatar_url: string;
+          can_send: boolean;
+          conversation_id: string;
+          is_owner: boolean;
+          kind: string;
+          last_at: string;
+          last_body: string;
+          last_deleted: boolean;
+          last_sender_name: string;
+          member_count: number;
+          title: string;
+          unread: number;
         }[];
       };
       my_friend_requests: {
@@ -361,7 +506,18 @@ export type Database = {
           top_game: string;
         }[];
       };
+      my_squads: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          conversation_id: string;
+          member_ids: string[];
+          name: string;
+        }[];
+      };
+      open_direct: { Args: { p_friend: string }; Returns: string };
       remove_friend: { Args: { p_friend: string }; Returns: undefined };
+      remove_squad_member: { Args: { p_conversation: string; p_user: string }; Returns: boolean };
+      rename_squad: { Args: { p_conversation: string; p_name: string }; Returns: boolean };
       season_at: {
         Args: { p_day: string };
         Returns: {
@@ -379,6 +535,23 @@ export type Database = {
       };
       season_rank: { Args: { p_minutes: number }; Returns: string };
       send_friend_request: { Args: { p_user: string }; Returns: string };
+      send_message: {
+        Args: { p_body: string; p_client_id: string; p_conversation: string };
+        Returns: {
+          message_id: string;
+          status: string;
+        }[];
+      };
+      squad_members: {
+        Args: { p_conversation: string };
+        Returns: {
+          avatar_url: string;
+          display_name: string;
+          is_owner: boolean;
+          user_id: string;
+          username: string;
+        }[];
+      };
       unblock_user: { Args: { p_user: string }; Returns: undefined };
       username_base: { Args: { source: string }; Returns: string };
     };
