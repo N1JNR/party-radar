@@ -140,7 +140,7 @@ export class HomePage {
   /** Telas que são entregas próprias (CA13). */
   /** "Abrir conversa" da oportunidade de squad (spec 007). */
   protected openConversation(squadId: string): void {
-    void this.router.navigate(['/conversas', squadId]);
+    void this.router.navigate(['/conversas'], { queryParams: { id: squadId } });
   }
 
   protected async copyInvite(link: string): Promise<void> {

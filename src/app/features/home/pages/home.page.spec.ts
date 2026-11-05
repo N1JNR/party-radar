@@ -473,7 +473,7 @@ describe('HomePage', () => {
     await render();
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     button('Abrir conversa')?.click();
-    expect(navigate).toHaveBeenCalledWith(['/conversas', 'sexta']);
+    expect(navigate).toHaveBeenCalledWith(['/conversas'], { queryParams: { id: 'sexta' } });
   });
 
   it('sem dados de amigos, as seções deles não aparecem (spec 004, CA13)', async () => {

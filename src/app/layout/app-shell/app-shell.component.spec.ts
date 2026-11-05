@@ -22,13 +22,16 @@ describe('AppShellComponent', () => {
   let conversations: Conversation[];
   let unsubscribe: ReturnType<typeof vi.fn>;
 
-  async function render(gateway: Partial<AuthGateway> = {}): Promise<void> {
+  async function render(gateway: Partial<AuthGateway> = {}, url?: string): Promise<void> {
     information = vi.fn();
     conversations = [];
     unsubscribe = vi.fn();
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([]),
+        provideRouter([
+          { path: 'amigos', children: [] },
+          { path: 'conversas', children: [] },
+        ]),
         { provide: PoNotificationService, useValue: { information } },
         { provide: HOME_DATA_SOURCE, useValue: {} },
         { provide: STEAM_SOURCE, useValue: {} },
@@ -50,6 +53,9 @@ describe('AppShellComponent', () => {
       ],
     });
     await TestBed.inject(AuthStore).restore();
+    if (url) {
+      await TestBed.inject(Router).navigateByUrl(url);
+    }
     fixture = TestBed.createComponent(AppShellComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -182,12 +188,41 @@ describe('AppShellComponent', () => {
     await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith('/login', { replaceUrl: true }));
   });
 
+  it('ao abrir o app numa tela, o menu já mostra o item marcado', async () => {
+    await render({}, '/amigos');
+    await new Promise((resolve) => setTimeout(resolve));
+    await new Promise((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+    expect(element.querySelector('.po-menu-item-selected')?.textContent).toContain('Amigos');
+  });
+
+  it('com uma conversa aberta, o menu marca Conversas (spec 007)', async () => {
+    await render();
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/amigos');
+    await router.navigateByUrl('/conversas?id=c1');
+    expect((menu() as unknown as { linkActive: string }).linkActive).toBe('/conversas');
+  });
+
   it('o menu diz quantas conversas têm novidade (spec 007, CA18)', async () => {
     await render();
     const news = { unread: 3 } as Conversation;
     TestBed.inject(ChatStore).conversations.set([news, { unread: 0 } as Conversation]);
     fixture.detectChanges();
     expect(menu().menus[2].label).toBe('Conversas · 1 com novidade');
+  });
+
+  it('a novidade muda o texto sem tirar o destaque do item (spec 007, CA18)', async () => {
+    await render({}, '/conversas');
+    await new Promise((resolve) => setTimeout(resolve));
+    await new Promise((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+    TestBed.inject(ChatStore).conversations.set([{ unread: 3 } as Conversation]);
+    TestBed.tick();
+    fixture.detectChanges();
+    expect(element.querySelector('.po-menu-item-selected')?.textContent).toContain(
+      'Conversas · 1 com novidade',
+    );
   });
 
   it('liga o tempo real ao entrar e esquece tudo ao sair (spec 007, CA18)', async () => {

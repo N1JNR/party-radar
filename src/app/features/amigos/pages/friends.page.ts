@@ -98,7 +98,7 @@ export class FriendsPage {
   protected async talk(friend: Player): Promise<void> {
     const id = await this.chat.openDirect(friend.id);
     if (id) {
-      await this.router.navigate(['/conversas', id]);
+      await this.router.navigate(['/conversas'], { queryParams: { id } });
     } else {
       this.notification.error(FAILURE_MESSAGE);
     }

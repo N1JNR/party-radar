@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   DestroyRef,
   ElementRef,
   afterNextRender,
-  computed,
   effect,
   inject,
   signal,
@@ -21,7 +21,7 @@ import {
 import { AuthStore } from '../../core/auth/auth.store';
 import { ChatStore } from '../../features/bate-papo/data/chat.store';
 import { HomeStore } from '../../features/home/data/home.store';
-import { buildAppMenu } from './app-menu';
+import { buildAppMenu, showNews } from './app-menu';
 
 /**
  * Layout das telas autenticadas: `po-menu` fixo a partir de 1201 px e gaveta abaixo disso
@@ -57,12 +57,10 @@ export class AppShellComponent {
   protected readonly menuOpen = signal(false);
   /** A própria pessoa tocou em Sair: a navegação já está a caminho. */
   private leaving = false;
-  protected readonly menus = computed(() =>
-    buildAppMenu(this.chat.withNews(), {
-      soon: (feature) => this.soon(feature),
-      signOut: () => void this.signOut(),
-    }),
-  );
+  protected readonly menus = buildAppMenu({
+    soon: (feature) => this.soon(feature),
+    signOut: () => void this.signOut(),
+  });
 
   constructor() {
     // A sessão terminou sem a pessoa tocar em Sair (renovação falhou, saiu em outra aba): as telas
@@ -73,8 +71,17 @@ export class AppShellComponent {
         void this.router.navigateByUrl('/login', { replaceUrl: true });
       }
     });
+    const changeDetector = inject(ChangeDetectorRef);
+    effect(() => {
+      showNews(this.menus, this.chat.withNews());
+      changeDetector.markForCheck();
+    });
     // Só no navegador: o tempo real e o contador do menu valem em todas as telas (spec 007, CA18).
-    afterNextRender(() => this.chat.start());
+    afterNextRender(() => {
+      this.chat.start();
+      // O `po-menu` marca o item atual num `setTimeout`, sem avisar esta casca `OnPush`.
+      setTimeout(() => changeDetector.markForCheck());
+    });
     inject(DestroyRef).onDestroy(() => this.chat.stop());
   }
 

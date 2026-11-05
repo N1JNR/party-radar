@@ -74,7 +74,7 @@ inevitável: mostrar nome e foto de outros membros com os perfis privados (spec 
 
 ## Front
 
-- **Rotas:** `/conversas` e `/conversas/:id`, na mesma tela. Acima de 768 px, lista e conversa ficam lado a lado; no
+- **Rotas:** `/conversas` e `/conversas?id=`, na mesma tela. O id vai na query porque o `po-menu` só marca o item com o caminho exato. Acima de 768 px, lista e conversa ficam lado a lado; no
   celular, uma de cada vez (CA25).
 - **Lojas:** `ChatStore` na raiz, para o menu saber das não lidas, limpa ao sair; `ConversationStore` por tela.
 - **Envio:** a mensagem aparece na hora com "Enviando…"; se falhar, "Não enviada" e "Tentar de novo" com o mesmo

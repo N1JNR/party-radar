@@ -323,7 +323,7 @@ describe('FriendsPage', () => {
     button('Conversar com Bia')?.click();
     await settle();
     expect(openDirect).toHaveBeenCalledWith('bia_souls');
-    expect(navigate).toHaveBeenCalledWith(['/conversas', 'conversa-1']);
+    expect(navigate).toHaveBeenCalledWith(['/conversas'], { queryParams: { id: 'conversa-1' } });
   });
 
   it('se não der para abrir a conversa, avisa e fica (spec 007, CA1)', async () => {

@@ -44,14 +44,9 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/amigos/pages/friends.page').then((m) => m.FriendsPage),
       },
+      // A conversa aberta vai em `?id=`: o `po-menu` só marca o item com o caminho exato (spec 007).
       {
         path: 'conversas',
-        title: 'Conversas | Party Radar',
-        loadComponent: () =>
-          import('./features/bate-papo/pages/conversations.page').then((m) => m.ConversationsPage),
-      },
-      {
-        path: 'conversas/:id',
         title: 'Conversas | Party Radar',
         loadComponent: () =>
           import('./features/bate-papo/pages/conversations.page').then((m) => m.ConversationsPage),

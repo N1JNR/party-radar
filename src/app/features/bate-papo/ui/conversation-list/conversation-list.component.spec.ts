@@ -46,7 +46,7 @@ describe('ConversationListComponent', () => {
 
   it('cada conversa é um link (CA24)', () => {
     const links = [...render().querySelectorAll('a')].map((a) => a.getAttribute('href'));
-    expect(links).toEqual(['/conversas/a', '/conversas/b']);
+    expect(links).toEqual(['/conversas?id=a', '/conversas?id=b']);
   });
 
   it('marca a conversa aberta', () => {
