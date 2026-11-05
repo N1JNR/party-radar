@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { PoNotificationService } from '@po-ui/ng-components';
 
 import { ClipboardService } from '../../../core/platform/clipboard.service';
@@ -468,10 +469,11 @@ describe('HomePage', () => {
     expect(element.querySelector('app-partnership-question')).not.toBeNull();
   });
 
-  it('Chamar o squad avisa "Em breve" (CA13)', async () => {
+  it('Abrir conversa leva à conversa do squad (spec 007)', async () => {
     await render();
-    button('Chamar o squad')?.click();
-    expect(information).toHaveBeenCalledWith('Em breve: Chamar o squad.');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    button('Abrir conversa')?.click();
+    expect(navigate).toHaveBeenCalledWith(['/conversas', 'sexta']);
   });
 
   it('sem dados de amigos, as seções deles não aparecem (spec 004, CA13)', async () => {

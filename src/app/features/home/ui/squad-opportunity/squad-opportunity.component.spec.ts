@@ -35,7 +35,7 @@ describe('SquadOpportunityComponent', () => {
   it('destaca o squad no mesmo jogo, com nomes e plataformas (CA12)', () => {
     render(opportunity);
     const call = vi.fn();
-    fixture.componentInstance.callSquad.subscribe(call);
+    fixture.componentInstance.openConversation.subscribe(call);
     expect(element.querySelector('h2')?.textContent?.trim()).toBe(
       '3 do Squad da Sexta no Fortnite',
     );
@@ -48,7 +48,7 @@ describe('SquadOpportunityComponent', () => {
       ['CAIO', 'PC'],
       ['DUDA', 'Xbox'],
     ]);
-    expect(button().textContent).toContain('Chamar o squad');
+    expect(button().textContent).toContain('Abrir conversa');
     button().click();
     expect(call).toHaveBeenCalledWith(opportunity);
   });

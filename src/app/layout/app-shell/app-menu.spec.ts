@@ -5,13 +5,12 @@ function actions() {
 }
 
 describe('buildAppMenu', () => {
-  it('tem Meu card, Amigos, Squads, Seus squads, Perfil e Sair, todos com ícone (CA1)', () => {
-    const menu = buildAppMenu([], actions());
+  it('tem Meu card, Amigos, Conversas, Perfil e Sair, todos com ícone (CA1)', () => {
+    const menu = buildAppMenu(0, actions());
     expect(menu.map((item) => item.label)).toEqual([
       'Meu card',
       'Amigos',
-      'Squads',
-      'Seus squads',
+      'Conversas',
       'Perfil',
       'Sair',
     ]);
@@ -19,59 +18,25 @@ describe('buildAppMenu', () => {
     expect(menu[0].link).toBe('/inicio');
   });
 
-  it('lista os squads com quantos estão jogando, em texto', () => {
-    const menu = buildAppMenu(
-      [
-        { id: 's1', name: 'Squad da Sexta', playing: 3 },
-        { id: 's2', name: 'Almas Sofridas', playing: 0 },
-      ],
-      actions(),
-    );
-    expect(menu[3].subItems?.map((item) => item.label)).toEqual([
-      'Squad da Sexta · 3 jogando',
-      'Almas Sofridas',
-      'Formar squad',
-    ]);
-  });
-
-  it('sem squads mostra "Nenhum squad ainda" e "Formar squad" (CA10)', () => {
-    const menu = buildAppMenu([], actions());
-    expect(menu[3].subItems?.map((item) => item.label)).toEqual([
-      'Nenhum squad ainda',
-      'Formar squad',
-    ]);
-  });
-
   it('Amigos abre a tela de amigos (spec 006)', () => {
-    expect(buildAppMenu([], actions())[1].link).toBe('/amigos');
+    expect(buildAppMenu(0, actions())[1].link).toBe('/amigos');
   });
 
-  it('destinos que ainda não existem avisam "Em breve" com o nome certo (CA13)', () => {
+  it('Conversas abre o bate-papo e diz em texto quantas têm novidade (spec 007, CA18)', () => {
+    const item = buildAppMenu(2, actions())[2];
+    expect(item.link).toBe('/conversas');
+    expect(item.label).toBe('Conversas · 2 com novidade');
+  });
+
+  it('o que ainda não existe avisa "Em breve" com o nome certo (CA13)', () => {
     const handlers = actions();
-    const menu = buildAppMenu([{ id: 's1', name: 'Squad da Sexta', playing: 1 }], handlers);
-    const subItems = menu[3].subItems ?? [];
-    for (const item of [menu[1], menu[2], menu[4], subItems[0], subItems[1]]) {
-      item.action?.();
-    }
-    expect(handlers.soon.mock.calls.map(([feature]) => feature)).toEqual([
-      'Squads',
-      'Perfil',
-      'Squad da Sexta',
-      'Formar squad',
-    ]);
-
-    buildAppMenu([], handlers)[3].subItems?.[0].action?.();
-    expect(handlers.soon).toHaveBeenLastCalledWith('Formar squad');
-  });
-
-  it('enquanto não sabe os squads, mostra só "Formar squad"', () => {
-    const menu = buildAppMenu(null, actions());
-    expect(menu[3].subItems?.map((item) => item.label)).toEqual(['Formar squad']);
+    buildAppMenu(0, handlers)[3].action?.();
+    expect(handlers.soon).toHaveBeenCalledWith('Perfil');
   });
 
   it('Sair chama a saída (CA3)', () => {
     const handlers = actions();
-    buildAppMenu([], handlers)[5].action?.();
+    buildAppMenu(0, handlers)[4].action?.();
     expect(handlers.signOut).toHaveBeenCalledTimes(1);
   });
 });

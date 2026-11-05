@@ -13,7 +13,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T3 — Fontes real e simulada e as lojas (CA3, CA6, CA8, CA9, CA18)
 - [x] T4 — Tela de conversas: lista, mensagens, caixa de texto e estados (CA3 a CA10, CA18 a CA22, CA24, CA25)
 - [x] T5 — Squads: criar, renomear, adicionar, remover e sair (CA11 a CA17)
-- [ ] T6 — Menu, "Conversar" nos amigos e "Abrir conversa" na home (CA1, CA18)
+- [x] T6 — Menu, "Conversar" nos amigos e "Abrir conversa" na home (CA1, CA18)
 - [ ] T7 — Textos sem "chame", `DESIGN.md` e `docs/plano.md`
 
 **Fechamento**

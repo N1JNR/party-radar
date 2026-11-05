@@ -77,7 +77,7 @@
           @if (store.opportunities().at(0); as opportunity) {
             <app-squad-opportunity
               [opportunity]="opportunity"
-              (callSquad)="soon('Chamar o squad')"
+              (openConversation)="openConversation($event.squad.id)"
             />
           }
           @if (data.friendsPlaying.length > 0) {

@@ -5,6 +5,9 @@ import { PoMenuComponent, PoNotificationService } from '@po-ui/ng-components';
 
 import { AUTH_GATEWAY, AuthGateway, AuthUser } from '../../core/auth/auth.gateway';
 import { AuthStore } from '../../core/auth/auth.store';
+import { CHAT_SOURCE } from '../../features/bate-papo/data/chat.source';
+import { ChatStore } from '../../features/bate-papo/data/chat.store';
+import { Conversation } from '../../features/bate-papo/domain/chat';
 import { HOME_DATA_SOURCE } from '../../features/home/data/home.source';
 import { HomeStore } from '../../features/home/data/home.store';
 import { STEAM_SOURCE } from '../../features/steam/data/steam.source';
@@ -16,15 +19,26 @@ describe('AppShellComponent', () => {
   let fixture: ComponentFixture<AppShellComponent>;
   let element: HTMLElement;
   let information: ReturnType<typeof vi.fn>;
+  let conversations: Conversation[];
+  let unsubscribe: ReturnType<typeof vi.fn>;
 
   async function render(gateway: Partial<AuthGateway> = {}): Promise<void> {
     information = vi.fn();
+    conversations = [];
+    unsubscribe = vi.fn();
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         { provide: PoNotificationService, useValue: { information } },
         { provide: HOME_DATA_SOURCE, useValue: {} },
         { provide: STEAM_SOURCE, useValue: {} },
+        {
+          provide: CHAT_SOURCE,
+          useValue: {
+            conversations: () => Promise.resolve(conversations),
+            subscribe: () => unsubscribe,
+          },
+        },
         {
           provide: AUTH_GATEWAY,
           useValue: {
@@ -52,7 +66,7 @@ describe('AppShellComponent', () => {
     const labels = [...element.querySelectorAll('po-menu .po-menu-icon-label')].map((span) =>
       span.textContent?.trim(),
     );
-    expect(labels).toEqual(['Meu card', 'Amigos', 'Squads', 'Seus squads', 'Perfil', 'Sair']);
+    expect(labels).toEqual(['Meu card', 'Amigos', 'Conversas', 'Perfil', 'Sair']);
     expect(element.querySelector('po-menu a[href="/inicio"]')).not.toBeNull();
     expect(element.querySelector('router-outlet')).not.toBeNull();
   });
@@ -70,7 +84,7 @@ describe('AppShellComponent', () => {
       await render();
       menuButton().click();
       fixture.detectChanges();
-      vi.runAllTimers();
+      vi.runOnlyPendingTimers();
       expect(menu().mobileOpened).toBe(true);
       expect(menuButton().getAttribute('aria-expanded')).toBe('true');
       expect(element.querySelector('.shell--menu-open')).not.toBeNull();
@@ -144,8 +158,8 @@ describe('AppShellComponent', () => {
 
   it('destinos que ainda não existem mostram "Em breve" (CA13)', async () => {
     await render();
-    menu().menus[2].action?.();
-    expect(information).toHaveBeenCalledWith('Em breve: Squads.');
+    menu().menus[3].action?.();
+    expect(information).toHaveBeenCalledWith('Em breve: Perfil.');
   });
 
   it('Sair encerra a sessão e volta para o login sem deixar a tela no histórico (CA3)', async () => {
@@ -153,7 +167,7 @@ describe('AppShellComponent', () => {
     await render({ signOut });
     const reset = vi.spyOn(TestBed.inject(HomeStore), 'reset');
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    menu().menus[5].action?.();
+    menu().menus[4].action?.();
     await vi.waitFor(() => expect(navigate).toHaveBeenCalled());
     expect(signOut).toHaveBeenCalledTimes(1);
     expect(TestBed.inject(AuthStore).isAuthenticated()).toBe(false);
@@ -164,47 +178,25 @@ describe('AppShellComponent', () => {
   it('volta para o login mesmo se o servidor falhar ao sair (CA3)', async () => {
     await render({ signOut: () => Promise.reject(new Error('rede')) });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    menu().menus[5].action?.();
+    menu().menus[4].action?.();
     await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith('/login', { replaceUrl: true }));
   });
 
-  it('mostra os squads da home no menu', async () => {
+  it('o menu diz quantas conversas têm novidade (spec 007, CA18)', async () => {
     await render();
-    const squad = { id: 's1', name: 'Squad da Sexta', memberIds: ['bia', 'caio'] };
-    const playing = (id: string) => ({
-      id,
-      name: id,
-      avatarUrl: null,
-      game: 'CS2',
-      platform: 'pc' as const,
-      startedAt: '2026-10-16T21:00:00Z',
-    });
-    TestBed.inject(HomeStore).data.set({
-      card: {
-        name: 'Ana',
-        username: 'ana',
-        avatarUrl: null,
-        playingNow: null,
-        monthHours: 0,
-        estimate: false,
-        steamName: null,
-        updatedAt: null,
-        games: 0,
-        gameOfMonth: null,
-      },
-      games: [],
-      previousIsEstimate: false,
-      season: { number: 1, daysLeft: 52, hours: 42, topGame: 'Elden Ring' },
-      trophies: [],
-      friendsCount: 2,
-      friendsPlaying: [playing('bia'), playing('caio')],
-      squads: [squad],
-      question: null,
-      inviteLink: '',
-    });
-    TestBed.inject(HomeStore).status.set('ready');
+    const news = { unread: 3 } as Conversation;
+    TestBed.inject(ChatStore).conversations.set([news, { unread: 0 } as Conversation]);
     fixture.detectChanges();
-    expect(menu().menus[3].subItems?.[0].label).toBe('Squad da Sexta · 2 jogando');
+    expect(menu().menus[2].label).toBe('Conversas · 1 com novidade');
+  });
+
+  it('liga o tempo real ao entrar e esquece tudo ao sair (spec 007, CA18)', async () => {
+    await render();
+    const chat = TestBed.inject(ChatStore);
+    await vi.waitFor(() => expect(chat.status()).toBe('ready'));
+    menu().menus[4].action?.();
+    await vi.waitFor(() => expect(unsubscribe).toHaveBeenCalled());
+    expect(chat.status()).toBe('idle');
   });
 
   it('se o po-menu fechar a gaveta ao redimensionar a janela, o estado acompanha (CA2)', async () => {
@@ -239,7 +231,7 @@ describe('AppShellComponent', () => {
   it('ao tocar em Sair, não mostra o aviso de sessão expirada (CA8)', async () => {
     await render({ signOut: () => Promise.resolve() });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    menu().menus[5].action?.();
+    menu().menus[4].action?.();
     await vi.waitFor(() => expect(navigate).toHaveBeenCalled());
     fixture.detectChanges();
     await fixture.whenStable();

@@ -8,6 +8,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   PoButtonModule,
   PoModalAction,
@@ -19,6 +20,7 @@ import {
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ClipboardService } from '../../../core/platform/clipboard.service';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
+import { ChatStore } from '../../bate-papo/data/chat.store';
 import { playingLabel } from '../../home/domain/player-card';
 import { FriendsStore } from '../data/friends.store';
 import {
@@ -54,6 +56,8 @@ export class FriendsPage {
   private readonly clipboard = inject(ClipboardService);
   private readonly navigation = inject(ExternalNavigation);
   private readonly notification = inject(PoNotificationService);
+  private readonly chat = inject(ChatStore);
+  private readonly router = inject(Router);
   private readonly modal = viewChild.required(PoModalComponent);
 
   protected readonly playingLabel = playingLabel;
@@ -88,6 +92,16 @@ export class FriendsPage {
       const timer = setInterval(() => void this.store.refresh(), REFRESH_EVERY_MS);
       destroyRef.onDestroy(() => clearInterval(timer));
     });
+  }
+
+  /** "Conversar": abre sempre a mesma conversa com esse amigo (spec 007, CA1). */
+  protected async talk(friend: Player): Promise<void> {
+    const id = await this.chat.openDirect(friend.id);
+    if (id) {
+      await this.router.navigate(['/conversas', id]);
+    } else {
+      this.notification.error(FAILURE_MESSAGE);
+    }
   }
 
   protected async send(player: FoundPlayer): Promise<void> {

@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { PoNotificationService } from '@po-ui/ng-components';
 
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ClipboardService } from '../../../core/platform/clipboard.service';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
+import { CHAT_SOURCE } from '../../bate-papo/data/chat.source';
 import { FRIENDS_SOURCE, FriendsSource } from '../data/friends.source';
 import { FriendsData } from '../domain/friends';
 import { FriendsPage, REFRESH_EVERY_MS } from './friends.page';
@@ -29,6 +31,7 @@ describe('FriendsPage', () => {
   let information: ReturnType<typeof vi.fn>;
   let error: ReturnType<typeof vi.fn>;
   let copy: ReturnType<typeof vi.fn>;
+  let openDirect: ReturnType<typeof vi.fn>;
 
   async function settle(): Promise<void> {
     await fixture.whenStable();
@@ -42,6 +45,7 @@ describe('FriendsPage', () => {
     information = vi.fn();
     error = vi.fn();
     copy = vi.fn(() => Promise.resolve(copied));
+    openDirect = vi.fn(() => Promise.resolve('conversa-1'));
     source = {
       load: vi.fn(() => Promise.resolve(homeData())),
       find: vi.fn(() => Promise.resolve(null)),
@@ -56,6 +60,10 @@ describe('FriendsPage', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: FRIENDS_SOURCE, useValue: source },
+        {
+          provide: CHAT_SOURCE,
+          useValue: { openDirect, conversations: () => Promise.resolve([]) },
+        },
         { provide: PoNotificationService, useValue: { success, information, error } },
         { provide: ClipboardService, useValue: { copy } },
         { provide: ExternalNavigation, useValue: { origin: () => 'http://localhost:4200' } },
@@ -94,6 +102,7 @@ describe('FriendsPage', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: FRIENDS_SOURCE, useValue: { load: () => new Promise(() => undefined) } },
+        { provide: CHAT_SOURCE, useValue: {} },
         { provide: PoNotificationService, useValue: {} },
         { provide: ClipboardService, useValue: {} },
         { provide: ExternalNavigation, useValue: {} },
@@ -306,5 +315,24 @@ describe('FriendsPage', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('Conversar abre a conversa com o amigo (spec 007, CA1)', async () => {
+    await render();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    button('Conversar com Bia')?.click();
+    await settle();
+    expect(openDirect).toHaveBeenCalledWith('bia_souls');
+    expect(navigate).toHaveBeenCalledWith(['/conversas', 'conversa-1']);
+  });
+
+  it('se não der para abrir a conversa, avisa e fica (spec 007, CA1)', async () => {
+    await render();
+    openDirect.mockResolvedValue(null);
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    button('Conversar com Bia')?.click();
+    await settle();
+    expect(error).toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 });

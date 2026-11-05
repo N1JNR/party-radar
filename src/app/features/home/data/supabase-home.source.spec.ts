@@ -56,6 +56,7 @@ function setup(
   season: { data: unknown; error: unknown } = noGames,
   trophies: { data: unknown; error: unknown } = noGames,
   friends: { data: unknown; error: unknown } = noGames,
+  squads: { data: unknown; error: unknown } = noGames,
 ) {
   const rpc = vi.fn((name: string) => {
     if (name === 'my_games') {
@@ -63,6 +64,9 @@ function setup(
     }
     if (name === 'my_friends') {
       return Promise.resolve(friends);
+    }
+    if (name === 'my_squads') {
+      return Promise.resolve(squads);
     }
     return Promise.resolve(name === 'my_season' ? season : result);
   });
@@ -97,7 +101,53 @@ describe('SupabaseHomeSource', () => {
     });
   });
 
-  it('amigos, squads e pergunta ficam vazios até a spec de amigos (CA13)', async () => {
+  it('traz os squads, com os membros (spec 007)', async () => {
+    const { source, rpc } = setup(
+      { data: [statsRow], error: null },
+      user,
+      noGames,
+      noGames,
+      noGames,
+      noGames,
+      {
+        data: [{ conversation_id: 's1', name: 'Squad da Sexta', member_ids: ['ana', 'bia'] }],
+        error: null,
+      },
+    );
+    const data = await source.load();
+    expect(rpc).toHaveBeenCalledWith('my_squads');
+    expect(data.squads).toEqual([{ id: 's1', name: 'Squad da Sexta', memberIds: ['ana', 'bia'] }]);
+  });
+
+  it('erro nos squads sobe, para a home mostrar o erro', async () => {
+    const failed = { data: null, error: new Error('rede') };
+    const { source } = setup(
+      { data: [statsRow], error: null },
+      user,
+      noGames,
+      noGames,
+      noGames,
+      noGames,
+      failed,
+    );
+    await expect(source.load()).rejects.toThrow('rede');
+  });
+
+  it('sem resposta dos squads, a lista fica vazia', async () => {
+    const empty = { data: null, error: null };
+    const { source } = setup(
+      { data: [statsRow], error: null },
+      user,
+      noGames,
+      noGames,
+      noGames,
+      noGames,
+      empty,
+    );
+    expect((await source.load()).squads).toEqual([]);
+  });
+
+  it('sem amigos, squads e pergunta, tudo fica vazio (CA13)', async () => {
     const { source } = setup({ data: [statsRow], error: null });
     const data = await source.load();
     expect(data.friendsCount).toBe(0);
