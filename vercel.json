@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/party-radar/browser",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.csr.html" }]
+}
