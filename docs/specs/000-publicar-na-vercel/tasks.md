@@ -26,8 +26,8 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 - [x] T8 — Jorge: girar o Client Secret do Discord e ligar o provedor Discord no painel com o segredo novo
 - [x] T9 — Jorge: no Discord, acrescentar `https://vxwnmcsuqphwohddxrlv.supabase.co/auth/v1/callback` em OAuth2 > Redirects
 - [x] T10 — `STEAM_WEB_API_KEY` e `APP_ORIGINS=https://party-radar-kappa.vercel.app` nas funções
-- [x] T11 — No Vault, `project_url` e `service_role_key`, com a chave `service_role` (JWT), e a mesma JWT no segredo
-      `SCHEDULE_KEY` das funções: sem ele, toda chamada agendada recebe 401 (`docs/specs/003-steam/plan.md`)
+- [x] T11 — `npm run db:agendamentos:nuvem`: grava `project_url` e `service_role_key` no Vault e a mesma JWT no segredo
+      `SCHEDULE_KEY` das funções; sem ele, toda chamada agendada recebe 401 (`docs/specs/003-steam/plan.md`)
 
 **Vercel**
 
@@ -45,10 +45,14 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 - [ ] T16 — Duas contas reais: amizade, conversa em tempo real e squad, em dois aparelhos (falta da spec 007)
 - [ ] T17 — Celular de verdade: teclado aberto, com a caixa de texto à vista (CA25 da spec 007)
 - [ ] T18 — Agendamentos: `steam-presence` a cada 5 minutos, a leitura das 23h55 e os troféus, em `net._http_response`
-- [x] T19 — Conferir que o build publicado não aceita `?simular-login=`
+- [ ] T19 — Sem sessão, abrir `/login?simular-login=sucesso` no site, tocar em "Continuar com Discord" e ir para o Discord
+      de verdade. `?simular=` já foi conferido e não tem efeito; este parâmetro só foi visto até a tela de login
 
 ## Riscos
 
+- **Falha silenciosa dos agendamentos:** o cron marca "succeeded" mesmo com 401, e nada avisa. Confira com
+  `npm run db:agendamentos:nuvem -- --conferir`. Depois de girar a JWT, rode `npm run db:agendamentos:nuvem`: ele grava o
+  Vault e o `SCHEDULE_KEY` juntos.
 - **E-mail da conta na Vercel:** o principal é um Outlook a que o Jorge não tem mais acesso. O botão de implantar do painel pede
   um código nele; o deploy pelo Git, ao chegar algo na `main`, é o caminho usado. Outras ações do painel podem pedir o mesmo
   código. Solução: recuperar o Outlook ou falar com o suporte da Vercel.

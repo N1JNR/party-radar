@@ -1,6 +1,6 @@
 // Grava no Vault do Supabase local o endereço das Edge Functions e a secret key, que os
-// agendamentos da Steam usam (spec 003, Parte 3b, T18). Só para o ambiente local: na nuvem, os
-// dois entram uma vez pelo painel do Supabase. A chave nunca é mostrada nem gravada em arquivo.
+// agendamentos da Steam usam (spec 003, Parte 3b, T18). Só para o ambiente local: na nuvem, use
+// agendamentos-nuvem.mjs. A chave nunca é mostrada nem gravada em arquivo.
 //
 // Uso: npm run db:agendamentos (com o Supabase local rodando).
 

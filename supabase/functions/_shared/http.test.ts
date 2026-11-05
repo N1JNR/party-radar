@@ -1,6 +1,6 @@
 import { assertEquals } from 'jsr:@std/assert@1';
 
-import { CORS_HEADERS, hasBearer, json, preflight, scheduleKey } from './http.ts';
+import { CORS_HEADERS, hasBearer, isScheduledCall, json, preflight, scheduleKey } from './http.ts';
 
 Deno.test('json devolve o corpo em JSON, o status e os cabeçalhos de CORS', async () => {
   const response = json({ ok: true }, 201);
@@ -63,6 +63,36 @@ Deno.test('scheduleKey sem nenhuma chave não reconhece ninguém', () => {
   assertEquals(
     hasBearer(new Request('http://x', { headers: { Authorization: 'Bearer ' } }), chave),
     false,
+  );
+});
+
+Deno.test('isScheduledCall na nuvem aceita a JWT e recusa a sb_secret', () => {
+  const nuvem: Record<string, string> = {
+    SCHEDULE_KEY: 'jwt-do-vault',
+    SUPABASE_SERVICE_ROLE_KEY: 'sb_secret_x',
+  };
+  const pedido = (chave: string) =>
+    new Request('http://x', { headers: { Authorization: `Bearer ${chave}` } });
+  assertEquals(
+    isScheduledCall(pedido('jwt-do-vault'), (nome) => nuvem[nome]),
+    true,
+  );
+  assertEquals(
+    isScheduledCall(pedido('sb_secret_x'), (nome) => nuvem[nome]),
+    false,
+  );
+  assertEquals(
+    isScheduledCall(new Request('http://x'), (nome) => nuvem[nome]),
+    false,
+  );
+});
+
+Deno.test('isScheduledCall no local aceita a chave da service role', () => {
+  const local: Record<string, string> = { SUPABASE_SERVICE_ROLE_KEY: 'jwt-local' };
+  const pedido = new Request('http://x', { headers: { Authorization: 'Bearer jwt-local' } });
+  assertEquals(
+    isScheduledCall(pedido, (nome) => local[nome]),
+    true,
   );
 });
 
