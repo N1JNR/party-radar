@@ -19,7 +19,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 **Fechamento**
 
 - [x] T8 — Conferência em 390, 768 e 1280 px, com duas contas e prints (CA1–CA25)
-- [ ] T9 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
+- [x] T9 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
 
 ## Conferência (T8)
 
@@ -53,3 +53,9 @@ o destaque quando a novidade mudava e não mostrava o item marcado ao abrir o ap
 contagem; "Criar squad" dizia que não havia amigos enquanto eles carregavam; o foco se perdia ao apagar.
 
 Prints em `prints/`.
+
+## Revisões (T9)
+
+- `/code-review`: 10 achados, 9 corrigidos com teste. O décimo (squad sem dono quando a conta é apagada) depende de
+  apagar contas, que o app ainda não faz, e está nos riscos do `plan.md`.
+- `/security-review`: nenhuma vulnerabilidade com confiança suficiente para relatar.
