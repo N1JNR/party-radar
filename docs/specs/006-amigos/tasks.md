@@ -5,8 +5,8 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 **Banco**
 
-- [ ] T1 — Tabelas, RLS e funções de amizade (CA3 a CA11, CA15 a CA17, CA20)
-- [ ] T2 — Perfis privados: cada um lê só o próprio (CA20)
+- [x] T1 — Tabelas, RLS e funções de amizade (CA3 a CA11, CA15 a CA17, CA20)
+- [x] T2 — Perfis privados: cada um lê só o próprio (CA20)
 
 **Front**
 
