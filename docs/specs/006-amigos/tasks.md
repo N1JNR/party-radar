@@ -19,5 +19,5 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 
 **Fechamento**
 
-- [ ] T9 — Conferência em 390, 768 e 1280 px, com duas contas e prints (CA1–CA21)
+- [x] T9 — Conferência em 390, 768 e 1280 px, com duas contas e prints (CA1–CA21)
 - [ ] T10 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final
