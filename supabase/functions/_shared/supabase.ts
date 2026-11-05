@@ -3,7 +3,7 @@
 
 import { SupabaseClient, createClient } from 'npm:@supabase/supabase-js@2.118.0';
 
-import { hasBearer } from './http.ts';
+import { hasBearer, scheduleKey } from './http.ts';
 import { Fetch, Visibility, readPresence, readSteam, withTimeout } from './steam-api.ts';
 import { ReadingPatch, SteamAccount, SyncDeps } from './steam-link.ts';
 import { PresenceDeps } from './steam-presence.ts';
@@ -96,7 +96,10 @@ export async function accountOf(
 
 /** Chamada do agendamento do banco: traz a secret key (service role), não a sessão de alguém. */
 export function isScheduledCall(request: Request): boolean {
-  return hasBearer(request, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
+  return hasBearer(
+    request,
+    scheduleKey((name) => Deno.env.get(name)),
+  );
 }
 
 /** Próximas contas Steam, em ordem de `user_id`, para a leitura agendada (CA14). */
