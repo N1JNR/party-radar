@@ -148,6 +148,40 @@ describe('FriendsStore', () => {
       expect(source.find).not.toHaveBeenCalled();
     });
 
+    it('responder diz se o pedido ainda estava aberto (CA8)', async () => {
+      const { store } = setup();
+      await store.load();
+      expect(await store.answer('gui', true)).toBe('done');
+    });
+
+    it('pedido que a outra pessoa cancelou volta como "gone" (CA8, CA10)', async () => {
+      const { store } = setup({ answer: () => Promise.resolve(false) });
+      await store.load();
+      expect(await store.answer('gui', true)).toBe('gone');
+    });
+
+    it('resposta que falhou volta como "failed" (CA19)', async () => {
+      const { store } = setup({ answer: () => Promise.reject(new Error('rede')) });
+      await store.load();
+      expect(await store.answer('gui', true)).toBe('failed');
+    });
+
+    it('uma ação limpa a busca, para não mostrar a relação antiga', async () => {
+      const { store } = setup();
+      await store.load();
+      await store.find('rafa_jogos');
+      await store.unblock('rafa');
+      expect(store.lookup()).toEqual({ status: 'idle' });
+    });
+
+    it('ação que falhou mantém a busca (CA19)', async () => {
+      const { store } = setup({ unblock: () => Promise.reject(new Error('rede')) });
+      await store.load();
+      await store.find('rafa_jogos');
+      await store.unblock('rafa');
+      expect(store.lookup()).toEqual({ status: 'found', player: found });
+    });
+
     it.each([
       ['answer', ['gui', true]],
       ['cancel', ['gui']],
@@ -157,8 +191,8 @@ describe('FriendsStore', () => {
     ] as const)('%s relê a lista (CA8 a CA10, CA15 a CA17)', async (method, args) => {
       const { store, source } = setup();
       await store.load();
-      const call = store[method] as (...params: unknown[]) => Promise<boolean>;
-      expect(await call.apply(store, [...args])).toBe(true);
+      const call = store[method] as (...params: unknown[]) => Promise<unknown>;
+      expect(await call.apply(store, [...args])).not.toBe(false);
       expect(source[method]).toHaveBeenCalledWith(...args);
       expect(source.load).toHaveBeenCalledTimes(2);
       expect(store.busy()).toBe(false);

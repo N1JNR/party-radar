@@ -49,6 +49,11 @@ export function sortFriends(friends: readonly Friend[]): Friend[] {
   );
 }
 
+/** Em ordem de nome, para a lista não mudar de lugar a cada releitura. */
+export function sortPlayers<T extends Player>(players: readonly T[]): T[] {
+  return [...players].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+}
+
 /** Tira espaços, o @ da frente e as maiúsculas do que foi digitado (CA3). */
 export function cleanUsername(text: string): string {
   return text.trim().replace(/^@+/, '').toLowerCase();

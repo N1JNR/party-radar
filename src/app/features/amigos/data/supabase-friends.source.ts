@@ -1,7 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 
 import { SUPABASE } from '../../../core/supabase/supabase.client';
-import { FoundPlayer, FriendsData, Player, Relation, SendResult } from '../domain/friends';
+import {
+  FoundPlayer,
+  FriendsData,
+  Player,
+  Relation,
+  SendResult,
+  sortPlayers,
+} from '../domain/friends';
 import { FriendsSource } from './friends.source';
 
 /**
@@ -55,9 +62,11 @@ export class SupabaseFriendsSource implements FriendsSource {
         ...toPlayer(row),
         playing: row.current_game,
       })),
-      received: requestRows.filter((row) => row.direction === 'received').map(toPlayer),
-      sent: requestRows.filter((row) => row.direction === 'sent').map(toPlayer),
-      blocked: ((blocks.data ?? []) as unknown as PlayerRow[]).map(toPlayer),
+      received: sortPlayers(
+        requestRows.filter((row) => row.direction === 'received').map(toPlayer),
+      ),
+      sent: sortPlayers(requestRows.filter((row) => row.direction === 'sent').map(toPlayer)),
+      blocked: sortPlayers(((blocks.data ?? []) as unknown as PlayerRow[]).map(toPlayer)),
     };
   }
 

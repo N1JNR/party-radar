@@ -100,6 +100,17 @@ describe('InvitePage', () => {
     expect(success).toHaveBeenCalledWith('Agora você e Ana são amigos.');
   });
 
+  it('pedido que a outra pessoa cancelou avisa e atualiza o convite (CA8, CA10)', async () => {
+    const find = vi.fn(() => Promise.resolve(found('received')));
+    await render({ find, answer: () => Promise.resolve(false) });
+    find.mockResolvedValue(found('none'));
+    button('Aceitar pedido')?.click();
+    await settle();
+    expect(information).toHaveBeenCalledWith('Esse pedido não está mais aberto.');
+    expect(success).not.toHaveBeenCalled();
+    expect(button('Enviar pedido')).toBeDefined();
+  });
+
   it('se aceitar falhar, avisa (CA19)', async () => {
     await render({
       find: () => Promise.resolve(found('received')),

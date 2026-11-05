@@ -61,11 +61,16 @@ export class InvitePage {
   }
 
   protected async accept(player: FoundPlayer): Promise<void> {
-    if (await this.store.answer(player.id, true)) {
-      this.notification.success(`Agora você e ${player.name} são amigos.`);
-      await this.store.find(player.username);
-    } else {
+    const result = await this.store.answer(player.id, true);
+    if (result === 'failed') {
       this.notification.error(FAILURE);
+      return;
     }
+    if (result === 'done') {
+      this.notification.success(`Agora você e ${player.name} são amigos.`);
+    } else {
+      this.notification.information('Esse pedido não está mais aberto.');
+    }
+    await this.store.find(player.username);
   }
 }

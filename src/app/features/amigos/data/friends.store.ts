@@ -95,10 +95,16 @@ export class FriendsStore {
     return result;
   }
 
-  answer(userId: string, accept: boolean): Promise<boolean> {
-    return this.run(async () => {
-      await this.source.answer(userId, accept);
+  /** `gone`: a outra pessoa cancelou antes da resposta, e nada mudou (CA8, CA10). */
+  async answer(userId: string, accept: boolean): Promise<'done' | 'gone' | 'failed'> {
+    let open = false;
+    const ran = await this.run(async () => {
+      open = await this.source.answer(userId, accept);
     });
+    if (!ran) {
+      return 'failed';
+    }
+    return open ? 'done' : 'gone';
   }
 
   cancel(userId: string): Promise<boolean> {
@@ -117,11 +123,15 @@ export class FriendsStore {
     return this.run(() => this.source.unblock(userId));
   }
 
-  /** Faz a ação e relê a lista. Devolve `false` se falhou, e a lista não muda (CA19). */
+  /**
+   * Faz a ação, relê a lista e limpa a busca, que ficaria mostrando a relação antiga. Devolve `false`
+   * se falhou, e a lista não muda (CA19).
+   */
   private async run(action: () => Promise<void>): Promise<boolean> {
     this.busy.set(true);
     try {
       await action();
+      this.clearLookup();
       await this.refresh();
       return true;
     } catch {

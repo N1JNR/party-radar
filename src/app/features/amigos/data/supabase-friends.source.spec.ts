@@ -40,6 +40,19 @@ describe('SupabaseFriendsSource', () => {
     expect(data.blocked.map((p) => p.id)).toEqual(['edu']);
   });
 
+  it('as listas vêm em ordem de nome, sem mudar de lugar a cada releitura', async () => {
+    const { source } = setup({
+      my_friend_requests: ok([
+        { ...row('z'), direction: 'received' },
+        { ...row('a'), direction: 'received' },
+      ]),
+      my_blocks: ok([row('y'), row('b')]),
+    });
+    const data = await source.load();
+    expect(data.received.map((p) => p.id)).toEqual(['a', 'z']);
+    expect(data.blocked.map((p) => p.id)).toEqual(['b', 'y']);
+  });
+
   it('resposta nula conta como lista vazia', async () => {
     const { source } = setup();
     expect(await source.load()).toEqual({ friends: [], received: [], sent: [], blocked: [] });

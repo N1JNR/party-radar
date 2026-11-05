@@ -29,6 +29,7 @@ import { PersonRowComponent } from '../ui/person-row/person-row.component';
 export const REFRESH_EVERY_MS = 60_000;
 
 const FAILURE = 'Não foi possível concluir. Tente de novo.';
+const REQUEST_GONE = 'Esse pedido não está mais aberto.';
 
 interface Confirmation {
   kind: 'remove' | 'block';
@@ -99,14 +100,12 @@ export class FriendsPage {
     }
   }
 
-  protected async acceptFound(player: FoundPlayer): Promise<void> {
-    await this.answer(player, true);
-    this.store.clearLookup();
-  }
-
   protected async answer(person: Player, accept: boolean): Promise<void> {
-    if (!(await this.store.answer(person.id, accept))) {
+    const result = await this.store.answer(person.id, accept);
+    if (result === 'failed') {
       this.notification.error(FAILURE);
+    } else if (result === 'gone') {
+      this.notification.information(REQUEST_GONE);
     } else if (accept) {
       this.notification.success(`Agora você e ${person.name} são amigos.`);
     } else {

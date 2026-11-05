@@ -8,6 +8,7 @@ import {
   relationLabel,
   sendMessage,
   sortFriends,
+  sortPlayers,
 } from './friends';
 
 const friend = (name: string, playing: string | null = null): Friend => ({
@@ -28,6 +29,14 @@ describe('sortFriends (CA12)', () => {
     const list = [friend('Bia'), friend('Ana')];
     sortFriends(list);
     expect(list[0].name).toBe('Bia');
+  });
+});
+
+describe('sortPlayers', () => {
+  it('ordena por nome, sem mudar a lista original', () => {
+    const list = [friend('Caio'), friend('Ágata'), friend('Bia')];
+    expect(sortPlayers(list).map((p) => p.name)).toEqual(['Ágata', 'Bia', 'Caio']);
+    expect(list[0].name).toBe('Caio');
   });
 });
 

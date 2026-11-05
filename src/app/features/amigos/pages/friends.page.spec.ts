@@ -149,6 +149,14 @@ describe('FriendsPage', () => {
     expect(success).toHaveBeenCalledWith('Agora você e Gui são amigos.');
   });
 
+  it('pedido que a outra pessoa cancelou avisa, sem dizer que viraram amigos (CA8, CA10)', async () => {
+    await render({ answer: () => Promise.resolve(false) });
+    button('Aceitar o pedido de Gui')?.click();
+    await settle();
+    expect(information).toHaveBeenCalledWith('Esse pedido não está mais aberto.');
+    expect(success).not.toHaveBeenCalled();
+  });
+
   it('recusa um pedido (CA9)', async () => {
     await render();
     button('Recusar o pedido de Gui')?.click();
