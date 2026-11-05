@@ -6,12 +6,11 @@ documento "Party Radar + Gamer Wrapped — Plano" e as telas no canvas "Party Ra
 ## Escopo do MVP
 
 1. **Login** com o Discord. Conectar a Steam depois do login.
-2. **Amigos:** adicionar por link de convite, por @usuário ou por sugestão da Steam;
+2. **Amigos:** adicionar por link de convite ou por @usuário;
    aceitar, recusar, remover e bloquear. A amizade é do app (o Discord não libera a lista de amigos).
-3. **Radar:** amigos jogando agora, online e offline, atualizado em tempo real.
-4. **Chamar pra jogar:** agora ou agendado, com squad opcional.
-   O chamado vai para o Discord (canal do servidor vinculado ou DM), com botões "Tô dentro" / "Agora não".
-   No app fica só o card "Chamado ativo" no Radar.
+3. **Quem está jogando:** a lista de amigos e a home mostram o jogo aberto, lido da Steam a cada 5 minutos.
+4. **Bate-papo:** por texto, entre dois amigos e em squads (os grupos). Sem chamadas de voz ou vídeo e
+   sem "Chamar pra jogar".
 5. **Perfil** simples com as contas conectadas.
 
 **Entrou antes do previsto:** a home "Meu card", com patentes, radar do jogador e imagem de
@@ -23,15 +22,15 @@ As leituras da Steam são gravadas desde a conexão para o Wrapped nascer com da
 
 ## Decisões técnicas
 
-| Decisão          | Escolha                                                           |
-| ---------------- | ----------------------------------------------------------------- |
-| Front            | Angular 21, standalone, signals, SSR nas rotas públicas           |
-| UI               | PO UI 21 com tema escuro próprio (`src/theme/`)                   |
-| Backend          | Supabase: Auth, Postgres + RLS, Realtime, Edge Functions, pg_cron |
-| Presença ao vivo | Bot do Discord (worker Node sempre ligado) + Steam Web API        |
-| Notificações     | Discord (canal vinculado ou DM). Push web/nativo fica para depois |
-| Mobile           | Mesmo projeto empacotado com Capacitor quando houver tração       |
-| Monetização      | Fora do escopo agora                                              |
+| Decisão      | Escolha                                                           |
+| ------------ | ----------------------------------------------------------------- |
+| Front        | Angular 21, standalone, signals, SSR nas rotas públicas           |
+| UI           | PO UI 21 com tema escuro próprio (`src/theme/`)                   |
+| Backend      | Supabase: Auth, Postgres + RLS, Realtime, Edge Functions, pg_cron |
+| Jogo aberto  | Steam Web API, lida pelo servidor a cada 5 minutos                |
+| Notificações | Só dentro do app. Push web/nativo fica para depois                |
+| Mobile       | Mesmo projeto empacotado com Capacitor quando houver tração       |
+| Monetização  | Fora do escopo agora                                              |
 
 ## Ordem das specs
 
@@ -45,7 +44,7 @@ Feitas, em andamento ou já aprovadas (a pasta de cada uma está em `docs/specs/
 
 Próximas, nesta ordem (o número sai quando a spec for criada):
 
-- Amigos — pedidos, aceite, remoção e bloqueio; corrida do squad com dados reais
-- Radar de presença — amigos em tempo real
-- Chamados — chamar, squad e integração com o Discord
+- `006-amigos` — pedidos, aceite, remoção, bloqueio e o jogo aberto dos amigos
+- `007-bate-papo` — conversas entre amigos e squads, só por texto (aprovada)
+- Corrida do squad — amigos na mesma trilha, com dados reais
 - Perfil

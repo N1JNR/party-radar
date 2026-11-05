@@ -23,6 +23,47 @@ export type Database = {
   };
   public: {
     Tables: {
+      friend_requests: {
+        Row: {
+          created_at: string;
+          declined_at: string | null;
+          from_id: string;
+          to_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          declined_at?: string | null;
+          from_id: string;
+          to_id: string;
+        };
+        Update: {
+          created_at?: string;
+          declined_at?: string | null;
+          from_id?: string;
+          to_id?: string;
+        };
+        Relationships: [];
+      };
+      friendships: {
+        Row: {
+          created_at: string;
+          user_high: string;
+          user_low: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          user_high: string;
+          user_low: string;
+        };
+        Update: {
+          created_at?: string;
+          user_high?: string;
+          user_low?: string;
+        };
+        Relationships: [];
+      };
       game_categories: {
         Row: {
           app_id: number;
@@ -208,16 +249,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      user_blocks: {
+        Row: {
+          blocked_id: string;
+          blocker_id: string;
+          created_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          blocked_id: string;
+          blocker_id: string;
+          created_at?: string;
+        };
+        Update: {
+          blocked_id?: string;
+          blocker_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      answer_friend_request: { Args: { p_accept: boolean; p_from: string }; Returns: boolean };
+      block_user: { Args: { p_user: string }; Returns: undefined };
+      cancel_friend_request: { Args: { p_to: string }; Returns: undefined };
+      find_player: {
+        Args: { p_username: string };
+        Returns: {
+          avatar_url: string;
+          display_name: string;
+          relation: string;
+          user_id: string;
+          username: string;
+        }[];
+      };
       latest_playtime: {
         Args: { p_user_id: string };
         Returns: {
           app_id: number;
           minutes_total: number;
+        }[];
+      };
+      my_blocks: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          avatar_url: string;
+          display_name: string;
+          user_id: string;
+          username: string;
         }[];
       };
       my_card_stats: {
@@ -233,6 +315,27 @@ export type Database = {
           steam_name: string;
           total_minutes: number;
           visibility: string;
+        }[];
+      };
+      my_friend_requests: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          avatar_url: string;
+          created_at: string;
+          direction: string;
+          display_name: string;
+          user_id: string;
+          username: string;
+        }[];
+      };
+      my_friends: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          avatar_url: string;
+          current_game: string;
+          display_name: string;
+          user_id: string;
+          username: string;
         }[];
       };
       my_games: {
@@ -258,6 +361,7 @@ export type Database = {
           top_game: string;
         }[];
       };
+      remove_friend: { Args: { p_friend: string }; Returns: undefined };
       season_at: {
         Args: { p_day: string };
         Returns: {
@@ -274,6 +378,8 @@ export type Database = {
         }[];
       };
       season_rank: { Args: { p_minutes: number }; Returns: string };
+      send_friend_request: { Args: { p_user: string }; Returns: string };
+      unblock_user: { Args: { p_user: string }; Returns: undefined };
       username_base: { Args: { source: string }; Returns: string };
     };
     Enums: {

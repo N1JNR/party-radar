@@ -117,6 +117,7 @@ Feitos pelo dono do projeto, com a conta dele; o agente não cria contas nem man
 - **CA18** — Dado dois usuários logados A e B, quando A consulta o perfil de B, então vê só
   nome, foto e @usuário (nunca o e-mail); quando A tenta alterar ou apagar o perfil de B, a
   operação é recusada; quem não está logado não lê nem altera nenhum perfil.
+  > **Substituído pela spec 006 (CA20):** cada pessoa lê só o próprio perfil na tabela; os outros chegam pelas funções de amizade.
 - **CA22 (segurança)** — Dado o build de produção, então não existe login simulado: só entra
   quem autorizou no provedor; o `?simular-login=` só funciona em desenvolvimento.
 - ~~**CA23**~~ — Removido na revisão 4 (aviso "Login com o Google em breve.").

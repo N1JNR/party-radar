@@ -5,12 +5,11 @@ Se uma instrução da tarefa conflitar com este arquivo, pare e pergunte.
 
 ## 1. Contexto
 
-Web app para grupos de amigos gamers verem quem está jogando agora, chamarem para jogar
+Web app para grupos de amigos gamers verem quem está jogando agora, conversarem por texto
 e receberem um retrospecto mensal (Wrapped).
 
 - **Front:** Angular 21 (standalone, signals, SSR nas rotas públicas) + PO UI com tema próprio.
 - **Back:** Supabase (Auth com Discord, Postgres + RLS, Realtime, Edge Functions, pg_cron).
-- **Worker:** bot do Discord em Node (presença e chamados), a criar em `apps/discord-worker`.
 - **Futuro:** empacotamento mobile com Capacitor. Escreva código que não dependa só do navegador.
 
 Documentos de referência: `docs/plano.md` (produto), `DESIGN.md` (visual, componentes e
@@ -94,7 +93,7 @@ src/app/
   core/          serviços singleton, auth, cliente Supabase, interceptors, guards
   shared/        componentes, pipes e utilitários reutilizáveis (sem regra de negócio)
   features/
-    <feature>/   ex.: radar, amigos, chamados, perfil
+    <feature>/   ex.: home, amigos, bate-papo, perfil
       data/      acesso a dados (Supabase, APIs) — só aqui se fala com o backend
       domain/    regras de negócio puras (funções e tipos, sem Angular) — 100% testadas
       ui/        componentes de apresentação (inputs/outputs, sem acesso a dados)
@@ -195,7 +194,7 @@ Uma tarefa só está concluída quando **todos** os itens aplicáveis forem verd
       Se houve migration ou mudança em `supabase/`: `npm run verify:all` (inclui os testes do banco).
 - [ ] Diff revisado (`git diff main...HEAD`): nada fora do escopo, nenhum segredo, nenhum `console.log` esquecido.
 - [ ] Revisão automática feita e achados tratados: `/code-review` sempre; `/security-review`
-      também quando a mudança tocar login, RLS, Edge Functions, worker ou segredos.
+      também quando a mudança tocar login, RLS, Edge Functions ou segredos.
 - [ ] `tasks.md` e documentação atualizados.
 
 Se algum item falhar: **não marque como concluída.** Corrija ou informe o bloqueio.

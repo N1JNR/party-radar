@@ -24,6 +24,14 @@ interface CardStatsRow {
   estimate: boolean;
 }
 
+/** Uma linha de `my_friends()` (spec 006). A foto e o jogo podem vir nulos. */
+interface FriendRow {
+  user_id: string;
+  display_name: string;
+  avatar_url: string | null;
+  current_game: string | null;
+}
+
 /** Uma linha de `my_season()` (spec 005). O jogo pode vir nulo. */
 interface SeasonRow {
   season_number: number;
@@ -60,8 +68,8 @@ const toKind = (category: string): GameKind =>
 
 /**
  * Home de verdade (spec 003, Parte 3b; spec 005): nome e foto do Discord (perfil) e os números da
- * Steam, calculados no banco por `my_card_stats()`, `my_games()` e `my_season()`. Amigos, squads e a pergunta de parceria ficam vazios
- * até a spec de amigos (CA13).
+ * Steam, calculados no banco por `my_card_stats()`, `my_games()` e `my_season()`. Os amigos vêm de `my_friends()` (spec 006); squads e a
+ * pergunta de parceria seguem vazios.
  */
 @Injectable()
 export class SupabaseHomeSource implements HomeDataSource {
@@ -70,12 +78,14 @@ export class SupabaseHomeSource implements HomeDataSource {
   private readonly navigation = inject(ExternalNavigation);
 
   async load(): Promise<HomeData> {
-    const [statsResult, gamesResult, seasonResult, trophiesResult] = await Promise.all([
-      this.supabase.rpc('my_card_stats'),
-      this.supabase.rpc('my_games'),
-      this.supabase.rpc('my_season'),
-      this.supabase.from('season_trophies').select('season_number, rank_id, minutes, top_game'),
-    ]);
+    const [statsResult, gamesResult, seasonResult, trophiesResult, friendsResult] =
+      await Promise.all([
+        this.supabase.rpc('my_card_stats'),
+        this.supabase.rpc('my_games'),
+        this.supabase.rpc('my_season'),
+        this.supabase.from('season_trophies').select('season_number, rank_id, minutes, top_game'),
+        this.supabase.rpc('my_friends'),
+      ]);
     if (statsResult.error) {
       throw statsResult.error;
     }
@@ -88,12 +98,16 @@ export class SupabaseHomeSource implements HomeDataSource {
     if (trophiesResult.error) {
       throw trophiesResult.error;
     }
+    if (friendsResult.error) {
+      throw friendsResult.error;
+    }
     // Sem Steam conectada, a função não devolve linha: o card fica zerado (primeiro acesso).
     const stats = ((statsResult.data ?? []) as unknown as CardStatsRow[]).at(0) ?? null;
     const gameRows = (gamesResult.data ?? []) as unknown as GameRow[];
     // Sem Steam conectada, também não há temporada (spec 005, CA16).
     const seasonRow = ((seasonResult.data ?? []) as unknown as SeasonRow[]).at(0) ?? null;
     const trophyRows = (trophiesResult.data ?? []) as TrophyRow[];
+    const friendRows = (friendsResult.data ?? []) as unknown as FriendRow[];
     const user = this.auth.user();
     const username = user?.username ?? 'jogador';
     const card: PlayerCard = {
@@ -135,8 +149,24 @@ export class SupabaseHomeSource implements HomeDataSource {
           topGame: row.top_game,
         })),
       ),
-      friendsCount: 0,
-      friendsPlaying: [],
+      friendsCount: friendRows.length,
+      // A Steam é a única fonte do jogo aberto, e ela não diz desde quando se joga (spec 006, CA14).
+      friendsPlaying: [...friendRows]
+        .sort((a, b) => a.display_name.localeCompare(b.display_name, 'pt-BR'))
+        .flatMap((row) =>
+          row.current_game
+            ? [
+                {
+                  id: row.user_id,
+                  name: row.display_name,
+                  avatarUrl: row.avatar_url,
+                  game: row.current_game,
+                  platform: 'pc' as const,
+                  startedAt: null,
+                },
+              ]
+            : [],
+        ),
       squads: [],
       question: null,
       inviteLink: `${this.navigation.origin()}/convite/${username}`,

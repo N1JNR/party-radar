@@ -42,6 +42,10 @@ describe('buildAppMenu', () => {
     ]);
   });
 
+  it('Amigos abre a tela de amigos (spec 006)', () => {
+    expect(buildAppMenu([], actions())[1].link).toBe('/amigos');
+  });
+
   it('destinos que ainda não existem avisam "Em breve" com o nome certo (CA13)', () => {
     const handlers = actions();
     const menu = buildAppMenu([{ id: 's1', name: 'Squad da Sexta', playing: 1 }], handlers);
@@ -50,7 +54,6 @@ describe('buildAppMenu', () => {
       item.action?.();
     }
     expect(handlers.soon.mock.calls.map(([feature]) => feature)).toEqual([
-      'Amigos',
       'Squads',
       'Perfil',
       'Squad da Sexta',

@@ -1,0 +1,47 @@
+<section class="add" aria-labelledby="add-title">
+  <h2 id="add-title" class="add__title">Adicionar amigo</h2>
+  <form class="add__form" (ngSubmit)="submit()">
+    <po-input
+      class="add__field"
+      name="username"
+      p-label="@usuário exato"
+      p-placeholder="@usuario_do_amigo"
+      [ngModel]="text()"
+      (ngModelChange)="text.set($event)"
+    />
+    <po-button
+      p-kind="secondary"
+      p-label="Procurar"
+      [p-type]="submitType"
+      [p-loading]="lookup().status === 'searching'"
+    />
+    <po-button p-kind="tertiary" p-label="Copiar convite" (p-click)="copyInvite.emit()" />
+  </form>
+  <div class="add__result" aria-live="polite">
+    @if (lookup().status === 'not-found') {
+      <p class="add__message">{{ notFound() }}</p>
+    } @else if (lookup().status === 'error') {
+      <p class="add__message add__message--error" role="alert">
+        Não foi possível procurar agora. Tente de novo.
+      </p>
+    } @else if (found(); as player) {
+      <app-person-row [person]="player" [status]="foundStatus()">
+        @if (player.relation === 'none') {
+          <po-button
+            p-kind="primary"
+            p-label="Enviar pedido"
+            [p-loading]="busy()"
+            (p-click)="send.emit(player)"
+          />
+        } @else if (player.relation === 'received') {
+          <po-button
+            p-kind="primary"
+            p-label="Aceitar pedido"
+            [p-loading]="busy()"
+            (p-click)="accept.emit(player)"
+          />
+        }
+      </app-person-row>
+    }
+  </div>
+</section>
