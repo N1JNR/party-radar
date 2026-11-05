@@ -25,30 +25,34 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 - [x] T7 — Publicar as funções com `npx supabase functions deploy`
 - [x] T8 — Jorge: girar o Client Secret do Discord e ligar o provedor Discord no painel com o segredo novo
 - [x] T9 — Jorge: no Discord, acrescentar `https://vxwnmcsuqphwohddxrlv.supabase.co/auth/v1/callback` em OAuth2 > Redirects
-- [ ] T10 — Jorge: `npx supabase secrets set` com `STEAM_WEB_API_KEY` e `APP_ORIGINS=https://<endereço-na-vercel>`
-- [ ] T11 — Jorge: no Vault, gravar `project_url` e `service_role_key`. Tem de ser a chave `service_role` (JWT), não a
-      `sb_secret_…`: com ela, os agendamentos falham em silêncio (`docs/specs/003-steam/plan.md`)
+- [x] T10 — `STEAM_WEB_API_KEY` e `APP_ORIGINS=https://party-radar-kappa.vercel.app` nas funções
+- [x] T11 — `npm run db:agendamentos:nuvem`: grava `project_url` e `service_role_key` no Vault e a mesma JWT no segredo
+      `SCHEDULE_KEY` das funções; sem ele, toda chamada agendada recebe 401 (`docs/specs/003-steam/plan.md`)
 
 **Vercel**
 
-- [ ] T12 — Jorge: entrar com o GitHub e importar `N1JNR/party-radar`
-- [ ] T13 — Jorge: no Supabase, em Authentication > URL Configuration, usar o endereço da Vercel como Site URL e
+- [x] T12 — Entrar com o GitHub e importar `N1JNR/party-radar`
+- [x] T13 — No Supabase, em Authentication > URL Configuration, usar o endereço da Vercel como Site URL e
       acrescentar `https://<endereço-na-vercel>/**` nos Redirects
 
-- [ ] T20 — Jorge: no Supabase, desligar o provedor Email: o app só entra com Discord, e, ligado, qualquer um cria
+- [x] T20 — No Supabase, desligar o provedor Email: o app só entra com Discord, e, ligado, qualquer um cria
       conta por fora, sem passar pelo Discord
 
 **Conferência**
 
-- [ ] T14 — Abrir uma rota direto (`/conversas`) e recarregar, sem 404
-- [ ] T15 — Entrar com o Discord, conectar a Steam e ver o card
+- [x] T14 — Abrir uma rota direto (`/conversas`) e recarregar, sem 404
+- [x] T15 — Entrar com o Discord, conectar a Steam e ver o card
 - [ ] T16 — Duas contas reais: amizade, conversa em tempo real e squad, em dois aparelhos (falta da spec 007)
 - [ ] T17 — Celular de verdade: teclado aberto, com a caixa de texto à vista (CA25 da spec 007)
 - [ ] T18 — Agendamentos: `steam-presence` a cada 5 minutos, a leitura das 23h55 e os troféus, em `net._http_response`
-- [ ] T19 — Conferir que o build publicado não aceita `?simular-login=`
+- [ ] T19 — Sem sessão, abrir `/login?simular-login=sucesso` no site, tocar em "Continuar com Discord" e ir para o Discord
+      de verdade. `?simular=` já foi conferido e não tem efeito; este parâmetro só foi visto até a tela de login
 
 ## Riscos
 
+- **Falha silenciosa dos agendamentos:** o cron marca "succeeded" mesmo com 401, e nada avisa. Confira com
+  `npm run db:agendamentos:nuvem -- --conferir`. Depois de girar a JWT, rode `npm run db:agendamentos:nuvem`: ele grava o
+  Vault e o `SCHEDULE_KEY` juntos.
 - **E-mail da conta na Vercel:** o principal é um Outlook a que o Jorge não tem mais acesso. O botão de implantar do painel pede
   um código nele; o deploy pelo Git, ao chegar algo na `main`, é o caminho usado. Outras ações do painel podem pedir o mesmo
   código. Solução: recuperar o Outlook ou falar com o suporte da Vercel.

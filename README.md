@@ -34,6 +34,7 @@ npm start            # http://localhost:4200
 | `npm run db:test`                 | testes do banco (RLS)                                        |
 | `npm run db:types`                | gera os tipos TypeScript do banco local                      |
 | `npm run db:agendamentos`         | liga a leitura agendada da Steam no Supabase local (Vault)   |
+| `npm run db:agendamentos:nuvem`   | liga e confere os agendamentos no Supabase na nuvem          |
 | `npm run fn:test`                 | testes das Edge Functions (Deno)                             |
 
 ## Hooks do Git

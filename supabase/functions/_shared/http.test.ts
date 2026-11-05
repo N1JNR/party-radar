@@ -1,6 +1,6 @@
 import { assertEquals } from 'jsr:@std/assert@1';
 
-import { CORS_HEADERS, hasBearer, json, preflight } from './http.ts';
+import { CORS_HEADERS, hasBearer, isScheduledCall, json, preflight, scheduleKey } from './http.ts';
 
 Deno.test('json devolve o corpo em JSON, o status e os cabeçalhos de CORS', async () => {
   const response = json({ ok: true }, 201);
@@ -26,6 +26,74 @@ Deno.test('preflight responde o OPTIONS do navegador com CORS e sem corpo', asyn
 
 Deno.test('preflight ignora os outros métodos', () => {
   assertEquals(preflight(new Request('http://localhost/x', { method: 'POST' })), null);
+});
+
+// Regressão da publicação: na nuvem, a variável da service role traz outra chave, e todo agendamento
+// recebia 401, em silêncio.
+Deno.test('scheduleKey prefere a SCHEDULE_KEY à chave da service role', () => {
+  const nuvem: Record<string, string> = {
+    SCHEDULE_KEY: 'jwt-do-vault',
+    SUPABASE_SERVICE_ROLE_KEY: 'sb_secret_x',
+  };
+  assertEquals(
+    scheduleKey((nome) => nuvem[nome]),
+    'jwt-do-vault',
+  );
+});
+
+Deno.test('scheduleKey usa a chave da service role quando não há SCHEDULE_KEY (local)', () => {
+  const local: Record<string, string> = { SUPABASE_SERVICE_ROLE_KEY: 'jwt-local' };
+  assertEquals(
+    scheduleKey((nome) => local[nome]),
+    'jwt-local',
+  );
+  const vazia: Record<string, string> = {
+    SCHEDULE_KEY: '',
+    SUPABASE_SERVICE_ROLE_KEY: 'jwt-local',
+  };
+  assertEquals(
+    scheduleKey((nome) => vazia[nome]),
+    'jwt-local',
+  );
+});
+
+Deno.test('scheduleKey sem nenhuma chave não reconhece ninguém', () => {
+  const chave = scheduleKey(() => undefined);
+  assertEquals(chave, undefined);
+  assertEquals(
+    hasBearer(new Request('http://x', { headers: { Authorization: 'Bearer ' } }), chave),
+    false,
+  );
+});
+
+Deno.test('isScheduledCall na nuvem aceita a JWT e recusa a sb_secret', () => {
+  const nuvem: Record<string, string> = {
+    SCHEDULE_KEY: 'jwt-do-vault',
+    SUPABASE_SERVICE_ROLE_KEY: 'sb_secret_x',
+  };
+  const pedido = (chave: string) =>
+    new Request('http://x', { headers: { Authorization: `Bearer ${chave}` } });
+  assertEquals(
+    isScheduledCall(pedido('jwt-do-vault'), (nome) => nuvem[nome]),
+    true,
+  );
+  assertEquals(
+    isScheduledCall(pedido('sb_secret_x'), (nome) => nuvem[nome]),
+    false,
+  );
+  assertEquals(
+    isScheduledCall(new Request('http://x'), (nome) => nuvem[nome]),
+    false,
+  );
+});
+
+Deno.test('isScheduledCall no local aceita a chave da service role', () => {
+  const local: Record<string, string> = { SUPABASE_SERVICE_ROLE_KEY: 'jwt-local' };
+  const pedido = new Request('http://x', { headers: { Authorization: 'Bearer jwt-local' } });
+  assertEquals(
+    isScheduledCall(pedido, (nome) => local[nome]),
+    true,
+  );
 });
 
 Deno.test('hasBearer reconhece só o segredo exato no Authorization', () => {

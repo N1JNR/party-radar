@@ -32,6 +32,26 @@ export function hasBearer(request: Request, secret: string | undefined): boolean
   return diff === 0;
 }
 
+/**
+ * A chave que o agendamento do banco apresenta. Na nuvem, `SUPABASE_SERVICE_ROLE_KEY` traz a chave nova
+ * (`sb_secret_…`), que o portão das funções recusa; o agendamento usa a JWT `service_role`, guardada em
+ * `SCHEDULE_KEY`. No Supabase local, as duas são a mesma, e `SCHEDULE_KEY` não precisa existir.
+ */
+export function scheduleKey(read: (name: string) => string | undefined): string | undefined {
+  return read('SCHEDULE_KEY') || read('SUPABASE_SERVICE_ROLE_KEY');
+}
+
+/**
+ * Chamada do agendamento do banco: traz a JWT `service_role`, não a sessão de alguém. Não confundir com a
+ * `sb_secret_…`: ela não passa no portão das funções, então não adianta gravá-la no Vault.
+ */
+export function isScheduledCall(
+  request: Request,
+  read: (name: string) => string | undefined = (name) => Deno.env.get(name),
+): boolean {
+  return hasBearer(request, scheduleKey(read));
+}
+
 /** Responde o pedido de pré-voo (OPTIONS) do navegador; para os outros, devolve `null`. */
 export function preflight(request: Request): Response | null {
   return request.method === 'OPTIONS'

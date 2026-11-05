@@ -3,14 +3,13 @@
 //   30 segundos ("Já deixei público" e "Tentar de novo");
 // - pelo agendamento do banco, com a secret key: lê todas as contas, uma vez por dia (CA14).
 
-import { json, preflight } from '../_shared/http.ts';
+import { isScheduledCall, json, preflight } from '../_shared/http.ts';
 import { recheckAccount, syncAllAccounts } from '../_shared/steam-link.ts';
 import {
   accountOf,
   adminClient,
   callerId,
   claimSync,
-  isScheduledCall,
   listAccounts,
   syncDeps,
 } from '../_shared/supabase.ts';
