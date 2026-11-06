@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing';
 
 import { AuthUser } from '../../../core/auth/auth.gateway';
 import { AuthStore } from '../../../core/auth/auth.store';
-import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import { SUPABASE } from '../../../core/supabase/supabase.client';
 import { SupabaseHomeSource } from './supabase-home.source';
 
@@ -55,18 +54,10 @@ function setup(
   games: { data: unknown; error: unknown } = noGames,
   season: { data: unknown; error: unknown } = noGames,
   trophies: { data: unknown; error: unknown } = noGames,
-  friends: { data: unknown; error: unknown } = noGames,
-  squads: { data: unknown; error: unknown } = noGames,
 ) {
   const rpc = vi.fn((name: string) => {
     if (name === 'my_games') {
       return Promise.resolve(games);
-    }
-    if (name === 'my_friends') {
-      return Promise.resolve(friends);
-    }
-    if (name === 'my_squads') {
-      return Promise.resolve(squads);
     }
     return Promise.resolve(name === 'my_season' ? season : result);
   });
@@ -76,7 +67,6 @@ function setup(
       SupabaseHomeSource,
       { provide: SUPABASE, useValue: { rpc, from } },
       { provide: AuthStore, useValue: { user: signal(current) } },
-      { provide: ExternalNavigation, useValue: { origin: () => 'http://localhost:4200' } },
     ],
   });
   return { source: TestBed.inject(SupabaseHomeSource), rpc };
@@ -101,121 +91,14 @@ describe('SupabaseHomeSource', () => {
     });
   });
 
-  it('traz os squads, com os membros (spec 007)', async () => {
-    const { source, rpc } = setup(
-      { data: [statsRow], error: null },
-      user,
-      noGames,
-      noGames,
-      noGames,
-      noGames,
-      {
-        data: [
-          { conversation_id: 's1', name: 'Squad da Sexta', member_ids: ['ana', 'bia'] },
-          { conversation_id: 's2', name: 'Almas', member_ids: ['caio'] },
-        ],
-        error: null,
-      },
-    );
-    const data = await source.load();
-    expect(rpc).toHaveBeenCalledWith('my_squads');
-    expect(data.squads).toEqual([
-      { id: 's2', name: 'Almas', memberIds: ['caio'] },
-      { id: 's1', name: 'Squad da Sexta', memberIds: ['ana', 'bia'] },
+  it('lê só o card, os jogos e a temporada, sem nada de amigos ou squads (spec 009, CA4)', async () => {
+    const { source, rpc } = setup({ data: [statsRow], error: null });
+    await source.load();
+    expect(rpc.mock.calls.map(([name]) => name).sort()).toEqual([
+      'my_card_stats',
+      'my_games',
+      'my_season',
     ]);
-  });
-
-  it('erro nos squads sobe, para a home mostrar o erro', async () => {
-    const failed = { data: null, error: new Error('rede') };
-    const { source } = setup(
-      { data: [statsRow], error: null },
-      user,
-      noGames,
-      noGames,
-      noGames,
-      noGames,
-      failed,
-    );
-    await expect(source.load()).rejects.toThrow('rede');
-  });
-
-  it('sem resposta dos squads, a lista fica vazia', async () => {
-    const empty = { data: null, error: null };
-    const { source } = setup(
-      { data: [statsRow], error: null },
-      user,
-      noGames,
-      noGames,
-      noGames,
-      noGames,
-      empty,
-    );
-    expect((await source.load()).squads).toEqual([]);
-  });
-
-  it('sem amigos, squads e pergunta, tudo fica vazio (CA13)', async () => {
-    const { source } = setup({ data: [statsRow], error: null });
-    const data = await source.load();
-    expect(data.friendsCount).toBe(0);
-    expect(data.friendsPlaying).toEqual([]);
-    expect(data.squads).toEqual([]);
-    expect(data.question).toBeNull();
-    expect(data.inviteLink).toBe('http://localhost:4200/convite/palmajnr_');
-  });
-
-  it('traz os amigos: conta todos e mostra só quem joga (spec 006, CA14)', async () => {
-    const friend = (id: string, game: string | null) => ({
-      user_id: id,
-      display_name: id.toUpperCase(),
-      username: id,
-      avatar_url: null,
-      current_game: game,
-    });
-    const { source, rpc } = setup(
-      { data: [statsRow], error: null },
-      user,
-      noGames,
-      noGames,
-      noGames,
-      {
-        data: [friend('bia', 'Dota 2'), friend('caio', null)],
-        error: null,
-      },
-    );
-    const data = await source.load();
-    expect(rpc).toHaveBeenCalledWith('my_friends');
-    expect(data.friendsCount).toBe(2);
-    expect(data.friendsPlaying).toEqual([
-      { id: 'bia', name: 'BIA', avatarUrl: null, game: 'Dota 2', platform: 'pc', startedAt: null },
-    ]);
-  });
-
-  it('quem joga aparece em ordem de nome, para a lista não mudar de lugar (spec 006)', async () => {
-    const friend = (id: string) => ({
-      user_id: id,
-      display_name: id,
-      username: id,
-      avatar_url: null,
-      current_game: 'CS2',
-    });
-    const { source } = setup({ data: [], error: null }, user, noGames, noGames, noGames, {
-      data: [friend('Caio'), friend('Bia')],
-      error: null,
-    });
-    const { friendsPlaying } = await source.load();
-    expect(friendsPlaying.map((row) => row.name)).toEqual(['Bia', 'Caio']);
-  });
-
-  it('resposta nula dos amigos conta como nenhum (spec 006)', async () => {
-    const empty = { data: null, error: null };
-    const { source } = setup({ data: [], error: null }, user, noGames, noGames, noGames, empty);
-    expect((await source.load()).friendsCount).toBe(0);
-  });
-
-  it('erro ao ler os amigos sobe, para a home mostrar o erro (spec 006)', async () => {
-    const failed = { data: null, error: new Error('rede') };
-    const { source } = setup({ data: [], error: null }, user, noGames, noGames, noGames, failed);
-    await expect(source.load()).rejects.toThrow('rede');
   });
 
   it('traz a temporada, com as horas em vez de minutos (spec 005, CA1)', async () => {
@@ -312,7 +195,6 @@ describe('SupabaseHomeSource', () => {
     const { source } = setup({ data: [], error: null }, null);
     const data = await source.load();
     expect(data.card).toMatchObject({ name: 'Jogador', username: 'jogador', avatarUrl: null });
-    expect(data.inviteLink).toBe('http://localhost:4200/convite/jogador');
   });
 
   it('erro do banco sobe, para a home mostrar o erro com "Tentar de novo"', async () => {
@@ -365,10 +247,5 @@ describe('SupabaseHomeSource', () => {
       error: new Error('jogos'),
     });
     await expect(source.load()).rejects.toThrow('jogos');
-  });
-
-  it('não há pergunta de parceria para responder', async () => {
-    const { source } = setup({ data: [], error: null });
-    await expect(source.answerPartnership()).rejects.toThrow('spec de amigos');
   });
 });

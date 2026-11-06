@@ -4,16 +4,16 @@ export type SteamStepState = 'not-connected' | 'reading' | 'private' | 'public';
 export type StepStatus = 'done' | 'pending' | 'reading';
 
 export interface StrengthenStep {
-  id: 'discord' | 'steam-connected' | 'steam-public' | 'friends';
+  id: 'discord' | 'steam-connected' | 'steam-public';
   label: string;
   status: StepStatus;
 }
 
 /**
  * "Deixe seu card mais forte" (spec 002, CA7; spec 003, CA1 e CA2): o Discord já está conectado
- * (é obrigatório para entrar); faltam conectar a Steam, deixá-la pública e convidar amigos.
+ * (é obrigatório para entrar); faltam conectar a Steam e deixá-la pública.
  */
-export function strengthenSteps(steam: SteamStepState, friendsCount: number): StrengthenStep[] {
+export function strengthenSteps(steam: SteamStepState): StrengthenStep[] {
   const steamPublic: StepStatus =
     steam === 'public' ? 'done' : steam === 'reading' ? 'reading' : 'pending';
   return [
@@ -24,7 +24,6 @@ export function strengthenSteps(steam: SteamStepState, friendsCount: number): St
       status: steam === 'not-connected' ? 'pending' : 'done',
     },
     { id: 'steam-public', label: 'Steam pública', status: steamPublic },
-    { id: 'friends', label: 'Convidar amigos', status: friendsCount > 0 ? 'done' : 'pending' },
   ];
 }
 

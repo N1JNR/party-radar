@@ -14,8 +14,6 @@ function setup(scenario: FakeHomeScenario): FakeSteamSource {
           scenario,
           loadDelayMs: 0,
           slowDelayMs: 0,
-          actionDelayMs: 0,
-          now: () => new Date(),
         },
       },
     ],

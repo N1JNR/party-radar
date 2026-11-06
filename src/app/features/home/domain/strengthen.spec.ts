@@ -1,28 +1,26 @@
 import { SteamStepState, strengthenSteps, stepStatusLabel } from './strengthen';
 
-const statuses = (steam: SteamStepState, friends: number) =>
-  strengthenSteps(steam, friends).map((step) => step.status);
+const statuses = (steam: SteamStepState) => strengthenSteps(steam).map((step) => step.status);
 
 describe('strengthenSteps', () => {
   it('sem Steam, Discord feito e o resto faltando (spec 003, CA1)', () => {
-    expect(strengthenSteps('not-connected', 0)).toEqual([
+    expect(strengthenSteps('not-connected')).toEqual([
       { id: 'discord', label: 'Discord conectado', status: 'done' },
       { id: 'steam-connected', label: 'Conectar Steam', status: 'pending' },
       { id: 'steam-public', label: 'Steam pública', status: 'pending' },
-      { id: 'friends', label: 'Convidar amigos', status: 'pending' },
     ]);
   });
 
   it('Steam conectada, primeira leitura em andamento (spec 003, CA2)', () => {
-    expect(statuses('reading', 0)).toEqual(['done', 'done', 'reading', 'pending']);
+    expect(statuses('reading')).toEqual(['done', 'done', 'reading']);
   });
 
   it('Steam conectada e privada (spec 003, CA6)', () => {
-    expect(statuses('private', 0)).toEqual(['done', 'done', 'pending', 'pending']);
+    expect(statuses('private')).toEqual(['done', 'done', 'pending']);
   });
 
-  it('Steam pública e com amigos: tudo feito', () => {
-    expect(statuses('public', 3)).toEqual(['done', 'done', 'done', 'done']);
+  it('Steam pública: tudo feito', () => {
+    expect(statuses('public')).toEqual(['done', 'done', 'done']);
   });
 });
 

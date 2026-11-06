@@ -6,10 +6,8 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
 import { PoButtonModule, PoNotificationService } from '@po-ui/ng-components';
 
-import { ClipboardService } from '../../../core/platform/clipboard.service';
 import { ExternalNavigation } from '../../../core/platform/external-navigation';
 import { ShareService } from '../../../core/platform/share.service';
 import { STILL_PRIVATE_MESSAGE, steamLoginUrl } from '../../steam/domain/steam-connect';
@@ -20,14 +18,10 @@ import { SeasonImageService } from '../data/season-image';
 import { radarSummary } from '../domain/player-radar';
 import { SeasonImage, SeasonTrophy, seasonImage, trophyImage } from '../domain/season';
 import { MonthSummaryComponent } from '../ui/month-summary/month-summary.component';
-import { PartnershipQuestionComponent } from '../ui/partnership-question/partnership-question.component';
 import { PlayerHeaderComponent } from '../ui/player-header/player-header.component';
 import { PlayerRadarComponent } from '../ui/player-radar/player-radar.component';
-import { PlayingNowComponent } from '../ui/playing-now/playing-now.component';
 import { RankTrackComponent } from '../ui/rank-track/rank-track.component';
 import { SeasonTrophiesComponent } from '../ui/season-trophies/season-trophies.component';
-import { SquadOpportunityComponent } from '../ui/squad-opportunity/squad-opportunity.component';
-import { SquadRaceComponent } from '../ui/squad-race/squad-race.component';
 import { SteamNoticeComponent } from '../ui/steam-notice/steam-notice.component';
 import { StrengthenCardComponent } from '../ui/strengthen-card/strengthen-card.component';
 
@@ -44,12 +38,8 @@ export const REFRESH_EVERY_MS = 60_000;
     SeasonTrophiesComponent,
     PlayerRadarComponent,
     MonthSummaryComponent,
-    SquadRaceComponent,
     StrengthenCardComponent,
     SteamNoticeComponent,
-    PartnershipQuestionComponent,
-    PlayingNowComponent,
-    SquadOpportunityComponent,
   ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
@@ -57,10 +47,8 @@ export const REFRESH_EVERY_MS = 60_000;
 })
 export class HomePage {
   protected readonly store = inject(HomeStore);
-  private readonly clipboard = inject(ClipboardService);
   private readonly navigation = inject(ExternalNavigation);
   private readonly notification = inject(PoNotificationService);
-  private readonly router = inject(Router);
   private readonly radarImage = inject(RadarImageService);
   private readonly seasonImage = inject(SeasonImageService);
   private readonly sharer = inject(ShareService);
@@ -134,26 +122,6 @@ export class HomePage {
       this.notification.error('Não foi possível gerar a imagem. Tente de novo.');
     } finally {
       this.sharing.set(false);
-    }
-  }
-
-  /** Telas que são entregas próprias (CA13). */
-  /** "Abrir conversa" da oportunidade de squad (spec 007). */
-  protected openConversation(squadId: string): void {
-    void this.router.navigate(['/conversas'], { queryParams: { id: squadId } });
-  }
-
-  protected async copyInvite(link: string): Promise<void> {
-    if (await this.clipboard.copy(link)) {
-      this.notification.success('Link de convite copiado.');
-    } else {
-      this.notification.information(`Não deu para copiar. Seu link de convite: ${link}`);
-    }
-  }
-
-  protected async answer(played: boolean): Promise<void> {
-    if (!(await this.store.answerPartnership(played))) {
-      this.notification.error('Não foi possível salvar sua resposta. Tente de novo.');
     }
   }
 

@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
 import { PoNotificationService } from '@po-ui/ng-components';
 
-import { ClipboardService } from '../../../core/platform/clipboard.service';
 import { ShareService } from '../../../core/platform/share.service';
 import { RadarImageService } from '../data/radar-image';
 import { SeasonImageService } from '../data/season-image';
@@ -51,35 +49,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
     previousIsEstimate: false,
     season: { number: 1, daysLeft: 52, hours: 42, topGame: 'Elden Ring' },
     trophies: [],
-    friendsCount: 6,
-    friendsPlaying: [
-      {
-        id: 'bia',
-        name: 'Bia',
-        avatarUrl: null,
-        game: 'Fortnite',
-        platform: 'ps5',
-        startedAt: '2026-10-16T20:00:00Z',
-      },
-      {
-        id: 'caio',
-        name: 'Caio',
-        avatarUrl: null,
-        game: 'Fortnite',
-        platform: 'pc',
-        startedAt: '2026-10-16T20:30:00Z',
-      },
-    ],
-    squads: [{ id: 'sexta', name: 'Squad da Sexta', memberIds: ['bia', 'caio'] }],
-    question: {
-      id: 'q1',
-      friendId: 'rafa',
-      friendName: 'Rafa',
-      game: 'CS2',
-      startedAt: '2026-10-15T22:00:00Z',
-      endedAt: '2026-10-15T23:40:00Z',
-    },
-    inviteLink: 'http://localhost/convite/ana',
     ...overrides,
   };
 }
@@ -100,10 +69,6 @@ const firstAccess = (): HomeData =>
     previousIsEstimate: false,
     season: null,
     trophies: [],
-    friendsCount: 0,
-    friendsPlaying: [],
-    squads: [],
-    question: null,
   });
 
 describe('HomePage', () => {
@@ -112,7 +77,6 @@ describe('HomePage', () => {
   let information: ReturnType<typeof vi.fn>;
   let success: ReturnType<typeof vi.fn>;
   let error: ReturnType<typeof vi.fn>;
-  let copy: ReturnType<typeof vi.fn>;
 
   let go: ReturnType<typeof vi.fn>;
   let createImage: ReturnType<typeof vi.fn>;
@@ -121,21 +85,18 @@ describe('HomePage', () => {
 
   async function render(
     source: Partial<HomeDataSource> = {},
-    copied = true,
     steam: Partial<SteamSource> = {},
   ): Promise<void> {
     information = vi.fn();
     success = vi.fn();
     error = vi.fn();
     go = vi.fn();
-    copy = vi.fn(() => Promise.resolve(copied));
     createImage = vi.fn(() => Promise.resolve(new Blob(['png'], { type: 'image/png' })));
     createSeasonImage = vi.fn(() => Promise.resolve(new Blob(['png'], { type: 'image/png' })));
     shareImage = vi.fn(() => Promise.resolve('shared'));
     TestBed.configureTestingModule({
       providers: [
         { provide: PoNotificationService, useValue: { information, success, error } },
-        { provide: ClipboardService, useValue: { copy } },
         { provide: RadarImageService, useValue: { create: createImage } },
         { provide: SeasonImageService, useValue: { create: createSeasonImage } },
         { provide: ShareService, useValue: { shareImage } },
@@ -147,7 +108,6 @@ describe('HomePage', () => {
           provide: HOME_DATA_SOURCE,
           useValue: {
             load: () => Promise.resolve(homeData()),
-            answerPartnership: () => Promise.resolve(),
             ...source,
           },
         },
@@ -177,18 +137,21 @@ describe('HomePage', () => {
       b.textContent?.includes(label),
     );
 
-  it('mostra o jogador, a trilha, o radar, o mês e a corrida (spec 004, CA1, CA11, CA12, CA13)', async () => {
+  it('mostra o jogador, a trilha, o radar e o mês, sem seções de amigos (spec 004, CA1; spec 009, CA3)', async () => {
     await render();
     expect(element.querySelector('h1')?.textContent?.trim()).toBe('Ana Souza');
     expect(element.querySelector('app-rank-track')).not.toBeNull();
     expect(element.querySelector('app-player-radar')).not.toBeNull();
     expect(element.querySelector('app-month-summary')).not.toBeNull();
-    expect(element.querySelector('app-squad-race')).not.toBeNull();
-    expect(element.querySelector('app-partnership-question')).not.toBeNull();
-    expect(element.querySelector('app-squad-opportunity h2')?.textContent).toContain(
-      '2 do Squad da Sexta no Fortnite',
-    );
-    expect(element.querySelector('app-playing-now .friend')).not.toBeNull();
+    for (const gone of [
+      'app-squad-race',
+      'app-partnership-question',
+      'app-squad-opportunity',
+      'app-playing-now',
+    ]) {
+      expect(element.querySelector(gone)).toBeNull();
+    }
+    expect(element.textContent).not.toContain('Jogando agora');
     expect(element.querySelector('app-strengthen-card')).toBeNull();
     expect(element.querySelector('app-steam-notice')).toBeNull();
   });
@@ -216,23 +179,26 @@ describe('HomePage', () => {
     expect(element.querySelector('app-player-header')).not.toBeNull();
   });
 
-  it('sem jogos: checklist e aviso, sem amigos nem compartilhar (spec 004, CA18, CA20)', async () => {
-    await render({ load: () => Promise.resolve(firstAccess()) }, true, {
-      account: () => Promise.resolve(steamAccount('private')),
-    });
+  it('sem jogos: checklist e aviso, sem compartilhar (spec 004, CA18, CA20)', async () => {
+    await render(
+      { load: () => Promise.resolve(firstAccess()) },
+      {
+        account: () => Promise.resolve(steamAccount('private')),
+      },
+    );
     expect(element.querySelector('app-strengthen-card')).not.toBeNull();
     expect(element.querySelector('app-steam-notice')).not.toBeNull();
-    expect(element.querySelector('app-partnership-question')).toBeNull();
-    expect(element.querySelector('app-squad-opportunity')).toBeNull();
-    expect(element.querySelector('app-playing-now')).toBeNull();
-    expect(element.querySelector('app-squad-race')).not.toBeNull();
+    expect(element.textContent).not.toContain('Convidar amigos');
     expect(button('Compartilhar meu radar')).toBeUndefined();
   });
 
   it('sem a Steam: radar vazio, "Conectar Steam" e nada de compartilhar (spec 004, CA18)', async () => {
-    await render({ load: () => Promise.resolve(firstAccess()) }, true, {
-      account: () => Promise.resolve(NOT_CONNECTED),
-    });
+    await render(
+      { load: () => Promise.resolve(firstAccess()) },
+      {
+        account: () => Promise.resolve(NOT_CONNECTED),
+      },
+    );
     expect(element.querySelector('app-player-radar')).not.toBeNull();
     expect(element.querySelector('app-player-radar .radar__shape')).toBeNull();
     expect(button('Conectar Steam')).toBeDefined();
@@ -240,7 +206,7 @@ describe('HomePage', () => {
   });
 
   it('com a Steam privada ou em leitura, o radar dá lugar ao aviso (spec 004, CA20)', async () => {
-    await render({}, true, { account: () => Promise.resolve(steamAccount('private')) });
+    await render({}, { account: () => Promise.resolve(steamAccount('private')) });
     expect(element.querySelector('app-steam-notice')).not.toBeNull();
     expect(element.querySelector('app-player-radar')).toBeNull();
     expect(button('Compartilhar meu radar')).toBeUndefined();
@@ -341,9 +307,12 @@ describe('HomePage', () => {
   });
 
   it('sem Steam conectada, fica em NPC, sem temporada nem troféus (spec 005, CA16)', async () => {
-    await render({ load: () => Promise.resolve(firstAccess()) }, true, {
-      account: () => Promise.resolve(NOT_CONNECTED),
-    });
+    await render(
+      { load: () => Promise.resolve(firstAccess()) },
+      {
+        account: () => Promise.resolve(NOT_CONNECTED),
+      },
+    );
     expect(element.querySelector('app-rank-track h2')?.textContent?.trim()).toBe(
       'Sua patente: NPC',
     );
@@ -379,10 +348,13 @@ describe('HomePage', () => {
   });
 
   it('primeira leitura pendente: "Tentar de novo" com a Steam fora avisa o erro (CA19)', async () => {
-    await render({}, true, {
-      account: () => Promise.resolve(steamAccount(null)),
-      recheck: () => Promise.resolve('unavailable'),
-    });
+    await render(
+      {},
+      {
+        account: () => Promise.resolve(steamAccount(null)),
+        recheck: () => Promise.resolve('unavailable'),
+      },
+    );
     expect(element.querySelector('app-strengthen-card')?.textContent).toContain(
       'Lendo seus dados da Steam…',
     );
@@ -398,7 +370,7 @@ describe('HomePage', () => {
       .fn<SteamSource['account']>()
       .mockResolvedValueOnce(steamAccount(null))
       .mockResolvedValue(steamAccount('public'));
-    await render({}, true, { account });
+    await render({}, { account });
     button('Tentar de novo')?.click();
     await settle();
     expect(error).not.toHaveBeenCalled();
@@ -407,7 +379,7 @@ describe('HomePage', () => {
   });
 
   it('sem Steam: "Conectar Steam" leva ao login da própria Steam (spec 003, CA1, CA2)', async () => {
-    await render({}, true, { account: () => Promise.resolve(NOT_CONNECTED) });
+    await render({}, { account: () => Promise.resolve(NOT_CONNECTED) });
     expect(element.querySelector('app-strengthen-card')).not.toBeNull();
     button('Conectar Steam')?.click();
     expect(go).toHaveBeenCalledWith(
@@ -423,7 +395,7 @@ describe('HomePage', () => {
       .fn<SteamSource['account']>()
       .mockResolvedValueOnce(steamAccount('private'))
       .mockResolvedValue(steamAccount('public'));
-    await render({}, true, { account });
+    await render({}, { account });
     button('Já deixei público')?.click();
     await settle();
     expect(success).toHaveBeenCalledWith('Steam pública. Seus dados vão aparecer no card.');
@@ -431,10 +403,13 @@ describe('HomePage', () => {
   });
 
   it('"Já deixei público" com a Steam ainda privada: avisa e mantém (spec 003, CA7)', async () => {
-    await render({}, true, {
-      account: () => Promise.resolve(steamAccount('private')),
-      recheck: () => Promise.resolve('private'),
-    });
+    await render(
+      {},
+      {
+        account: () => Promise.resolve(steamAccount('private')),
+        recheck: () => Promise.resolve('private'),
+      },
+    );
     button('Já deixei público')?.click();
     await settle();
     expect(information).toHaveBeenCalledWith(
@@ -444,63 +419,17 @@ describe('HomePage', () => {
   });
 
   it('se a Steam estiver fora do ar, avisa o erro e mantém o aviso (spec 003, CA15)', async () => {
-    await render({}, true, {
-      account: () => Promise.resolve(steamAccount('private')),
-      recheck: () => Promise.resolve('unavailable'),
-    });
+    await render(
+      {},
+      {
+        account: () => Promise.resolve(steamAccount('private')),
+        recheck: () => Promise.resolve('unavailable'),
+      },
+    );
     button('Já deixei público')?.click();
     await settle();
     expect(error).toHaveBeenCalledWith('Não foi possível verificar a Steam agora. Tente de novo.');
     expect(element.querySelector('app-steam-notice')).not.toBeNull();
-  });
-
-  it('Joguei tira a pergunta (CA11)', async () => {
-    await render();
-    button('Joguei')?.click();
-    await settle();
-    expect(element.querySelector('app-partnership-question')).toBeNull();
-  });
-
-  it('se não salvar a resposta, avisa o erro e mantém a pergunta', async () => {
-    await render({ answerPartnership: () => Promise.reject(new Error('rede')) });
-    button('Não joguei')?.click();
-    await settle();
-    expect(error).toHaveBeenCalledWith('Não foi possível salvar sua resposta. Tente de novo.');
-    expect(element.querySelector('app-partnership-question')).not.toBeNull();
-  });
-
-  it('Abrir conversa leva à conversa do squad (spec 007)', async () => {
-    await render();
-    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
-    button('Abrir conversa')?.click();
-    expect(navigate).toHaveBeenCalledWith(['/conversas'], { queryParams: { id: 'sexta' } });
-  });
-
-  it('sem dados de amigos, as seções deles não aparecem (spec 004, CA13)', async () => {
-    await render({
-      load: () => Promise.resolve(homeData({ squads: [], friendsPlaying: [], question: null })),
-    });
-    expect(element.querySelector('app-squad-opportunity')).toBeNull();
-    expect(element.querySelector('app-playing-now')).toBeNull();
-    expect(element.querySelector('app-partnership-question')).toBeNull();
-    expect(element.textContent).not.toContain('Nenhum squad ainda');
-  });
-
-  it('Copiar convite copia o link e confirma (CA9)', async () => {
-    await render({ load: () => Promise.resolve(homeData({ friendsPlaying: [] })) });
-    button('Copiar convite')?.click();
-    await settle();
-    expect(copy).toHaveBeenCalledWith('http://localhost/convite/ana');
-    expect(success).toHaveBeenCalledWith('Link de convite copiado.');
-  });
-
-  it('se não der para copiar, mostra o link para copiar à mão', async () => {
-    await render({ load: () => Promise.resolve(firstAccess()) }, false);
-    button('Copiar convite')?.click();
-    await settle();
-    expect(information).toHaveBeenCalledWith(
-      'Não deu para copiar. Seu link de convite: http://localhost/convite/ana',
-    );
   });
 
   it('relê o card a cada minuto, para o "jogando agora" acompanhar a Steam (spec 003, CA10)', async () => {
@@ -528,7 +457,7 @@ describe('HomePage', () => {
 
   it('"Já deixei público" com a Steam pública relê o card (spec 003, CA7)', async () => {
     const load = vi.fn<HomeDataSource['load']>(() => Promise.resolve(homeData()));
-    await render({ load }, true, { account: () => Promise.resolve(steamAccount('private')) });
+    await render({ load }, { account: () => Promise.resolve(steamAccount('private')) });
     button('Já deixei público')?.click();
     await settle();
     await settle();
@@ -537,7 +466,7 @@ describe('HomePage', () => {
 
   it('"Tentar de novo" com a Steam pública relê o card (spec 003, CA19)', async () => {
     const load = vi.fn<HomeDataSource['load']>(() => Promise.resolve(homeData()));
-    await render({ load }, true, { account: () => Promise.resolve(steamAccount(null)) });
+    await render({ load }, { account: () => Promise.resolve(steamAccount(null)) });
     button('Tentar de novo')?.click();
     await settle();
     await settle();

@@ -36,35 +36,6 @@ function homeData(overrides: Partial<HomeData> = {}): HomeData {
     previousIsEstimate: false,
     season: { number: 1, daysLeft: 52, hours: 42, topGame: 'Elden Ring' },
     trophies: [],
-    friendsCount: 6,
-    friendsPlaying: [
-      {
-        id: 'bia',
-        name: 'Bia',
-        avatarUrl: null,
-        game: 'Fortnite',
-        platform: 'ps5',
-        startedAt: '2026-10-16T20:00:00Z',
-      },
-      {
-        id: 'caio',
-        name: 'Caio',
-        avatarUrl: null,
-        game: 'Fortnite',
-        platform: 'pc',
-        startedAt: '2026-10-16T20:30:00Z',
-      },
-    ],
-    squads: [{ id: 'sexta', name: 'Squad da Sexta', memberIds: ['bia', 'caio'] }],
-    question: {
-      id: 'q1',
-      friendId: 'rafa',
-      friendName: 'Rafa',
-      game: 'CS2',
-      startedAt: '2026-10-15T22:00:00Z',
-      endedAt: '2026-10-15T23:40:00Z',
-    },
-    inviteLink: 'http://localhost/convite/ana',
     ...overrides,
   };
 }
@@ -84,7 +55,6 @@ function setup(source: Partial<HomeDataSource>, steam: Partial<SteamSource> = {}
         provide: HOME_DATA_SOURCE,
         useValue: {
           load: () => Promise.resolve(homeData()),
-          answerPartnership: () => Promise.resolve(),
           ...source,
         },
       },
@@ -112,10 +82,9 @@ describe('HomeStore', () => {
     expect(store.season()).toBeNull();
     expect(store.trophies()).toEqual([]);
     expect(store.careerHours()).toBe(0);
-    expect(store.opportunities()).toEqual([]);
   });
 
-  it('carrega e calcula patente, jogos e oportunidades', async () => {
+  it('carrega e calcula patente e jogos', async () => {
     const store = setup({});
     await store.load();
     expect(store.status()).toBe('ready');
@@ -125,7 +94,6 @@ describe('HomeStore', () => {
     expect(store.careerHours()).toBe(42);
     expect(store.hasGames()).toBe(true);
     expect(store.previousHours()).toBe(12);
-    expect(store.opportunities()[0].game).toBe('Fortnite');
   });
 
   it('compartilha a temporada só com horas nela (spec 005, CA13)', async () => {
@@ -215,57 +183,17 @@ describe('HomeStore', () => {
       .fn<HomeDataSource['load']>()
       .mockReturnValueOnce(new Promise((resolve) => (resolveFirst = resolve)))
       .mockReturnValueOnce(new Promise((_, reject) => (rejectFirst = reject)))
-      .mockResolvedValueOnce(homeData({ friendsCount: 9 }));
+      .mockResolvedValueOnce(homeData({ previousIsEstimate: true }));
     const store = setup({ load });
     const first = store.load();
     const second = store.load();
     const third = store.load();
     await third;
-    resolveFirst(homeData({ friendsCount: 1 }));
+    resolveFirst(homeData({ previousIsEstimate: false }));
     rejectFirst(new Error('velha'));
     await Promise.all([first, second]);
     expect(store.status()).toBe('ready');
-    expect(store.data()?.friendsCount).toBe(9);
-  });
-
-  describe('pergunta de parceria (CA11)', () => {
-    it('Joguei: a pergunta some', async () => {
-      const answerPartnership = vi.fn(() => Promise.resolve());
-      const store = setup({ answerPartnership });
-      await store.load();
-      const answer = store.answerPartnership(true);
-      expect(store.answering()).toBe(true);
-      expect(await answer).toBe(true);
-      expect(answerPartnership).toHaveBeenCalledWith('q1', true);
-      expect(store.data()?.question).toBeNull();
-      expect(store.answering()).toBe(false);
-    });
-
-    it('Não joguei: a pergunta some', async () => {
-      const store = setup({});
-      await store.load();
-      expect(await store.answerPartnership(false)).toBe(true);
-      expect(store.data()?.question).toBeNull();
-    });
-
-    it('se não salvar, a pergunta continua', async () => {
-      const store = setup({ answerPartnership: () => Promise.reject(new Error('rede')) });
-      await store.load();
-      expect(await store.answerPartnership(true)).toBe(false);
-      expect(store.data()?.question?.id).toBe('q1');
-      expect(store.answering()).toBe(false);
-    });
-
-    it('sem pergunta, ou já respondendo, não faz nada', async () => {
-      const answerPartnership = vi.fn(() => Promise.resolve());
-      const store = setup({ answerPartnership });
-      expect(await store.answerPartnership(true)).toBe(false);
-      await store.load();
-      const first = store.answerPartnership(true);
-      expect(await store.answerPartnership(false)).toBe(false);
-      await first;
-      expect(answerPartnership).toHaveBeenCalledTimes(1);
-    });
+    expect(store.data()?.previousIsEstimate).toBe(true);
   });
 
   describe('Steam (spec 003)', () => {
@@ -370,25 +298,6 @@ describe('HomeStore', () => {
       store.reset();
       expect(store.steam()).toBeNull();
     });
-
-    it('uma resposta que chega depois de recarregar não mexe nos dados novos', async () => {
-      let finish: () => void = () => undefined;
-      const fresh = homeData({ question: { ...homeData().question!, id: 'q2' } });
-      const load = vi
-        .fn<HomeDataSource['load']>()
-        .mockResolvedValueOnce(homeData())
-        .mockResolvedValueOnce(fresh);
-      const store = setup({
-        load,
-        answerPartnership: () => new Promise<void>((resolve) => (finish = resolve)),
-      });
-      await store.load();
-      const answer = store.answerPartnership(true);
-      await store.load();
-      finish();
-      expect(await answer).toBe(true);
-      expect(store.data()?.question?.id).toBe('q2');
-    });
   });
 
   describe('refreshCard (spec 003, CA7, CA10, CA19)', () => {
@@ -409,12 +318,12 @@ describe('HomeStore', () => {
       expect(store.trophies().map((trophy) => trophy.season)).toEqual([1]);
     });
 
-    it('relê só o card, sem o esqueleto de carregando', async () => {
+    it('relê o card sem o esqueleto de carregando', async () => {
       const load = vi
         .fn<HomeDataSource['load']>()
         .mockResolvedValueOnce(homeData())
         .mockResolvedValueOnce(
-          homeData({ card: { ...homeData().card, playingNow: 'Hades' }, friendsCount: 99 }),
+          homeData({ card: { ...homeData().card, playingNow: 'Hades' }, previousIsEstimate: true }),
         );
       const store = setup({ load });
       await store.load();
@@ -422,7 +331,7 @@ describe('HomeStore', () => {
       expect(store.status()).toBe('ready');
       await refreshing;
       expect(store.card()?.playingNow).toBe('Hades');
-      expect(store.data()?.friendsCount).toBe(homeData().friendsCount);
+      expect(store.data()?.previousIsEstimate).toBe(true);
     });
 
     it('antes de a home carregar, não faz nada', async () => {
