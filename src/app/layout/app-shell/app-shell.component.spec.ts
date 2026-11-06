@@ -5,9 +5,6 @@ import { PoMenuComponent, PoNotificationService } from '@po-ui/ng-components';
 
 import { AUTH_GATEWAY, AuthGateway, AuthUser } from '../../core/auth/auth.gateway';
 import { AuthStore } from '../../core/auth/auth.store';
-import { CHAT_SOURCE } from '../../features/bate-papo/data/chat.source';
-import { ChatStore } from '../../features/bate-papo/data/chat.store';
-import { Conversation } from '../../features/bate-papo/domain/chat';
 import { HOME_DATA_SOURCE } from '../../features/home/data/home.source';
 import { HomeStore } from '../../features/home/data/home.store';
 import { STEAM_SOURCE } from '../../features/steam/data/steam.source';
@@ -19,29 +16,15 @@ describe('AppShellComponent', () => {
   let fixture: ComponentFixture<AppShellComponent>;
   let element: HTMLElement;
   let information: ReturnType<typeof vi.fn>;
-  let conversations: Conversation[];
-  let unsubscribe: ReturnType<typeof vi.fn>;
 
   async function render(gateway: Partial<AuthGateway> = {}, url?: string): Promise<void> {
     information = vi.fn();
-    conversations = [];
-    unsubscribe = vi.fn();
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([
-          { path: 'amigos', children: [] },
-          { path: 'conversas', children: [] },
-        ]),
+        provideRouter([{ path: 'inicio', children: [] }]),
         { provide: PoNotificationService, useValue: { information } },
         { provide: HOME_DATA_SOURCE, useValue: {} },
         { provide: STEAM_SOURCE, useValue: {} },
-        {
-          provide: CHAT_SOURCE,
-          useValue: {
-            conversations: () => Promise.resolve(conversations),
-            subscribe: () => unsubscribe,
-          },
-        },
         {
           provide: AUTH_GATEWAY,
           useValue: {
@@ -67,12 +50,12 @@ describe('AppShellComponent', () => {
   const menuButton = () => element.querySelector<HTMLButtonElement>('.shell__menu-button')!;
   const pressEscape = () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
 
-  it('mostra o menu com os itens e Meu card como link para /inicio (CA1)', async () => {
+  it('mostra o menu só com Meu card, Perfil e Sair (CA1; spec 009, CA1)', async () => {
     await render();
     const labels = [...element.querySelectorAll('po-menu .po-menu-icon-label')].map((span) =>
       span.textContent?.trim(),
     );
-    expect(labels).toEqual(['Meu card', 'Amigos', 'Conversas', 'Perfil', 'Sair']);
+    expect(labels).toEqual(['Meu card', 'Perfil', 'Sair']);
     expect(element.querySelector('po-menu a[href="/inicio"]')).not.toBeNull();
     expect(element.querySelector('router-outlet')).not.toBeNull();
   });
@@ -149,7 +132,7 @@ describe('AppShellComponent', () => {
     await render();
     menuButton().click();
     fixture.detectChanges();
-    element.querySelectorAll<HTMLElement>('po-menu .po-menu-item')[1].click();
+    element.querySelectorAll<HTMLElement>('po-menu .po-menu-item')[0].click();
     fixture.detectChanges();
     expect(menu().mobileOpened).toBe(false);
     expect(menuButton().getAttribute('aria-expanded')).toBe('false');
@@ -164,7 +147,7 @@ describe('AppShellComponent', () => {
 
   it('destinos que ainda não existem mostram "Em breve" (CA13)', async () => {
     await render();
-    menu().menus[3].action?.();
+    menu().menus[1].action?.();
     expect(information).toHaveBeenCalledWith('Em breve: Perfil.');
   });
 
@@ -173,7 +156,7 @@ describe('AppShellComponent', () => {
     await render({ signOut });
     const reset = vi.spyOn(TestBed.inject(HomeStore), 'reset');
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    menu().menus[4].action?.();
+    menu().menus[2].action?.();
     await vi.waitFor(() => expect(navigate).toHaveBeenCalled());
     expect(signOut).toHaveBeenCalledTimes(1);
     expect(TestBed.inject(AuthStore).isAuthenticated()).toBe(false);
@@ -184,54 +167,16 @@ describe('AppShellComponent', () => {
   it('volta para o login mesmo se o servidor falhar ao sair (CA3)', async () => {
     await render({ signOut: () => Promise.reject(new Error('rede')) });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    menu().menus[4].action?.();
+    menu().menus[2].action?.();
     await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith('/login', { replaceUrl: true }));
   });
 
   it('ao abrir o app numa tela, o menu já mostra o item marcado', async () => {
-    await render({}, '/amigos');
+    await render({}, '/inicio');
     await new Promise((resolve) => setTimeout(resolve));
     await new Promise((resolve) => setTimeout(resolve));
     fixture.detectChanges();
-    expect(element.querySelector('.po-menu-item-selected')?.textContent).toContain('Amigos');
-  });
-
-  it('com uma conversa aberta, o menu marca Conversas (spec 007)', async () => {
-    await render();
-    const router = TestBed.inject(Router);
-    await router.navigateByUrl('/amigos');
-    await router.navigateByUrl('/conversas?id=c1');
-    expect((menu() as unknown as { linkActive: string }).linkActive).toBe('/conversas');
-  });
-
-  it('o menu diz quantas conversas têm novidade (spec 007, CA18)', async () => {
-    await render();
-    const news = { unread: 3 } as Conversation;
-    TestBed.inject(ChatStore).conversations.set([news, { unread: 0 } as Conversation]);
-    fixture.detectChanges();
-    expect(menu().menus[2].label).toBe('Conversas · 1 com novidade');
-  });
-
-  it('a novidade muda o texto sem tirar o destaque do item (spec 007, CA18)', async () => {
-    await render({}, '/conversas');
-    await new Promise((resolve) => setTimeout(resolve));
-    await new Promise((resolve) => setTimeout(resolve));
-    fixture.detectChanges();
-    TestBed.inject(ChatStore).conversations.set([{ unread: 3 } as Conversation]);
-    TestBed.tick();
-    fixture.detectChanges();
-    expect(element.querySelector('.po-menu-item-selected')?.textContent).toContain(
-      'Conversas · 1 com novidade',
-    );
-  });
-
-  it('liga o tempo real ao entrar e esquece tudo ao sair (spec 007, CA18)', async () => {
-    await render();
-    const chat = TestBed.inject(ChatStore);
-    await vi.waitFor(() => expect(chat.status()).toBe('ready'));
-    menu().menus[4].action?.();
-    await vi.waitFor(() => expect(unsubscribe).toHaveBeenCalled());
-    expect(chat.status()).toBe('idle');
+    expect(element.querySelector('.po-menu-item-selected')?.textContent).toContain('Meu card');
   });
 
   it('se o po-menu fechar a gaveta ao redimensionar a janela, o estado acompanha (CA2)', async () => {
@@ -266,7 +211,7 @@ describe('AppShellComponent', () => {
   it('ao tocar em Sair, não mostra o aviso de sessão expirada (CA8)', async () => {
     await render({ signOut: () => Promise.resolve() });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    menu().menus[4].action?.();
+    menu().menus[2].action?.();
     await vi.waitFor(() => expect(navigate).toHaveBeenCalled());
     fixture.detectChanges();
     await fixture.whenStable();

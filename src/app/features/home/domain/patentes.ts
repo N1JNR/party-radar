@@ -38,7 +38,7 @@ export const PATENTES: readonly Patente[] = [
     pace: 'cerca de 5h por semana',
     minHours: 40,
   },
-  { id: 'lenda', name: 'Lenda do squad', goal: '120h', pace: 'cerca de 2h por dia', minHours: 120 },
+  { id: 'lenda', name: 'Lenda', goal: '120h', pace: 'cerca de 2h por dia', minHours: 120 },
   {
     id: 'sem-vida-social',
     name: 'Sem vida social',
@@ -91,7 +91,7 @@ export function progressFor(hours: number): PatenteProgress {
 
 /**
  * O que falta para a próxima patente, em texto: "Falta 1h para Recruta da fila." ou
- * "Faltam 78h para Lenda do squad." Vazio na última patente.
+ * "Faltam 78h para Lenda." Vazio na última patente.
  */
 export function remainingLabel(progress: PatenteProgress): string {
   if (!progress.next) {

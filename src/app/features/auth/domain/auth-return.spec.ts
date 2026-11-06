@@ -3,9 +3,9 @@ import { DEFAULT_DESTINATION, returnFailure, returnUrl, safeDestination } from '
 describe('safeDestination', () => {
   it.each([
     ['/inicio', '/inicio'],
-    ['/amigos?aba=pedidos', '/amigos?aba=pedidos'],
+    ['/perfil?aba=contas', '/perfil?aba=contas'],
     ['/convite/ana#topo', '/convite/ana#topo'],
-    ['/inicio/../amigos', '/amigos'],
+    ['/inicio/../perfil', '/perfil'],
   ])('mantém o caminho interno %s (CA5)', (next, expected) => {
     expect(safeDestination(next)).toBe(expected);
   });
@@ -31,8 +31,8 @@ describe('safeDestination', () => {
 
 describe('returnUrl', () => {
   it('volta para /auth/retorno levando o destino', () => {
-    expect(returnUrl('http://localhost:4200', '/amigos?aba=1')).toBe(
-      'http://localhost:4200/auth/retorno?next=%2Famigos%3Faba%3D1',
+    expect(returnUrl('http://localhost:4200', '/perfil?aba=1')).toBe(
+      'http://localhost:4200/auth/retorno?next=%2Fperfil%3Faba%3D1',
     );
   });
 

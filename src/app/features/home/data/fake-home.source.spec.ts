@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 
 import { AUTH_GATEWAY, AuthUser } from '../../../core/auth/auth.gateway';
 import { AuthStore } from '../../../core/auth/auth.store';
-import { squadOpportunities } from '../domain/squad-opportunity';
 import {
   FAKE_HOME_OPTIONS,
   FakeHomeScenario,
@@ -10,7 +9,6 @@ import {
   fakeHomeScenarioFrom,
 } from './fake-home.source';
 
-const now = new Date(2026, 9, 16, 21, 0);
 const user: AuthUser = {
   name: 'Ana Souza',
   username: 'ana',
@@ -22,8 +20,6 @@ describe('fakeHomeScenarioFrom', () => {
     ['', 'full'],
     ['?simular=primeiro-acesso', 'first-access'],
     ['?simular=steam-privada', 'steam-private'],
-    ['?simular=sem-amigos', 'no-friends-playing'],
-    ['?simular=sem-squads', 'no-squads'],
     ['?simular=carregando', 'slow'],
     ['?simular=erro', 'error'],
     ['?simular=qualquer-coisa', 'full'],
@@ -43,9 +39,7 @@ describe('FAKE_HOME_OPTIONS', () => {
       scenario: 'full',
       loadDelayMs: 500,
       slowDelayMs: 3000,
-      actionDelayMs: 300,
     });
-    expect(options.now()).toBeInstanceOf(Date);
   });
 });
 
@@ -56,7 +50,7 @@ describe('FakeHomeSource', () => {
         FakeHomeSource,
         {
           provide: FAKE_HOME_OPTIONS,
-          useValue: { scenario, loadDelayMs: 0, slowDelayMs: 5, actionDelayMs: 0, now: () => now },
+          useValue: { scenario, loadDelayMs: 0, slowDelayMs: 5 },
         },
         {
           provide: AUTH_GATEWAY,
@@ -81,7 +75,6 @@ describe('FakeHomeSource', () => {
       games: 7,
       gameOfMonth: { name: 'Elden Ring', hours: 18 },
     });
-    expect(data.inviteLink).toMatch(/\/convite\/ana$/);
   });
 
   it('cheio: traz jogos de vários tipos, para o radar (spec 004)', async () => {
@@ -95,42 +88,16 @@ describe('FakeHomeSource', () => {
     expect((await (await setup('first-access')).load()).games).toEqual([]);
   });
 
-  it('cheio: tem oportunidade de squad e pergunta de parceria de ontem (CA11, CA12)', async () => {
-    const data = await (await setup('full')).load();
-    const [first] = squadOpportunities(data.squads, data.friendsPlaying);
-    expect(first.squad.name).toBe('Squad da Sexta');
-    expect(first.game).toBe('Fortnite');
-    expect(first.members).toHaveLength(3);
-    expect(data.question).toMatchObject({ friendName: 'Rafa', game: 'CS2' });
-    const started = new Date(data.question!.startedAt);
-    const ended = new Date(data.question!.endedAt);
-    expect([started.getDate(), started.getHours(), started.getMinutes()]).toEqual([15, 22, 0]);
-    expect([ended.getHours(), ended.getMinutes()]).toEqual([23, 40]);
-  });
-
-  it('primeiro acesso: card vazio, Steam privada e sem amigos (CA7)', async () => {
+  it('primeiro acesso: card vazio (CA7)', async () => {
     const data = await (await setup('first-access')).load();
     expect(data.card.monthHours).toBe(0);
     expect(data.card.games).toBe(0);
-    expect(data.friendsCount).toBe(0);
-    expect(data.friendsPlaying).toEqual([]);
-    expect(data.squads).toEqual([]);
-    expect(data.question).toBeNull();
+    expect(data).not.toHaveProperty('friendsPlaying');
   });
 
   it('Steam privada: card cheio com a Steam privada (CA8)', async () => {
     const data = await (await setup('steam-private')).load();
     expect(data.card.monthHours).toBeGreaterThan(0);
-  });
-
-  it('sem amigos jogando (CA9)', async () => {
-    const data = await (await setup('no-friends-playing')).load();
-    expect(data.friendsPlaying).toEqual([]);
-  });
-
-  it('sem squads (CA10)', async () => {
-    const data = await (await setup('no-squads')).load();
-    expect(data.squads).toEqual([]);
   });
 
   it('carregando: demora mais, depois carrega o card cheio (CA14)', async () => {
@@ -158,10 +125,5 @@ describe('FakeHomeSource', () => {
   it('sem usuário, usa um nome genérico', async () => {
     const data = await (await setup('full', false)).load();
     expect(data.card).toMatchObject({ name: 'Jogador', username: 'jogador', avatarUrl: null });
-  });
-
-  it('responder a parceria responde sem erro', async () => {
-    const source = await setup('full');
-    await expect(source.answerPartnership()).resolves.toBeUndefined();
   });
 });

@@ -1,7 +1,10 @@
 # 007 — Bate-papo
 
-**Status:** aprovada em 2026-11-05
+**Status:** aprovada em 2026-11-05 · retirada em 2026-11-06
 **Relacionada a:** `006-amigos` (vem antes: só amigos conversam) · `002-home` (o menu e os squads)
+
+> **Retirada em 2026-11-06 pela spec `009-app-enxuto`:** o app deixou de ter amigos e bate-papo. O código, as
+> tabelas e os dados saíram; esta spec fica só como histórico.
 
 ## Problema
 

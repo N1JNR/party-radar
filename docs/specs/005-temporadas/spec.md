@@ -1,6 +1,6 @@
 # 005 — Temporadas: patente que recomeça
 
-**Status:** aprovada em 2026-11-03; textos da trilha aprovados no mesmo dia, na conferência da spec 004
+**Status:** aprovada em 2026-11-03; textos da trilha aprovados no mesmo dia, na conferência da spec 004; a patente do topo virou "Lenda" na spec 009
 **Relacionada a:** `004-novo-dashboard` (a trilha onde a patente aparece) · `003-steam` (as fotos
 diárias de tempo de jogo) · spec de amigos (o placar do squad, que vem depois).
 
@@ -28,7 +28,7 @@ O jogador passa a ter duas trilhas:
 | Recruta da fila          | 5h                 | 35 min por semana |
 | Soldado do fim de semana | 15h                | 2h por semana     |
 | Veterano de lobby        | 40h                | 5h por semana     |
-| Lenda do squad           | 120h               | 2h por dia        |
+| Lenda                    | 120h               | 2h por dia        |
 | Sem vida social          | 200h               | 3h20 por dia      |
 
 **Limite diário:** contam no máximo **8 horas por dia** para a temporada, porque a Steam conta o
@@ -45,7 +45,7 @@ de amigos, ninguém conseguiria cumpri-las. Elas podem voltar como outro tipo de
 
 > **Sua patente: Veterano de lobby**
 > Temporada 1: faltam 52 dias.
-> 42h nesta temporada, somando todos os seus jogos. Faltam 78h para Lenda do squad.
+> 42h nesta temporada, somando todos os seus jogos. Faltam 78h para Lenda.
 
 | Patente                  | Texto da meta       | Ritmo                      |
 | ------------------------ | ------------------- | -------------------------- |
@@ -53,7 +53,7 @@ de amigos, ninguém conseguiria cumpri-las. Elas podem voltar como outro tipo de
 | Recruta da fila          | 5h                  | cerca de 35 min por semana |
 | Soldado do fim de semana | 15h                 | cerca de 2h por semana     |
 | Veterano de lobby        | 40h                 | cerca de 5h por semana     |
-| Lenda do squad           | 120h                | cerca de 2h por dia        |
+| Lenda                    | 120h                | cerca de 2h por dia        |
 | Sem vida social          | 200h                | cerca de 3h20 por dia      |
 
 ## Fora do escopo

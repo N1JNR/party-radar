@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  DestroyRef,
   ElementRef,
   afterNextRender,
   effect,
@@ -19,9 +18,8 @@ import {
 } from '@po-ui/ng-components';
 
 import { AuthStore } from '../../core/auth/auth.store';
-import { ChatStore } from '../../features/bate-papo/data/chat.store';
 import { HomeStore } from '../../features/home/data/home.store';
-import { buildAppMenu, showNews } from './app-menu';
+import { buildAppMenu } from './app-menu';
 
 /**
  * Layout das telas autenticadas: `po-menu` fixo a partir de 1201 px e gaveta abaixo disso
@@ -49,7 +47,6 @@ export class AppShellComponent {
   private readonly router = inject(Router);
   private readonly notification = inject(PoNotificationService);
   private readonly home = inject(HomeStore);
-  private readonly chat = inject(ChatStore);
   private readonly menu = viewChild.required(PoMenuComponent);
   private readonly menuElement = viewChild.required(PoMenuComponent, { read: ElementRef });
   private readonly menuButton = viewChild.required<ElementRef<HTMLButtonElement>>('menuButton');
@@ -72,17 +69,8 @@ export class AppShellComponent {
       }
     });
     const changeDetector = inject(ChangeDetectorRef);
-    effect(() => {
-      showNews(this.menus, this.chat.withNews());
-      changeDetector.markForCheck();
-    });
-    // Só no navegador: o tempo real e o contador do menu valem em todas as telas (spec 007, CA18).
-    afterNextRender(() => {
-      this.chat.start();
-      // O `po-menu` marca o item atual num `setTimeout`, sem avisar esta casca `OnPush`.
-      setTimeout(() => changeDetector.markForCheck());
-    });
-    inject(DestroyRef).onDestroy(() => this.chat.stop());
+    // O `po-menu` marca o item atual num `setTimeout`, sem avisar esta casca `OnPush`.
+    afterNextRender(() => setTimeout(() => changeDetector.markForCheck()));
   }
 
   protected openMenu(): void {
@@ -137,6 +125,5 @@ export class AppShellComponent {
   /** A próxima pessoa não vê nada de quem saiu. */
   private forget(): void {
     this.home.reset();
-    this.chat.stop();
   }
 }

@@ -7,7 +7,7 @@ interface Blip {
   presence: Presence;
   x: number;
   y: number;
-  /** Momento em que a varredura passa pelo amigo e ele "acende". */
+  /** Momento em que a varredura passa pelo ponto e ele "acende". */
   delay: string;
 }
 
@@ -48,7 +48,7 @@ function ticks(): Tick[] {
 
 /**
  * Radar decorativo da tela de login (DESIGN.md, "anel de radar"). Ao abrir a tela, a varredura
- * dá uma única volta e cada amigo acende quando ela passa por ele, com o anel na cor da
+ * dá uma única volta e cada ponto acende quando ela passa por ele, com o anel na cor da
  * presença. Sem significado para leitores de tela, por isso fica escondido deles.
  */
 @Component({

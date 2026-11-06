@@ -58,8 +58,8 @@ describe('AuthReturnPage', () => {
   });
 
   it('com o login feito, vai para o destino pedido sem deixar a volta no histórico (CA2, CA5)', async () => {
-    const { navigate } = await render({ next: '/amigos?aba=pedidos', code: 'abc' }, jorge);
-    expect(navigate).toHaveBeenCalledWith('/amigos?aba=pedidos', { replaceUrl: true });
+    const { navigate } = await render({ next: '/perfil?aba=contas', code: 'abc' }, jorge);
+    expect(navigate).toHaveBeenCalledWith('/perfil?aba=contas', { replaceUrl: true });
   });
 
   it('sem destino, vai para a tela inicial', async () => {

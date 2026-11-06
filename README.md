@@ -1,6 +1,6 @@
 # Party Radar
 
-Veja quem do seu grupo está jogando agora, chame a galera e acompanhe o que vocês jogaram.
+Seu card gamer: horas, jogos e a patente da temporada, direto da Steam.
 
 - **Stack:** Angular 21 · PO UI 21 · Supabase · Vitest · ESLint · Prettier
 - **Regras do projeto (para pessoas e agentes de IA):** [`AGENTS.md`](AGENTS.md)

@@ -16,20 +16,19 @@ Os valores abaixo copiam os arquivos de código para facilitar a leitura. Se div
 
 ### Personalidade
 
-O Party Radar é o lugar onde o grupo vê **quem está online agora** e se junta. A interface
-é um **painel de sinais**: escura como uma sala com o monitor ligado, com cor só onde há
-alguém ativo. Ela soa como um amigo do grupo, não como um console técnico nem como uma
+O Party Radar é o **card gamer** de cada pessoa: horas, jogos e a patente da temporada, lidos da
+Steam. A interface é um **painel de sinais**: escura como uma sala com o monitor ligado, com cor só
+onde há dado de jogo. Ela soa como um colega de jogo, não como um console técnico nem como uma
 loja gamer cheia de neon.
 
-- **Vivo, não barulhento:** a cor vem da presença dos amigos, não da decoração.
+- **Vivo, não barulhento:** a cor vem dos dados de jogo (patente, tipo de jogo, "jogando agora"),
+  não da decoração.
 - **Direto:** uma ação principal por tela ("Compartilhar meu radar", "Continuar com Discord").
-- **Do grupo:** nomes, fotos e jogos dos amigos são o conteúdo; o app fica em segundo plano.
+- **Do jogador:** o nome, a foto e os jogos da pessoa são o conteúdo; o app fica em segundo plano.
 
-**O elemento memorável é o anel de radar**: um anel em volta do avatar, na cor do estado
-de presença, que emite **uma onda** (como o eco de um radar) quando um amigo começa a jogar.
-Na home, o elemento memorável é o **radar do jogador**: a forma que mostra o tipo de jogo de cada
-um, que também vira a imagem de compartilhar. Toda a ousadia visual fica nessas duas peças; o resto
-da interface é calmo e disciplinado.
+**O elemento memorável é o radar do jogador**: a forma que mostra o tipo de jogo de cada um, que
+também vira a imagem de compartilhar. Toda a ousadia visual fica nessa peça; o resto da interface é
+calmo e disciplinado.
 
 Não use o ponto colorido no canto do avatar: ele é a marca registrada do Discord, e as
 [diretrizes do Discord](https://discord.com/branding) proíbem copiar seus ícones de presença.
@@ -191,11 +190,10 @@ lateral (`po-menu`) fica fixo acima de 1200 px e vira gaveta até 1200 px. Prefi
 ### Movimento
 
 - Duração curta (150–250 ms) e só como resposta a uma ação: abrir, expandir, confirmar.
-- Movimento espontâneo existe em três momentos, todos de uma vez só: a **varredura** do radar da
-  tela de login (uma volta ao abrir, acendendo os amigos quando passa por eles), a **varredura** do
-  radar do jogador (uma volta ao abrir a home) e a **onda única** do anel de radar quando um amigo
-  passa a jogar. Nada de animações de entrada em cada card.
-- Com `prefers-reduced-motion: reduce`, os três mostram direto o estado final, sem animação.
+- Movimento espontâneo existe em dois momentos, os dois de uma vez só: a **varredura** do radar da
+  tela de login (uma volta ao abrir, acendendo os pontos quando passa por eles) e a **varredura** do
+  radar do jogador (uma volta ao abrir a home). Nada de animações de entrada em cada card.
+- Com `prefers-reduced-motion: reduce`, os dois mostram direto o estado final, sem animação.
 
 ## 3. Componentes de interface
 
@@ -230,12 +228,6 @@ lateral (`po-menu`) fica fixo acima de 1200 px e vira gaveta até 1200 px. Prefi
 - **Imagens de compartilhar (radar, temporada e troféu):** PNG de 1080 × 1350 desenhado em
   `<canvas>`, só com o @usuário e dados de jogo. O canvas não lê variáveis de CSS: as cores repetem as
   do tema em `data/canvas-image.ts`.
-- **Linha de pessoa:** foto, nome, @usuário, estado em texto ("Jogando Dota 2 agora") e as ações à direita; no
-  celular, as ações descem para a linha de baixo.
-- **Conversas:** a lista e a conversa lado a lado a partir de 768 px; abaixo disso, uma tela de cada
-  vez, com "Voltar". A tela ocupa a altura toda e só as mensagens rolam: a caixa de texto fica sempre à
-  vista. A mensagem da própria pessoa fica à direita, com outro fundo, e toda a informação também está
-  em texto ("2 não lidas", "Não enviada").
 - **Card do Wrapped:** precisa renderizar no servidor (SSR) **sem PO UI**, para a prévia do link.
 
 ### Estados obrigatórios
@@ -246,17 +238,17 @@ Toda tela e todo componente que carrega dados tem quatro versões: **carregando*
 - **Carregando:** esqueleto ou `po-loading-overlay`; botões em `p-loading` durante a ação.
   Exceção: o carregamento inicial do app (verificando a sessão) usa o indicador próprio de
   `app.ts`, para o PO UI continuar fora do bundle inicial.
-- **Vazio:** diz o que fazer, com a ação ali mesmo: "Nenhum amigo ainda. Convide a galera
-  pelo link." + botão "Copiar convite".
+- **Vazio:** diz o que fazer, com a ação ali mesmo: "Nenhum jogo lido ainda. Conecte a Steam
+  para montar seu card." + botão "Conectar Steam".
 - **Erro:** diz o que aconteceu e como resolver, sem pedir desculpas: "Não foi possível
-  carregar seus amigos. Verifique sua conexão." + "Tentar de novo".
+  carregar seu card. Verifique sua conexão." + "Tentar de novo".
 
 ## 4. Layout e responsividade
 
 - **Web primeiro** (1280–1440 px), funcional até 390 px: conteúdo alinhado à esquerda;
   centralizado só em telas de uma ação (Entrar, vazio). No celular, uma coluna com margem
   lateral `--spacing-sm`.
-- **Navegação:** menu lateral (`po-menu`) fixo acima de 1200 px, com Meu card, Amigos, Conversas, Perfil
+- **Navegação:** menu lateral (`po-menu`) fixo acima de 1200 px, com Meu card, Perfil
   e Sair. Até 1200 px, o menu vira gaveta aberta pelo botão de
   menu (fecha ao escolher um destino, tocar fora ou apertar Esc, devolvendo o foco ao botão).
   O botão de abrir é nosso: o do `po-menu` é uma `div` sem teclado (exceção aceita na spec 002).
@@ -285,9 +277,9 @@ Toda tela e todo componente que carrega dados tem quatro versões: **carregando*
 ### Voz e textos
 
 - Português do Brasil, frases curtas, sentença com só a primeira letra maiúscula.
-- O botão diz o que acontece: "Enviar pedido", não "Enviar". A mesma ação mantém o nome
-  do começo ao fim ("Enviar pedido" → toast "Pedido enviado para Bia.").
-- Tom de amigo, sem gírias forçadas e sem pedir desculpas em erro.
+- O botão diz o que acontece: "Compartilhar meu radar", não "Compartilhar". A mesma ação mantém o
+  nome do começo ao fim ("Já deixei público" → toast "Steam pública. Seus dados vão aparecer no card.").
+- Tom de colega de jogo, sem gírias forçadas e sem pedir desculpas em erro.
 - **Evite:** rótulos em CAIXA ALTA, seta "→" no fim de botões, textos genéricos como
   "Algo deu errado".
 

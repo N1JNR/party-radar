@@ -3,15 +3,14 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { STEAM_SOURCE, SteamAccountState, SteamRecheck } from '../../steam/data/steam.source';
 import { progressFor } from '../domain/patentes';
 import { previousMonthHours, totalHours } from '../domain/player-radar';
-import { squadOpportunities } from '../domain/squad-opportunity';
 import { SteamStepState } from '../domain/strengthen';
 import { HOME_DATA_SOURCE, HomeData } from './home.source';
 
 export type HomeStatus = 'loading' | 'error' | 'ready';
 
 /**
- * Estado da home em signals (spec 002, CA8, CA11, CA14 e CA15). Fica na raiz porque o menu do
- * app também mostra os squads.
+ * Estado da home em signals (spec 002, CA8, CA14 e CA15). Fica na raiz para a casca do app esquecer os
+ * dados ao sair.
  */
 @Injectable({ providedIn: 'root' })
 export class HomeStore {
@@ -23,7 +22,6 @@ export class HomeStore {
   readonly data = signal<HomeData | null>(null);
   /** Conta Steam de quem está logado; `null` se não deu para ler (sem passo nem aviso da Steam). */
   readonly steam = signal<SteamAccountState | null>(null);
-  readonly answering = signal(false);
   readonly markingSteam = signal(false);
 
   /** Onde a Steam está, para o "Deixe seu card mais forte" e o aviso de perfil privado. */
@@ -69,17 +67,12 @@ export class HomeStore {
   readonly canShareSeason = computed(() => (this.season()?.hours ?? 0) > 0 && this.showRadar());
   /** Horas totais na Steam (spec 005, CA14). */
   readonly careerHours = computed(() => totalHours(this.data()?.games ?? [], 'all'));
-  readonly opportunities = computed(() => {
-    const data = this.data();
-    return data ? squadOpportunities(data.squads, data.friendsPlaying) : [];
-  });
-  /** Esquece os dados ao sair, para a próxima pessoa não ver os squads de quem saiu. */
+  /** Esquece os dados ao sair, para a próxima pessoa não ver o card de quem saiu. */
   reset(): void {
     this.loadId++;
     this.data.set(null);
     this.steam.set(null);
     this.status.set('loading');
-    this.answering.set(false);
     this.markingSteam.set(false);
   }
 
@@ -102,28 +95,6 @@ export class HomeStore {
       if (id === this.loadId) {
         this.status.set('error');
       }
-    }
-  }
-
-  /**
-   * Responde a pergunta de parceria (CA11): a pergunta some. Devolve `false` se a resposta não foi
-   * salva; a pergunta continua na tela.
-   */
-  async answerPartnership(played: boolean): Promise<boolean> {
-    const question = this.data()?.question;
-    if (!question || this.answering()) {
-      return false;
-    }
-    this.answering.set(true);
-    const loadId = this.loadId;
-    try {
-      await this.source.answerPartnership(question.id, played);
-      this.update(loadId, (data) => ({ ...data, question: null }));
-      return true;
-    } catch {
-      return false;
-    } finally {
-      this.answering.set(false);
     }
   }
 
@@ -152,11 +123,10 @@ export class HomeStore {
     }
   }
 
-  /** Aplica a resposta só se os dados ainda são os da carga em que a ação começou. */
   /**
    * Relê o card e a conta Steam sem o esqueleto de carregando (spec 003, CA10: "jogando agora" a
-   * cada minuto; CA7 e CA19: dados e estado da Steam depois de uma leitura no servidor). Só troca
-   * o card e a conta; se falhar, fica o que estava.
+   * cada minuto; CA7 e CA19: dados e estado da Steam depois de uma leitura no servidor). Se
+   * falhar, fica o que estava.
    */
   async refreshCard(): Promise<void> {
     if (this.status() !== 'ready') {
@@ -171,24 +141,10 @@ export class HomeStore {
       return;
     }
     if (home) {
-      this.update(loadId, (data) => ({
-        ...data,
-        card: home.card,
-        games: home.games,
-        previousIsEstimate: home.previousIsEstimate,
-        season: home.season,
-        trophies: home.trophies,
-      }));
+      this.data.set(home);
     }
     if (steam) {
       this.steam.set(steam);
     }
-  }
-
-  private update(loadId: number, change: (data: HomeData) => HomeData): void {
-    if (loadId !== this.loadId) {
-      return;
-    }
-    this.data.update((data) => (data ? change(data) : data));
   }
 }

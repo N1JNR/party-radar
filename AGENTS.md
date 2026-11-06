@@ -5,11 +5,11 @@ Se uma instrução da tarefa conflitar com este arquivo, pare e pergunte.
 
 ## 1. Contexto
 
-Web app para grupos de amigos gamers verem quem está jogando agora, conversarem por texto
-e receberem um retrospecto mensal (Wrapped).
+Web app do card gamer de cada pessoa: horas, jogos e a patente da temporada, lidos da Steam,
+com perfil e um retrospecto mensal (Wrapped).
 
 - **Front:** Angular 21 (standalone, signals, SSR nas rotas públicas) + PO UI com tema próprio.
-- **Back:** Supabase (Auth com Discord, Postgres + RLS, Realtime, Edge Functions, pg_cron).
+- **Back:** Supabase (Auth com Discord, Postgres + RLS, Edge Functions, pg_cron).
 - **Futuro:** empacotamento mobile com Capacitor. Escreva código que não dependa só do navegador.
 
 Documentos de referência: `docs/plano.md` (produto), `DESIGN.md` (visual, componentes e
@@ -65,14 +65,14 @@ Repositório: https://github.com/N1JNR/party-radar (remoto `origin`).
 - Nunca implemente direto na `main`.
 - Uma branch por tarefa independente; não reaproveite branches antigas.
 - Nome `<tipo>/<NNN>-<nome-curto>`: tipo (`feat`, `fix`, `refactor`, `test`, `docs`, `chore`),
-  número da spec (`000` para manutenção) e nome em kebab-case: `feat/003-lista-de-amigos`,
+  número da spec (`000` para manutenção) e nome em kebab-case: `feat/003-trilha-da-temporada`,
   `fix/004-radar-status-duplicado`, `chore/000-melhorar-ci`.
 
 ### Commits
 
 - Pequenos e frequentes, um propósito por commit.
 - Formato [Conventional Commits](https://www.conventionalcommits.org/pt-br/), em português:
-  `feat(amigos): adiciona aceite de pedido de amizade`. Título até 72 caracteres, minúsculo e sem
+  `feat(home): adiciona a trilha da temporada`. Título até 72 caracteres, minúsculo e sem
   ponto final; corpo quebrado em 72 explicando o porquê (detalhes no `CONTRIBUTING.md`).
 - Hooks do Git (husky) verificam cada commit: `pre-commit` roda ESLint e Prettier nos arquivos
   do commit (lint-staged) e `commit-msg` valida o formato (commitlint). A CI valida de novo os
@@ -93,7 +93,7 @@ src/app/
   core/          serviços singleton, auth, cliente Supabase, interceptors, guards
   shared/        componentes, pipes e utilitários reutilizáveis (sem regra de negócio)
   features/
-    <feature>/   ex.: home, amigos, bate-papo, perfil
+    <feature>/   ex.: home, steam, perfil
       data/      acesso a dados (Supabase, APIs) — só aqui se fala com o backend
       domain/    regras de negócio puras (funções e tipos, sem Angular) — 100% testadas
       ui/        componentes de apresentação (inputs/outputs, sem acesso a dados)
@@ -106,7 +106,7 @@ src/app/
 - Cada componente tem **três arquivos** com o mesmo nome: `.ts` (lógica), `.html` (template) e
   `.scss` (estilos), ligados por `templateUrl` e `styleUrl`. Nada de `template` ou `styles`
   inline; o ESLint (`component-max-inline-declarations`) recusa.
-- Estado com **signals** (`signal`, `computed`, `effect` com parcimônia). RxJS só para streams (Realtime, eventos).
+- Estado com **signals** (`signal`, `computed`, `effect` com parcimônia). RxJS só para streams (eventos).
 - Novo controle de fluxo nos templates (`@if`, `@for` com `track`, `@switch`).
 - Rotas com lazy loading por feature.
 - Sem `any`. `strict: true` no TypeScript. Tipos do banco gerados por `supabase gen types`.

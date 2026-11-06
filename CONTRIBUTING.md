@@ -101,7 +101,7 @@ clara (`docs: ...`).
 | Certo                                            | Errado                                                                                  |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
 | `feat(login): adiciona aviso de sessão expirada` | `feat(login): Adicionado aviso de sessão expirada.`                                     |
-| `fix(radar): corrige status duplicado`           | `fix: corrigido bug no componente radar-hero que duplicava o status dos amigos na tela` |
+| `fix(radar): corrige status duplicado`           | `fix: corrigido bug no componente radar-hero que duplicava o status do jogador na tela` |
 
 ### Corpo
 

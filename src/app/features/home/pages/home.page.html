@@ -7,7 +7,6 @@
         <div class="skeleton skeleton--radar"></div>
         <div class="home__footer">
           <div class="skeleton skeleton--footer"></div>
-          <div class="skeleton skeleton--footer"></div>
         </div>
       </div>
       <p class="pr-sr-only" role="status">Carregando seu card…</p>
@@ -33,9 +32,7 @@
           @if (store.showStrengthen()) {
             <app-strengthen-card
               [steam]="store.steamStep()"
-              [friendsCount]="data.friendsCount"
               [checking]="store.markingSteam()"
-              (invite)="copyInvite(data.inviteLink)"
               (connectSteam)="connectSteam()"
               (retrySteam)="retrySteam()"
             />
@@ -66,28 +63,6 @@
             <app-player-radar [games]="data.games" />
           }
 
-          @if (data.question; as question) {
-            <app-partnership-question
-              [question]="question"
-              [now]="now()"
-              [answering]="store.answering()"
-              (answered)="answer($event)"
-            />
-          }
-          @if (store.opportunities().at(0); as opportunity) {
-            <app-squad-opportunity
-              [opportunity]="opportunity"
-              (openConversation)="openConversation($event.squad.id)"
-            />
-          }
-          @if (data.friendsPlaying.length > 0) {
-            <app-playing-now
-              [friends]="data.friendsPlaying"
-              [now]="now()"
-              (invite)="copyInvite(data.inviteLink)"
-            />
-          }
-
           <div class="home__footer">
             <app-month-summary
               [card]="data.card"
@@ -95,7 +70,6 @@
               [previousIsEstimate]="data.previousIsEstimate"
               [now]="now()"
             />
-            <app-squad-race (invite)="copyInvite(data.inviteLink)" />
           </div>
         </div>
       }

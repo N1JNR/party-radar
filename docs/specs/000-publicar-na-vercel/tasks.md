@@ -42,9 +42,13 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 
 - [x] T14 — Abrir uma rota direto (`/conversas`) e recarregar, sem 404
 - [x] T15 — Entrar com o Discord, conectar a Steam e ver o card
-- [ ] T16 — Duas contas reais: amizade, conversa em tempo real e squad, em dois aparelhos (falta da spec 007)
-- [ ] T17 — Celular de verdade: teclado aberto, com a caixa de texto à vista (CA25 da spec 007)
-- [ ] T18 — Agendamentos: `steam-presence` a cada 5 minutos, a leitura das 23h55 e os troféus, em `net._http_response`
+- [x] T16 — Duas contas reais: amizade, conversa em tempo real e squad, em dois aparelhos (falta da spec 007).
+      Conferido em 05/11/2026; depois, a spec 009 tirou amigos e bate-papo do app
+- [x] T17 — Celular de verdade: teclado aberto, com a caixa de texto à vista (CA25 da spec 007). Conferido pelo
+      relato do Jorge em 05/11/2026; a spec 009 tirou o bate-papo
+- [x] T18 — Agendamentos: `steam-presence` a cada 5 minutos, a leitura das 23h55 e os troféus, em `net._http_response`.
+      Conferido em 06/11/2026: `steam-sync-diario` às 02:55 UTC leu as duas contas, `season-close-diario` às 03:30 UTC
+      deu certo e nenhuma resposta diferente de 200 nas 14 horas anteriores
 - [ ] T19 — Sem sessão, abrir `/login?simular-login=sucesso` no site, tocar em "Continuar com Discord" e ir para o Discord
       de verdade. `?simular=` já foi conferido e não tem efeito; este parâmetro só foi visto até a tela de login
 
@@ -56,7 +60,6 @@ e a publishable key (`sb_publishable_…`) são públicas e entram no `environme
 - **E-mail da conta na Vercel:** o principal é um Outlook a que o Jorge não tem mais acesso. O botão de implantar do painel pede
   um código nele; o deploy pelo Git, ao chegar algo na `main`, é o caminho usado. Outras ações do painel podem pedir o mesmo
   código. Solução: recuperar o Outlook ou falar com o suporte da Vercel.
-- **Sem moderação:** não há denúncia no bate-papo. Até existir, só convide amigos.
 - **Temporada:** ela começa quando a migration é aplicada, e todos recomeçam do zero na nuvem.
 - **Os dados locais não vão para a nuvem:** cada pessoa entra e conecta a Steam de novo.
 - **Endereço:** usando o da Vercel, trocar por um domínio próprio depois pede repetir T9, T10 e T13.

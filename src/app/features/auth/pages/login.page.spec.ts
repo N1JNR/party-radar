@@ -59,10 +59,12 @@ describe('LoginPage', () => {
     fixture.detectChanges();
   }
 
-  it('mostra o nome, a proposta e o botão do Discord (CA1)', async () => {
+  it('mostra o nome, a proposta e o botão do Discord (CA1; spec 009, CA8)', async () => {
     const { element } = await render();
     expect(element.querySelector('h1')?.textContent?.trim()).toBe('Party Radar');
-    expect(element.querySelector('.login__tagline')?.textContent).toContain('jogando agora');
+    expect(element.querySelector('.login__tagline')?.textContent?.trim()).toBe(
+      'Seu card gamer: horas, jogos e a patente da temporada, direto da Steam.',
+    );
     expect(buttons(element).map((b) => b.textContent?.trim())).toEqual(['Continuar com Discord']);
     expect(element.querySelector('.login__note')?.textContent?.trim()).toBe(
       'Usamos seu nome e foto do Discord para criar seu perfil.',
@@ -119,16 +121,16 @@ describe('LoginPage', () => {
   });
 
   it('leva o destino pedido até a volta do provedor e, sem sair do app, vai a ele (CA5)', async () => {
-    const { fixture, element } = await render(null, { next: '/amigos' });
+    const { fixture, element } = await render(null, { next: '/perfil' });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     buttons(element)[0].click();
     expect(gateway.signIn).toHaveBeenCalledWith(
       'discord',
-      expect.stringMatching(/\/auth\/retorno\?next=%2Famigos$/),
+      expect.stringMatching(/\/auth\/retorno\?next=%2Fperfil$/),
     );
     resolveSignIn({ ok: true, user: { name: 'Ana', username: 'ana', avatarUrl: null } });
     await settle(fixture);
-    expect(navigate).toHaveBeenCalledWith('/amigos');
+    expect(navigate).toHaveBeenCalledWith('/perfil');
   });
 
   it('voltar do Discord pelo botão do navegador libera os botões (bfcache)', async () => {

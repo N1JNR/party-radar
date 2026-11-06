@@ -24,7 +24,7 @@
 }
 
 // Varredura: um feixe que termina numa borda clara e dá uma única volta. A duração vem do TS
-// (SWEEP_MS) pela variável --sweep-duration, para os amigos acenderem em sincronia.
+// (SWEEP_MS) pela variável --sweep-duration, para os pontos acenderem em sincronia.
 .radar__sweep {
   position: absolute;
   inset: 6.7%; // mesmo raio do anel externo (112 de 120)
@@ -146,7 +146,7 @@
   }
 }
 
-// Sem animação: mostra direto o estado final (amigos visíveis, feixe parado e suave).
+// Sem animação: mostra direto o estado final (pontos visíveis, feixe parado e suave).
 @media (prefers-reduced-motion: reduce) {
   .radar__sweep {
     animation: none;
