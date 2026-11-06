@@ -11,10 +11,8 @@
   gap: var(--spacing-lg);
   min-width: 0;
 }
+// Rodapé com o resumo do mês, separado por uma linha.
 .home__footer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--spacing-lg);
   padding-top: var(--spacing-md);
   border-top: var(--border-width-sm) solid var(--color-neutral-light-30);
 }

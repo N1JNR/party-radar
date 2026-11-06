@@ -160,6 +160,8 @@ describe('HomePage', () => {
     await render({ load: () => new Promise<HomeData>(() => undefined) });
     expect(element.querySelectorAll('.skeleton').length).toBeGreaterThan(0);
     expect(element.querySelector('[role="status"]')?.textContent).toContain('Carregando seu card');
+    // Um bloco por item do rodapé: só o resumo do mês, para nada pular (spec 004, CA17; spec 009).
+    expect(element.querySelectorAll('.skeleton--footer')).toHaveLength(1);
     expect(element.querySelector('app-player-header')).toBeNull();
     expect(button('Compartilhar meu radar')).toBeUndefined();
   });

@@ -61,8 +61,8 @@ describe('guards de autenticação', () => {
   it('authenticatedOnly manda ao login levando o endereço pedido (CA5)', async () => {
     setup();
     finishRestore(null);
-    expect(path(await run(authenticatedOnly, '/amigos?aba=pedidos'))).toBe(
-      '/login?next=%2Famigos%3Faba%3Dpedidos',
+    expect(path(await run(authenticatedOnly, '/perfil?aba=contas'))).toBe(
+      '/login?next=%2Fperfil%3Faba%3Dcontas',
     );
   });
 

@@ -41,7 +41,7 @@ describe('RadarHeroComponent', () => {
     expect(element.querySelectorAll('.radar__tick--major')).toHaveLength(12);
   });
 
-  it('mostra três amigos, um por estado de presença, com a inicial no anel', () => {
+  it('mostra três pontos, um por estado de presença, com a inicial no anel', () => {
     const element = render();
     const blips = Array.from(element.querySelectorAll<SVGGElement>('.radar__blip'));
     expect(blips.map((b) => b.querySelector('text')?.textContent?.trim())).toEqual(['A', 'L', 'M']);
@@ -58,7 +58,7 @@ describe('RadarHeroComponent', () => {
     expect(host.style.getPropertyValue('--sweep-duration')).toBe('8000ms');
   });
 
-  it('cada amigo acende quando a varredura passa pelo ângulo dele', () => {
+  it('cada ponto acende quando a varredura passa pelo ângulo dele', () => {
     const element = render();
     const delays = Array.from(element.querySelectorAll<SVGGElement>('.radar__blip')).map((b) =>
       b.style.getPropertyValue('--blip-delay'),

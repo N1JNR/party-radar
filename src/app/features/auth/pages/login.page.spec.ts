@@ -121,16 +121,16 @@ describe('LoginPage', () => {
   });
 
   it('leva o destino pedido até a volta do provedor e, sem sair do app, vai a ele (CA5)', async () => {
-    const { fixture, element } = await render(null, { next: '/amigos' });
+    const { fixture, element } = await render(null, { next: '/perfil' });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     buttons(element)[0].click();
     expect(gateway.signIn).toHaveBeenCalledWith(
       'discord',
-      expect.stringMatching(/\/auth\/retorno\?next=%2Famigos$/),
+      expect.stringMatching(/\/auth\/retorno\?next=%2Fperfil$/),
     );
     resolveSignIn({ ok: true, user: { name: 'Ana', username: 'ana', avatarUrl: null } });
     await settle(fixture);
-    expect(navigate).toHaveBeenCalledWith('/amigos');
+    expect(navigate).toHaveBeenCalledWith('/perfil');
   });
 
   it('voltar do Discord pelo botão do navegador libera os botões (bfcache)', async () => {
