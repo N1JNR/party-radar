@@ -72,7 +72,7 @@ select is(
 
 select hasnt_column('public', 'profiles', 'email', 'o perfil não guarda e-mail');
 
--- Spec 006, CA20: Ana logada lê só o próprio perfil; os outros chegam pelas funções de amizade.
+-- Spec 006, CA20 (mantido na spec 009, CA6): Ana logada lê só o próprio perfil.
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub": "00000000-0000-0000-0000-00000000000a", "role": "authenticated"}', true);
 
