@@ -60,6 +60,8 @@ imagens de compartilhar.
 - [x] **O plano do MVP** (`docs/plano.md`), o `AGENTS.md` e o `DESIGN.md` passam a descrever o app sem a parte social;
       "Corrida do squad" sai das próximas, e "Perfil" vira a próxima.
 - [x] **Perfis seguem privados**, como a spec 006 deixou.
+- [x] **A patente do topo passa a se chamar "Lenda"** (aprovado em 2026-11-06, durante a implementação): "Lenda do
+      squad" contrariava o CA8. Só o nome visível muda; o id `lenda` e os troféus já ganhos continuam valendo.
 
 ## Perguntas em aberto
 

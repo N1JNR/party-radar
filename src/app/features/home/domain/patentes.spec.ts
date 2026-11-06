@@ -7,7 +7,7 @@ describe('PATENTES', () => {
       ['recruta', 'Recruta da fila', 5],
       ['soldado', 'Soldado do fim de semana', 15],
       ['veterano', 'Veterano de lobby', 40],
-      ['lenda', 'Lenda do squad', 120],
+      ['lenda', 'Lenda', 120],
       ['sem-vida-social', 'Sem vida social', 200],
     ]);
   });
@@ -70,7 +70,7 @@ describe('progressFor', () => {
     });
   });
 
-  it('com 42h mostra quanto falta para Lenda do squad (CA4)', () => {
+  it('com 42h mostra quanto falta para Lenda (CA4)', () => {
     expect(progressFor(42)).toMatchObject({ hoursRemaining: 78, percent: 2 });
     expect(progressFor(42).current.id).toBe('veterano');
     expect(progressFor(42).next?.id).toBe('lenda');
@@ -91,7 +91,7 @@ describe('progressFor', () => {
 
 describe('remainingLabel', () => {
   it('diz o que falta, no plural (CA4)', () => {
-    expect(remainingLabel(progressFor(42))).toBe('Faltam 78h para Lenda do squad.');
+    expect(remainingLabel(progressFor(42))).toBe('Faltam 78h para Lenda.');
   });
 
   it('e no singular', () => {

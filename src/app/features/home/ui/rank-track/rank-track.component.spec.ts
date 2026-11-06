@@ -44,13 +44,13 @@ describe('RankTrackComponent', () => {
     const text = textOf(render(42));
     expect(text).toContain('Temporada 1: faltam 52 dias.');
     expect(text).toContain('42h nesta temporada, somando todos os seus jogos.');
-    expect(text).toContain('Faltam 78h para Lenda do squad.');
+    expect(text).toContain('Faltam 78h para Lenda.');
   });
 
   it('mostra a meta e o ritmo de cada patente, sem falar em amigos (CA4)', () => {
     const element = render(42);
     const lenda = [...element.querySelectorAll('.track__item')].find(
-      (item) => item.querySelector('.track__name')?.textContent === 'Lenda do squad',
+      (item) => item.querySelector('.track__name')?.textContent === 'Lenda',
     );
     expect([...(lenda?.querySelectorAll('.track__rule') ?? [])].map((n) => n.textContent)).toEqual([
       '120h',
@@ -78,7 +78,7 @@ describe('RankTrackComponent', () => {
     const element = render(42);
     expect(stateOf(element, 'Soldado do fim de semana')).toBe('Conquistada');
     expect(stateOf(element, 'Veterano de lobby')).toBe('Patente atual');
-    expect(stateOf(element, 'Lenda do squad')).toBe('Próxima');
+    expect(stateOf(element, 'Lenda')).toBe('Próxima');
     expect(stateOf(element, 'Sem vida social')).toBe('A conquistar');
   });
 

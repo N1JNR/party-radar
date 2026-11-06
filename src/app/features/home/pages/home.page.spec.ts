@@ -277,9 +277,7 @@ describe('HomePage', () => {
           }),
         ),
     });
-    expect(element.querySelector('.trophies__name')?.textContent).toBe(
-      'Temporada 3: Lenda do squad',
-    );
+    expect(element.querySelector('.trophies__name')?.textContent).toBe('Temporada 3: Lenda');
     element.querySelector<HTMLButtonElement>('app-season-trophies button')?.click();
     await settle();
     expect(createSeasonImage.mock.calls[0][0]).toMatchObject({
