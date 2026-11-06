@@ -59,8 +59,7 @@ const toKind = (category: string): GameKind =>
 
 /**
  * Home de verdade (spec 003, Parte 3b; spec 005): nome e foto do Discord (perfil) e os números da
- * Steam, calculados no banco por `my_card_stats()`, `my_games()` e `my_season()`. Os amigos vêm de `my_friends()` (spec 006), os squads de `my_squads()` (spec 007),
- * e a pergunta de parceria segue vazia.
+ * Steam, calculados no banco por `my_card_stats()`, `my_games()` e `my_season()`, e os troféus das temporadas encerradas.
  */
 @Injectable()
 export class SupabaseHomeSource implements HomeDataSource {

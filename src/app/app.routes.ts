@@ -38,27 +38,8 @@ export const routes: Routes = [
         title: 'Meu card | Party Radar',
         loadComponent: () => import('./features/home/pages/home.page').then((m) => m.HomePage),
       },
-      {
-        path: 'amigos',
-        title: 'Amigos | Party Radar',
-        loadComponent: () =>
-          import('./features/amigos/pages/friends.page').then((m) => m.FriendsPage),
-      },
-      // A conversa aberta vai em `?id=`: o `po-menu` só marca o item com o caminho exato (spec 007).
-      {
-        path: 'conversas',
-        title: 'Conversas | Party Radar',
-        loadComponent: () =>
-          import('./features/bate-papo/pages/conversations.page').then((m) => m.ConversationsPage),
-      },
-      // Sem login, o guard leva ao Discord e o `?next=` traz a pessoa de volta (spec 006, CA2).
-      {
-        path: 'convite/:username',
-        title: 'Convite | Party Radar',
-        loadComponent: () =>
-          import('./features/amigos/pages/invite.page').then((m) => m.InvitePage),
-      },
     ],
   },
+  // Endereço desconhecido, inclusive os antigos /amigos, /conversas e /convite, vai para a raiz (spec 009, CA2).
   { path: '**', redirectTo: '' },
 ];
