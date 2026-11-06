@@ -9,7 +9,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T4 — Frase do login, `AGENTS.md`, `DESIGN.md`, `docs/plano.md` e aviso nas specs 006 a 008 (CA8)
 - [x] T5 — Conferência em 390, 768 e 1280 px, com prints (CA9)
 - [x] T6 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final (CA7)
-- [ ] T7 — Depois do merge: `npx supabase db push` e conferir na nuvem (CA5)
+- [x] T7 — Depois do merge: `npx supabase db push` e conferir na nuvem (CA5). Feito em 06/11/2026, depois do deploy do merge na Vercel: na nuvem, 0 tabelas e 0 funções sociais, nenhuma tabela no tempo real, todas com RLS e a policy "cada um lê o próprio perfil" mantida
 
 ## Conferência (06/11/2026)
 
