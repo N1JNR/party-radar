@@ -8,7 +8,7 @@ Marque `[x]` só depois que os testes da tarefa passarem.
 - [x] T3 — Migration que apaga funções e tabelas de amigos e bate-papo, e os testes do banco (CA5, CA6)
 - [x] T4 — Frase do login, `AGENTS.md`, `DESIGN.md`, `docs/plano.md` e aviso nas specs 006 a 008 (CA8)
 - [x] T5 — Conferência em 390, 768 e 1280 px, com prints (CA9)
-- [ ] T6 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final (CA7)
+- [x] T6 — `/code-review`, `/security-review`, `npm run verify:all` e relatório final (CA7)
 - [ ] T7 — Depois do merge: `npx supabase db push` e conferir na nuvem (CA5)
 
 ## Conferência (06/11/2026)
@@ -27,3 +27,6 @@ Notas:
 - T4: a spec 008 nunca chegou à `main`, então o aviso foi só nas specs 006 e 007; o plano diz onde a 008 ficou.
 - T4: "Lenda do squad" virou "Lenda", decisão registrada na spec.
 - O radar decorativo do login (sem texto, `aria-hidden`) continua com seus pontos acendendo.
+- T6: `/code-review` achou 5 pontos, todos corrigidos em `a1f5058` (o principal: o esqueleto do rodapé ainda tinha
+  dois blocos). `/security-review` não achou vulnerabilidade: a migration só apaga objetos e não cria permissão nova.
+  `npm run verify:all` passou antes das correções e `npm run verify` depois.
