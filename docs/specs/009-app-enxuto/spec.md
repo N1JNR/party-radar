@@ -1,6 +1,6 @@
 # 009 — App enxuto: sem amigos e sem bate-papo
 
-**Status:** aguardando aprovação
+**Status:** aprovada em 2026-11-06
 **Relacionada a:** remove `006-amigos` e `007-bate-papo`, e abandona `008-convites-e-avisos` · muda `002-home`
 
 ## Problema
@@ -52,14 +52,14 @@ imagens de compartilhar.
 
 ## Decisões a aprovar
 
-- [ ] **Apagar os dados de vez**, na nuvem e no local, sem backup: amizades, mensagens e o squad das duas contas de teste.
-- [ ] **Tirar todas as partes sociais da home**, inclusive o link de convite.
-- [ ] **Abandonar a spec 008 sem merge**, guardando a branch.
-- [ ] **Frase nova do login:** "Seu card gamer: horas, jogos e a patente da temporada, direto da Steam."
-- [ ] **Specs 006, 007 e 008 ficam como histórico**, marcadas como removidas por esta.
-- [ ] **O plano do MVP** (`docs/plano.md`), o `AGENTS.md` e o `DESIGN.md` passam a descrever o app sem a parte social;
+- [x] **Apagar os dados de vez**, na nuvem e no local, sem backup: amizades, mensagens e o squad das duas contas de teste.
+- [x] **Tirar todas as partes sociais da home**, inclusive o link de convite.
+- [x] **Abandonar a spec 008 sem merge**, guardando a branch.
+- [x] **Frase nova do login:** "Seu card gamer: horas, jogos e a patente da temporada, direto da Steam."
+- [x] **Specs 006, 007 e 008 ficam como histórico**, marcadas como removidas por esta.
+- [x] **O plano do MVP** (`docs/plano.md`), o `AGENTS.md` e o `DESIGN.md` passam a descrever o app sem a parte social;
       "Corrida do squad" sai das próximas, e "Perfil" vira a próxima.
-- [ ] **Perfis seguem privados**, como a spec 006 deixou.
+- [x] **Perfis seguem privados**, como a spec 006 deixou.
 
 ## Perguntas em aberto
 
