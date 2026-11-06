@@ -1,8 +1,11 @@
 # 006 — Amigos
 
-**Status:** aprovada em 2026-11-05
+**Status:** aprovada em 2026-11-05 · retirada em 2026-11-06
 **Relacionada a:** `007-bate-papo` (só amigos conversam) · `002-home` (a seção "Jogando agora" e o menu) ·
 `003-steam` (o jogo aberto) · `001-login` (o perfil e o @usuário)
+
+> **Retirada em 2026-11-06 pela spec `009-app-enxuto`:** o app deixou de ter amigos e bate-papo. O código, as
+> tabelas e os dados saíram; esta spec fica só como histórico.
 
 ## Problema
 

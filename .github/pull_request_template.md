@@ -1,6 +1,6 @@
 <!--
 Título do PR no padrão do CONTRIBUTING.md: tipo(escopo): descrição curta (até 72 caracteres)
-Ex.: feat(amigos): adiciona aceite de pedido de amizade · fix(radar): corrige status duplicado
+Ex.: feat(home): adiciona a trilha da temporada · fix(radar): corrige status duplicado
 Apague as seções que não se aplicam e os comentários como este.
 -->
 

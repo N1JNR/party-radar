@@ -59,10 +59,12 @@ describe('LoginPage', () => {
     fixture.detectChanges();
   }
 
-  it('mostra o nome, a proposta e o botão do Discord (CA1)', async () => {
+  it('mostra o nome, a proposta e o botão do Discord (CA1; spec 009, CA8)', async () => {
     const { element } = await render();
     expect(element.querySelector('h1')?.textContent?.trim()).toBe('Party Radar');
-    expect(element.querySelector('.login__tagline')?.textContent).toContain('jogando agora');
+    expect(element.querySelector('.login__tagline')?.textContent?.trim()).toBe(
+      'Seu card gamer: horas, jogos e a patente da temporada, direto da Steam.',
+    );
     expect(buttons(element).map((b) => b.textContent?.trim())).toEqual(['Continuar com Discord']);
     expect(element.querySelector('.login__note')?.textContent?.trim()).toBe(
       'Usamos seu nome e foto do Discord para criar seu perfil.',
