@@ -38,10 +38,10 @@
     "@angular/ssr": "^21.2.29",
     "@po-ui/ng-components": "^21.35.0",
     "@po-ui/style": "^21.34.0",
-    "@supabase/supabase-js": "^2.118.0",
+    "@supabase/supabase-js": "^2.119.0",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
+    "tslib": "^2.9.1",
     "zone.js": "^0.15.1"
   },
   "devDependencies": {
