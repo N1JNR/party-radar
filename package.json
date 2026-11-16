@@ -38,10 +38,10 @@
     "@angular/ssr": "^21.2.29",
     "@po-ui/ng-components": "^21.35.0",
     "@po-ui/style": "^21.34.0",
-    "@supabase/supabase-js": "^2.118.0",
+    "@supabase/supabase-js": "^2.119.0",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
+    "tslib": "^2.9.1",
     "zone.js": "^0.15.1"
   },
   "devDependencies": {
@@ -60,10 +60,10 @@
     "husky": "^9.1.7",
     "jsdom": "^30.1.3",
     "lint-staged": "^17.6.0",
-    "prettier": "^3.8.1",
+    "prettier": "^3.10.1",
     "supabase": "^2.122.0",
     "typescript": "~5.9.2",
-    "typescript-eslint": "^8.72.1",
+    "typescript-eslint": "^8.72.2",
     "vitest": "^4.0.8"
   },
   "engines": {
